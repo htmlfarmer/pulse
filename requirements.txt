@@ -1,0 +1,9 @@
+feedparser
+requests
+beautifulsoup4
+geopy
+spacy
+pyyaml
+flask
+# to install the small English model (manual step):
+# python -m spacy download en_core_web_sm

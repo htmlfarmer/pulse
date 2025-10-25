@@ -1,0 +1,14 @@
+# pulse configuration
+# Put feed URLs (one per line under 'feeds') or maintain this file and use --config to override
+feeds:
+  - https://feeds.bbci.co.uk/news/rss.xml
+  - http://rss.cnn.com/rss/edition.rss
+wikipedia:
+  - New York City
+  - London
+  - Paris
+  - Beijing
+  - Tokyo
+user_agent: "pulse/1.0 (+https://github.com/htmlfarmer/pulse)"
+limit: 5
+max_places: 200

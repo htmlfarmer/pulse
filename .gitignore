@@ -1,0 +1,17 @@
+# Virtual environment
+.venv/
+
+# Logs and generated data
+web/data/*.log
+web/data/articles.geojson
+
+# Cache and sqlite
+.cache/
+*.sqlite
+
+# Environment files
+.env
+
+# OS files
+*.swp
+__pycache__/

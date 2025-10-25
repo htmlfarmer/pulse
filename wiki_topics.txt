@@ -1,0 +1,6 @@
+# Sample Wikipedia topics to include in the study
+New York City
+London
+Paris
+Beijing
+Tokyo

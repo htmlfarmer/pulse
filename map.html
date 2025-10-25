@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple OpenStreetMap Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>  
+
+</head>
+<body>
+    <div id="mapid" style="width: 100%; height: 500px;"></div>
+    <div id="textbox">Hello World!</div>
+    <script>
+        var mymap = L.map('mapid').setView([47.4332, -116.8021], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>  
+ contributors'
+        }).addTo(mymap);
+
+        var marker1  
+ = L.marker([47.4332, -116.8021]).addTo(mymap);
+        marker1.bindPopup("<b>First Location</b><br>This is the first location on the map.");
+
+        var marker2 = L.marker([47.4342, -116.8031]).addTo(mymap);
+        marker2.bindPopup("<b>Second Location</b><br>This is the second location on the map.");
+
+        var marker3 = L.marker([47.4352, -116.8041]).addTo(mymap);
+        marker3.bindPopup("<b>Third Location</b><br>This is the third location on the map.");
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Pulse Admin</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif;padding:12px} pre{background:#111;color:#efe;padding:10px;border-radius:6px;max-height:60vh;overflow:auto}</style>
+  </head>
+  <body>
+    <h2>Pulse admin</h2>
+    <p>Use this page to view the live <code>pulse.log</code> and trigger a background regeneration.</p>
+    <div style="margin-bottom:8px">
+  <label>Trigger token: <input id="token" type="text" placeholder="secret token (TRIGGER_SECRET)" style="width:320px"></label>
+  <div style="font-size:12px;color:#666;margin-top:6px">This token will not be stored by this page. Do not commit the secret to your repository.</div>
+      <button id="btnTrigger">Trigger</button>
+      <span id="adminStatus" style="margin-left:10px"></span>
+    </div>
+
+    <div>
+      <div style="font-weight:600">Live pulse.log</div>
+      <pre id="adminLog">(no log yet)</pre>
+    </div>
+
+    <script>
+      const adminLog = document.getElementById('adminLog');
+      const adminStatus = document.getElementById('adminStatus');
+
+      async function poll(){
+        try{
+          const r = await fetch('data/pulse.log', {cache:'no-store'});
+          if(r.ok){ const t = await r.text(); adminLog.textContent = t || '(empty)'; adminLog.scrollTop = adminLog.scrollHeight; }
+        }catch(e){}
+        setTimeout(poll, 2000);
+      }
+      poll();
+
+      document.getElementById('btnTrigger').addEventListener('click', async ()=>{
+        const token = document.getElementById('token').value || '';
+        adminStatus.textContent = 'Sending…';
+        try{
+          const r = await fetch('http://127.0.0.1:5050/trigger', {method:'POST', headers:{'Content-Type':'application/json','X-Trigger-Token': token}, body: JSON.stringify({limit:5})});
+          if(r.ok){ adminStatus.textContent = 'Triggered'; } else { adminStatus.textContent = 'Trigger failed: '+r.status; }
+        }catch(e){ adminStatus.textContent = 'Trigger error'; }
+        setTimeout(()=>adminStatus.textContent='',3000);
+      });
+    </script>
+  </body>
+</html>

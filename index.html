@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Pulse — Real-time News Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale-1.0">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <!-- (Styles are the same as the top-center panel version) -->
+  <style>html,body{height:100%;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}#map{height:100%;width:100%}#top-panel{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:1000;width:90%;max-width:500px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;flex-direction:column;max-height:70vh;transition:max-height .3s ease-in-out}#controls{padding:15px;border-bottom:1px solid #ddd}#controls h2{margin:0 0 10px;font-size:20px;text-align:center}#search-box{width:100%;padding:8px;font-size:16px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box}#results-panel{overflow-y:auto;transition:max-height .3s ease-in-out,padding .3s ease-in-out,opacity .3s ease-in-out}#results-panel.hidden{max-height:0;padding:0 10px;opacity:0;border-top:none}#results-panel.visible{max-height:60vh;padding:0 10px 10px;opacity:1}.result-item{margin-top:15px;padding-top:15px;border-top:1px solid #eee}.result-item:first-child{border-top:none;margin-top:10px;padding-top:5px}.result-item h4{margin:0 0 5px;font-size:16px}.result-item a{color:#007bff;text-decoration:none}.result-item a:hover{text-decoration:underline}.result-meta{font-size:13px;color:#6c757d}#no-results{padding:20px;text-align:center;color:#6c757d}#run-script-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:1001;padding:10px 20px;font-size:16px;font-weight:700;background-color:#007bff;color:#fff;border:none;border-radius:5px;cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.3)}#run-script-btn:disabled{background-color:#7a7a7a;cursor:not-allowed}</style>
+</head>
+<body>
+  <div id="map"></div>
+  <div id="top-panel">
+    <div id="controls">
+      <h2>Pulse News Map</h2>
+      <input type="text" id="search-box" placeholder="Search by city, country, or title...">
+    </div>
+    <div id="results-panel" class="visible"></div>
+  </div>
+  <button id="run-script-btn">Check for News</button>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script>
+    // --- WebSocket and Map Setup ---
+    const map = L.map('map').setView([20, 0], 2);
+    const markerClusterGroup = L.markerClusterGroup();
+    let allFeatures = [];
+    const resultsPanel = document.getElementById('results-panel');
+    const searchBox = document.getElementById('search-box');
+    const runButton = document.getElementById('run-script-btn');
+    
+    // --- IMPORTANT: Configure your WebSocket connection ---
+    const WEBSOCKET_URL = "ws://localhost:8765";
+    const SECRET_TOKEN = "a_very_secret_and_hard_to_guess_token"; // Must match the server
+    
+    let socket;
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+    }).addTo(map);
+    map.addLayer(markerClusterGroup);
+
+    // --- Core Data and UI Functions (Unchanged) ---
+    function renderData(featuresToShow) {
+      allFeatures = featuresToShow; // Update our master list
+      markerClusterGroup.clearLayers();
+      const geoJsonLayer = L.geoJSON(featuresToShow, { /* ... onEachFeature ... */ });
+      markerClusterGroup.addLayer(geoJsonLayer);
+      updateResultsPanel(featuresToShow);
+    }
+    function updateResultsPanel(featuresToShow) { /* ... same as before ... */ }
+    
+    // --- WebSocket Logic ---
+    function connectWebSocket() {
+      console.log("Attempting to connect to WebSocket server...");
+      socket = new WebSocket(WEBSOCKET_URL);
+
+      socket.onopen = function(event) {
+        console.log("WebSocket connection established.");
+        runButton.disabled = false;
+        runButton.textContent = 'Check for News';
+      };
+
+      socket.onmessage = function(event) {
+        const response = JSON.parse(event.data);
+        console.log("Message from server:", response);
+
+        if (response.status === 'running') {
+          runButton.textContent = response.message;
+        } else if (response.status === 'complete') {
+          runButton.textContent = 'Updating Map...';
+          alert('News check complete! Updating map.');
+          renderData(response.data.features); // Update the map with pushed data
+          runButton.disabled = false;
+          runButton.textContent = 'Check for News';
+        } else if (response.status === 'error') {
+          alert(`An error occurred: ${response.message}`);
+          runButton.disabled = false;
+          runButton.textContent = 'Check for News';
+        }
+      };
+
+      socket.onclose = function(event) {
+        console.log("WebSocket connection closed. Attempting to reconnect in 3 seconds...");
+        runButton.disabled = true;
+        runButton.textContent = 'Connecting...';
+        setTimeout(connectWebSocket, 3000);
+      };
+
+      socket.onerror = function(error) {
+        console.error("WebSocket error:", error);
+      };
+    }
+    
+    // --- Event Listeners ---
+    runButton.addEventListener('click', () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            runButton.disabled = true;
+            runButton.textContent = 'Requesting...';
+            // Send the command to the server
+            socket.send(JSON.stringify({
+                action: "run_pulse",
+                token: SECRET_TOKEN 
+            }));
+        } else {
+            alert("Not connected to the server. Please wait.");
+        }
+    });
+
+    // Initial load from the static file, in case the server isn't running
+    function loadInitialData() {
+        fetch('data/articles.geojson?t=' + new Date().getTime())
+            .then(response => response.json())
+            .then(data => renderData(data.features))
+            .catch(e => console.warn('Could not load initial GeoJSON data.', e));
+    }
+    
+    // (Other listeners for search box, etc., remain the same)
+    
+    // --- Start Everything ---
+    loadInitialData();
+    connectWebSocket();
+  </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+=== pulse run start: Mon Oct  6 12:19:01 PM UTC 2025 pid=66505 ===
+Command: /home/asher/github/pulse/.venv/bin/python /home/asher/github/pulse/pulse.py --limit 1 --max-places 200 --user-agent pulse/1.0 (+https://github.com/htmlfarmer/pulse)
+INFO: Feeds: 3 wiki topics: 5
+INFO: Selected 55 unique place candidates (top 200)
+INFO: Feature added: title='Home secretary wants police to get more powers to restrict repeated protests' source='https://feeds.bbci.co.uk/news/rss.xml' link='https://www.bbc.com/news/articles/c24rmdngrrjo?at_medium=RSS&at_campaign=rss' place='Police' coords=(48.9656205,15.6303894)
+INFO: Feature added: title='Home secretary wants police to get more powers to restrict repeated protests' source='https://feeds.bbci.co.uk/news/rss.xml' link='https://www.bbc.com/news/articles/c24rmdngrrjo?at_medium=RSS&at_campaign=rss' place='Senior' coords=(-36.0796095,140.7876817)
+INFO: Feature added: title='Home secretary wants police to get more powers to restrict repeated protests' source='https://feeds.bbci.co.uk/news/rss.xml' link='https://www.bbc.com/news/articles/c24rmdngrrjo?at_medium=RSS&at_campaign=rss' place='Home Office' coords=(51.4960092,-0.1298318)
+INFO: Wrote 3 features to web/data/articles.geojson
+=== pulse run end: Mon Oct  6 12:19:29 PM UTC 2025 ===

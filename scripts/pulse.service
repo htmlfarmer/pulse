@@ -1,9 +1,0 @@
-[Unit]
-Description=Run pulse and deploy GeoJSON
-
-[Service]
-Type=oneshot
-WorkingDirectory=/home/asher/github/pulse
-ExecStart=/home/asher/github/pulse/scripts/run_and_deploy.sh --venv /home/asher/github/pulse/.venv --deploy /var/www/html/pulse/data/articles.geojson --limit 5 --max-places 100
-User=asher
-Group=www-data

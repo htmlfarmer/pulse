@@ -1,0 +1,45 @@
+{
+  "fetched": "2025-10-25T21:07:57.523579",
+  "events": [
+    {
+      "title": "CALS Days",
+      "date": null,
+      "location": null,
+      "summary": null,
+      "link": "https://www.uidaho.edu/agricultural-life-sciences/news-events/cals-days",
+      "scrape_date": "2025-10-25"
+    },
+    {
+      "title": "Vandal Science Day",
+      "date": null,
+      "location": null,
+      "summary": null,
+      "link": "https://www.uidaho.edu/science/news-events/vandal-science-day",
+      "scrape_date": "2025-10-25"
+    },
+    {
+      "title": "Idaho Pitch",
+      "date": null,
+      "location": null,
+      "summary": null,
+      "link": "https://www.uidaho.edu/business-economics/news-events/idaho-pitch",
+      "scrape_date": "2025-10-25"
+    },
+    {
+      "title": "Engineering EXPO",
+      "date": null,
+      "location": null,
+      "summary": null,
+      "link": "https://www.uidaho.edu/engineering/news-events/engineering-expo",
+      "scrape_date": "2025-10-25"
+    },
+    {
+      "title": "Summer Design Days",
+      "date": null,
+      "location": null,
+      "summary": null,
+      "link": "https://www.uidaho.edu/art-architecture/news-events/summer-design-days",
+      "scrape_date": "2025-10-25"
+    }
+  ]
+}

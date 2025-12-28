@@ -168,13 +168,30 @@ def article_text_from_summary(summary, link, user_agent):
 def to_geojson(features: List[Dict]) -> Dict:
 	return {"type": "FeatureCollection", "features": features}
 
+def categorize_article(title: str) -> Dict[str, str]:
+    """Analyzes an article title to assign a category, icon, and color."""
+    title_lower = title.lower()
+    categories = {
+        'Alert': {'keywords': ['earthquake', 'quake', 'emergency', 'alert'], 'icon': 'exclamation-triangle', 'color': 'red'},
+        'Weather': {'keywords': ['weather', 'snow', 'rain', 'sun', 'storm', 'forecast', 'temperature', 'hurricane'], 'icon': 'cloud', 'color': 'blue'},
+        'Sports': {'keywords': ['sports', 'game', 'match', 'team', 'player', 'draws', 'football', 'soccer', 'nba', 'olympics'], 'icon': 'futbol-o', 'color': 'green'},
+        'Politics': {'keywords': ["robinson's", 'election', 'government', 'senate', 'congress', 'political', 'mayor'], 'icon': 'bank', 'color': 'darkred'},
+        'Business': {'keywords': ['business', 'economy', 'market', 'stocks', 'finance', 'shares'], 'icon': 'line-chart', 'color': 'purple'},
+        'Technology': {'keywords': ['tech', 'apple', 'google', 'microsoft', 'software', 'hardware', 'ai'], 'icon': 'cogs', 'color': 'orange'},
+    }
+    for category, data in categories.items():
+        if any(keyword in title_lower for keyword in data['keywords']):
+            return {"category": category, "icon": data['icon'], "markerColor": data['color']}
+    # Default category if no keywords match
+    return {"category": "News", "icon": "info-circle", "markerColor": "gray"}
+
 
 def main():
     signal.signal(signal.SIGINT, handle_shutdown_signal)
     # (Argument parsing is unchanged)
     p = argparse.ArgumentParser()
     p.add_argument("--cities-csv", default="cities.csv")
-    p.add_argument("--out", default="web/data/articles.geojson")
+    p.add_argument("--out", default="data/articles.geojson")
     p.add_argument("--max-cities", type=int, default=None)
     p.add_argument("--force-check", action="store_true")
     args = p.parse_args()
@@ -201,12 +218,33 @@ def main():
         if SHUTDOWN_REQUESTED or (args.max_cities and cities_processed >= args.max_cities):
             break
         cities_processed += 1
-        
-        # (Decision logic to check city is unchanged)
-        # ...
+
+        lat, lon, _ = CITIES_CACHE.get(city_name, (None, None, None))
+        if not lat or not lon:
+            logging.warning(f"Skipping {city_name} due to missing coordinates.")
+            _remove_city_from_queue(conn, city_name)
+            continue
+            
+        sun_events = get_sun_events_for_city(lat, lon)
+        if not sun_events:
+            logging.warning(f"Skipping {city_name} due to missing sun event data.")
+            _remove_city_from_queue(conn, city_name)
+            continue
+            
+        target_event = next((e for e in sun_events if e.time_utc > now_utc), sun_events[-1])
+
+        last_check = _get_last_checked(conn, city_name)
+        if not args.force_check and last_check:
+            last_check_time, last_event_name = last_check
+            if last_event_name == target_event.name:
+                logging.debug(f"Skipping {city_name}, already processed for {target_event.name}.")
+                continue
+            if (now_utc - last_check_time).total_seconds() < 3600: # 1 hour cooldown
+                logging.debug(f"Skipping {city_name}, checked too recently.")
+                continue
 
         # --- MODIFIED: Fetching and Storing Logic ---
-        logging.info(f"Processing {city_name}...")
+        logging.info(f"Processing {city_name} for sun event '{target_event.name}'...")
         gnews_url = f"https://news.google.com/rss/search?q={quote_plus(f'{city_name}')}&hl=en-US&gl=US&ceid=US:en"
         try:
             feed = feedparser.parse(gnews_url)
@@ -217,29 +255,42 @@ def main():
                 # Convert published time to a timestamp for sorting
                 published_ts = int(time.mktime(entry.published_parsed)) if hasattr(entry, 'published_parsed') else int(time.time())
 
+                category_info = categorize_article(entry.title)
+
+                # Clean up summary HTML using BeautifulSoup
+                summary_text = BeautifulSoup(entry.summary, 'html.parser').get_text(separator=' ', strip=True)
+
+                # Create a Wikipedia search query from the title (e.g., "NYC Forecast Warns..." -> "NYC Forecast Warns")
+                wiki_topic = re.split(r' - | \| ', entry.title)[0]
+
                 feature = {
                     "type": "Feature", "properties": {
                         "title": entry.title, "news_link": entry.link,
                         "news_source": entry.get("source", {}).get("title", "Google News"),
-                        "place": city_name, "summary": entry.summary,
+                        "place": city_name, "summary": summary_text,
                         "published": entry.published,
+                        "wiki_topic": wiki_topic,
+                        **category_info
                     }, "geometry": {"type": "Point", "coordinates": [lon, lat]}
                 }
 
                 article_data = {
                     "city": city_name, "link": entry.link, "title": entry.title,
                     "source": entry.get("source", {}).get("title", "Google News"),
-                    "summary": entry.summary, "published_ts": published_ts,
+                    "summary": summary_text, "published_ts": published_ts,
                     "image": None, # Image fetching can be re-added here
                     "feature": feature
                 }
+
+                # --- NEW: Categorize article and add to data ---
+                category_data = categorize_article(entry.title)
+                article_data.update(category_data)
 
                 _store_article_in_db(conn, article_data)
                 _trim_article_history(conn, city_name, max_articles=5)
                 logging.info(f"  -> Stored: {entry.title[:60]}...")
             
-            # (Unchanged) Update last checked time and remove from queue
-            # _set_last_checked(conn, city_name, target_event.name)
+            _set_last_checked(conn, city_name, target_event.name)
         except Exception as e:
             logging.error(f"  -> Failed to process {city_name}: {e}")
         

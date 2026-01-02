@@ -35,7 +35,7 @@
     }
     exit;
   }
-
+  /*
   if (isset($_GET['proxy_noaa'])) {
     if (isset($_GET['debug_proxy'])) {
       header('Content-Type: text/plain');
@@ -81,7 +81,7 @@
     }
     exit;
   }
-
+  */
   if (isset($_GET['geo_lookup']) && isset($_GET['lat']) && isset($_GET['lon'])) {
     header('Content-Type: application/json');
     $lat = floatval($_GET['lat']);
@@ -266,6 +266,14 @@
       L.DomEvent.off(map.getContainer(), 'contextmenu');
 
       const baseLayers = {
+        'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 19
+        }),
+        'Topographical': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+          attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+          maxZoom: 17
+        }),
         'Dark': L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
           subdomains: 'abcd',
@@ -307,14 +315,14 @@
           attribution: '&copy; NASA GIBS',
           maxZoom: 9
         }),
-        'Pressure': L.tileLayer.wms('pulse.php', {
+        /* 'Pressure': L.tileLayer.wms('pulse.php', {
           layers: '2',
           format: 'image/png',
           transparent: true,
           attribution: 'NOAA/NWS',
           // Custom parameter to trigger our proxy
           proxy_noaa: true
-        })
+        }) */
       };
       
       const earthquakesLayer = L.geoJSON(null, {
@@ -351,9 +359,6 @@
 
       overlays['Earthquakes'] = earthquakesLayer;
 
-      baseLayers.Satellite.addTo(map);
-      overlays['Weather'].addTo(map);
-      overlays['Cities'].addTo(map);
       L.control.layers(baseLayers, overlays).addTo(map);
 
       // --- Theme switcher for popups ---
@@ -368,13 +373,8 @@
         }
       }
 
-      // Listen for base layer changes
-      map.on('baselayerchange', function(e) {
-        setTheme(e.name);
-      });
-
-      // Set initial theme based on the default layer
-      setTheme('Satellite');
+      // Listen for base layer changes are handled below
+      
       // --- End theme switcher ---
 
       // fetch(`data/articles.geojson?v=${Date.now()}`).then(r=>r.json()).then(geo=>{
@@ -498,8 +498,8 @@
           if (hasNearestCity) {
             const city = data.nearest_city;
             const search_query = `${city.name}${city.state ? ', ' + city.state : ''}${city.country ? ', ' + city.country : ''}`;
-            const wiki_query = city.state ? `${city.name},_${city.state}`: city.name;
-            html += `<b>Nearest City:</b> <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(wiki_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(city.name)}</a> <a href="https://news.google.com/search?q=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">(news)</a><hr>`;
+            // Changed to Wikipedia search URL
+            html += `<b>Nearest City:</b> <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(city.name)}</a> <a href="https://news.google.com/search?q=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">(news)</a><hr>`;
             
             html += '<div id="news-headlines" style="max-height: 250px; overflow-y: auto;">Loading news...</div>';
 
@@ -533,8 +533,8 @@
             html += '<div id="wiki-topics" style="max-height: 150px; overflow-y: auto; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
             html += '<b>Wikipedia Related Area Topics:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
             data.wiki_topics.forEach(topic => {
-              const wiki_query = topic.replace(/ /g, '_');
-              html += `<li style="margin-bottom: 0.5em;"><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(wiki_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(topic)}</a></li>`;
+              // Changed to Wikipedia search URL
+              html += `<li style="margin-bottom: 0.5em;"><a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(topic)}" target="_blank" rel="noopener noreferrer">${escapeHtml(topic)}</a></li>`;
             });
             html += '</ul></div>';
           }
@@ -590,6 +590,73 @@
 
       map.on('click', function(e) {
         fetchAndShowCityInfo(e.latlng);
+      });
+
+      // --- URL State Management & Initial Load ---
+      let currentBaseLayerName;
+      
+      function updateUrl() {
+        const center = map.getCenter();
+        const zoom = map.getZoom();
+        const url = new URL(window.location);
+        url.searchParams.set('lat', center.lat.toFixed(5));
+        url.searchParams.set('lon', center.lng.toFixed(5));
+        url.searchParams.set('zoom', zoom);
+        url.searchParams.set('base', currentBaseLayerName);
+
+        const activeOverlays = [];
+        for (const name in overlays) {
+          if (map.hasLayer(overlays[name])) {
+            activeOverlays.push(name);
+          }
+        }
+
+        if (activeOverlays.length > 0) {
+          url.searchParams.set('overlays', activeOverlays.join(','));
+        } else {
+          url.searchParams.delete('overlays');
+        }
+
+        window.history.replaceState({}, '', url);
+      }
+
+      map.on('moveend', updateUrl);
+      map.on('overlayadd', updateUrl);
+      map.on('overlayremove', updateUrl);
+      map.on('baselayerchange', function(e) {
+        setTheme(e.name);
+        currentBaseLayerName = e.name;
+        updateUrl();
+      });
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLat = urlParams.get('lat');
+      const urlLon = urlParams.get('lon');
+      const urlZoom = urlParams.get('zoom');
+      const urlBase = urlParams.get('base');
+      const urlOverlays = urlParams.get('overlays');
+
+      // Set view
+      if (urlLat && urlLon) {
+        const zoom = urlZoom ? parseInt(urlZoom, 10) : map.getZoom();
+        map.setView([parseFloat(urlLat), parseFloat(urlLon)], zoom);
+      }
+
+      // Set base layer
+      const initialBaseLayerName = (urlBase && baseLayers[urlBase]) ? urlBase : 'Satellite';
+      baseLayers[initialBaseLayerName].addTo(map);
+      currentBaseLayerName = initialBaseLayerName;
+      setTheme(initialBaseLayerName);
+      
+      // Set overlays. Default to all on if 'overlays' param is not in URL.
+      const initialOverlays = urlOverlays !== null 
+          ? (urlOverlays === '' ? [] : urlOverlays.split(',')) 
+          : ['Weather', 'Cities', 'Earthquakes'];
+
+      initialOverlays.forEach(name => {
+        if (overlays[name] && !map.hasLayer(overlays[name])) {
+          overlays[name].addTo(map);
+        }
       });
     </script>
   </body>

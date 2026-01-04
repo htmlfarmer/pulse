@@ -2,6 +2,13 @@
   if (isset($_GET['run_pulse_py'])) {
       header('Content-Type: application/json');
       set_time_limit(300); // 5 minutes, because the LLM can be slow
+
+      // Delete old geojson before running the script
+      $geojson_file = __DIR__ . '/data/current_events.geojson';
+      if (file_exists($geojson_file)) {
+          unlink($geojson_file);
+      }
+
       $command = 'cd ' . __DIR__ . ' && python3 pulse.py 2>&1';
       $output = shell_exec($command);
       
@@ -56,53 +63,7 @@
     }
     exit;
   }
-  /*
-  if (isset($_GET['proxy_noaa'])) {
-    if (isset($_GET['debug_proxy'])) {
-      header('Content-Type: text/plain');
-      $params = $_GET;
-      unset($params['proxy_noaa']);
-      unset($params['debug_proxy']);
-      $queryString = http_build_query($params);
-      $url = "https://idpgis.ncep.noaa.gov/arcgis/services/NWS_Forecasts_Guidance_Warnings/natl_sfc_wx/MapServer/WMSServer?" . $queryString;
-      echo "DEBUG MODE\n\n";
-      echo "The proxy will request this URL from NOAA:\n";
-      echo $url;
-      exit;
-    }
-    $params = $_GET;
-    unset($params['proxy_noaa']);
-    $queryString = http_build_query($params);
-    
-    $url = "https://idpgis.ncep.noaa.gov/arcgis/services/NWS_Forecasts_Guidance_Warnings/natl_sfc_wx/MapServer/WMSServer?" . $queryString;
 
-    $ch = curl_init();
-    
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-    // Disable SSL verification for maximum compatibility
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-
-    $image_data = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $error_message = curl_error($ch);
-    
-    curl_close($ch);
-    
-    if ($http_code == 200 && $image_data) {
-        header('Content-Type: image/png');
-        echo $image_data;
-    } else {
-        http_response_code(404);
-        echo "cURL Error: " . $error_message . " (HTTP Code: " . $http_code . ")";
-    }
-    exit;
-  }
-  */
   if (isset($_GET['geo_lookup']) && isset($_GET['lat']) && isset($_GET['lon'])) {
     header('Content-Type: application/json');
     $lat = floatval($_GET['lat']);
@@ -331,6 +292,15 @@
     <style>
       html,body,#map { height: 100%; margin: 0; padding: 0 }
       .news-popup { max-width: 360px; }
+      .leaflet-popup-content-wrapper, .leaflet-popup-content {
+        max-width: 350px !important;
+        max-height: 260px !important;
+        overflow-y: auto !important;
+      }
+      .leaflet-popup-content {
+        font-size: 15px;
+        line-height: 1.3;
+      }
       .news-title { font-weight: 600; margin-bottom: 6px; }
       .news-source { color: #666; font-size: 90%; }
       .news-summary { margin-top: 6px; }
@@ -361,7 +331,10 @@
         background: white;
         padding: 10px;
         padding-top: 25px; /* space for close button */
-        position: relative;
+        position: absolute; /* Changed from relative to absolute */
+        top: 80px; /* Below top controls */
+        right: 10px;
+        z-index: 1000; /* Ensure it sits on top of the map */
         border-radius: 5px;
         box-shadow: 0 1px 5px rgba(0,0,0,0.65);
         max-width: 400px;
@@ -418,9 +391,27 @@
   </head>
   <body>
     <div id="map"></div>
+    
+    <!-- Add the Info Panel HTML here -->
+    <div id="info-panel" class="info-panel">
+      <div class="info-panel-close" id="info-panel-close">&times;</div>
+      <div id="info-panel-content"></div>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
     <script>
+      // Utility function for escaping HTML (was missing)
+      function escapeHtml(text) {
+        if (!text) return '';
+        return text.toString()
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
       const map = L.map('map').setView([39.8283, -98.5795], 4);
 
       // Re-enable browser context menu (for inspector) on the map.
@@ -468,75 +459,7 @@
       const dateControl = new DateControl({ position: 'bottomleft' });
       dateControl.addTo(map);
 
-      const citiesLayer = L.layerGroup();
-      const liveNewsLayer = L.layerGroup();
-      const currentEventsLayer = L.layerGroup();
-
-      const overlays = {
-        'Current Events': currentEventsLayer,
-        'Live News': liveNewsLayer,
-        'Cities': citiesLayer,
-        'Weather': L.tileLayer(`pulse.php?proxy_gibs=true&date=${date}&z={z}&y={y}&x={x}`, {
-          attribution: '&copy; NASA GIBS',
-          maxZoom: 9
-        }),
-        /* 'Pressure': L.tileLayer.wms('pulse.php', {
-          layers: '2',
-          format: 'image/png',
-          transparent: true,
-          attribution: 'NOAA/NWS',
-          // Custom parameter to trigger our proxy
-          proxy_noaa: true
-        }) */
-      };
-      
-      const earthquakesLayer = L.geoJSON(null, {
-        pointToLayer: function(feature, latlng) {
-          const mag = feature.properties.mag;
-          const time = feature.properties.time;
-          const hours = (Date.now() - time) / 3600000; // Quake age in hours
-          
-          let color = 'white';
-          if (hours <= 24) color = 'red';
-          else if (hours <= 24 * 7) color = 'orange';
-          else if (hours <= 24 * 14) color = 'yellow';
-
-          return L.circleMarker(latlng, {
-            radius: mag * 1.5,
-            fillColor: color,
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
-          });
-        },
-        onEachFeature: function(feature, layer) {
-          const props = feature.properties;
-          const date = new Date(props.time).toLocaleString();
-          const html = `<b>Magnitude ${props.mag}</b><br>${props.place}<br>${date}<br><a href="${props.url}" target="_blank" rel="noopener noreferrer">More details (USGS)</a>`;
-          layer.on('click', (e) => {
-            if (searchCircle) {
-                map.removeLayer(searchCircle);
-                searchCircle = null;
-            }
-            infoPanel.update(html);
-            L.DomEvent.stopPropagation(e);
-          });
-        }
-      });
-
-      fetch('pulse.php?earthquakes=true').then(r=>r.json()).then(data=>{
-        earthquakesLayer.addData(data);
-      });
-
-      overlays['Earthquakes'] = earthquakesLayer;
-
-      L.control.layers(baseLayers, overlays).addTo(map);
-
-      let searchCircle;
-      let infoPanel;
-
-      // --- Info Panel Control ---
+      // --- Info Panel Control (Restored) ---
       const InfoControl = L.Control.extend({
         onAdd: function(map) {
             this._div = L.DomUtil.create('div', 'info-panel');
@@ -566,7 +489,7 @@
             this._div.querySelector('.info-panel-content').innerHTML = '';
         }
       });
-      infoPanel = new InfoControl({ position: 'topright' });
+      const infoPanel = new InfoControl({ position: 'topright' });
       infoPanel.addTo(map);
 
       // --- Theme switcher for popups ---
@@ -581,84 +504,216 @@
         }
       }
 
-      // Listen for base layer changes are handled below
-      
-      // --- End theme switcher ---
+      const citiesLayer = L.layerGroup();
+      const liveNewsLayer = L.layerGroup();
+      const currentEventsLayer = L.layerGroup();
+      let searchCircle = null; // Visual blue circle for news/search area
+      let currentEventsGeoJsonLayer = null; // Track the actual GeoJSON layer
 
-      // fetch(`data/articles.geojson?v=${Date.now()}`).then(r=>r.json()).then(geo=>{
-      //   if (!geo || !geo.features) return;
-      //   geo.features.forEach(f=>{
-      //     try {
-      //       const coords = f.geometry && f.geometry.coordinates;
-      //       if (!coords || coords.length < 2) return;
-      //       const props = f.properties || {};
-      //       const lon = coords[0], lat = coords[1];
-            
-      //       const title = props.title || props.place || 'News item';
-      //       const place = props.place || '';
-      //       const source = props.source || '';
-      //       const link = props.news_link || '#';
-      //       const summary = (props.summary || '').replace(/\n/g,' ').slice(0,800);
-      //       const wikiTopic = props.wiki_topic || title;
+      const overlays = {
+        'Current Events': currentEventsLayer,
+        'Live News': liveNewsLayer,
+        'Cities': citiesLayer,
+        'Weather': L.tileLayer(`pulse.php?proxy_gibs=true&date=${date}&z={z}&y={y}&x={x}`, {
+          attribution: '&copy; NASA GIBS',
+          maxZoom: 9
+        })
+        // 'Earthquakes' will be added after earthquakesLayer is created
+      };
 
-      //       const html = `
-      //         <div class="news-popup">
-      //           <div class="news-title"><a href="${link}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a></div>
-      //           <div class="news-source">${escapeHtml(source)} ${place?('&middot; '+escapeHtml(place)):''}</div>
-      //           <div class="news-summary">${escapeHtml(summary)}</div>
-      //           <div style="margin-top:6px">
-      //             <a href="${link}" target="_blank" rel="noopener noreferrer">Open article</a>
-      //             &middot;
-      //             <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(wikiTopic)}" target="_blank" rel="noopener noreferrer">Search Wikipedia</a>
-      //           </div>
-      //         </div>`;
+      // --- Current Events (Wikipedia) ---
+      let currentEventsLoaded = false;
 
-      //       const marker = L.marker([lat, lon], {
-      //         icon: L.AwesomeMarkers.icon({
-      //           icon: props.icon || 'info-circle',
-      //           markerColor: props.markerColor || 'gray',
-      //           prefix: 'fa'
-      //         })
-      //       });
-      //       marker.bindPopup(html);
-      //       marker.addTo(map);
-      //       allMarkers.push(marker);
-      //     } catch (e) { console.error('feature error', e); }
-      //   });
-        
-      //   if (allMarkers.length > 0) {
-      //     const group = L.featureGroup(allMarkers);
-      //     map.fitBounds(group.getBounds().pad(0.5));
-      //   }
-      // }).catch(e=>console.error(e));
-
-      fetch('pulse.php?cities=all').then(r=>r.json()).then(cities=>{
-        cities.forEach(city => {
-          const marker = L.circleMarker([city.lat, city.lng], {
-            radius: 3,
-            fillColor: "#ff7800",
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
+      function loadCurrentEvents() {
+        // Remove previous GeoJSON layer if it exists
+        if (currentEventsGeoJsonLayer) {
+          currentEventsLayer.removeLayer(currentEventsGeoJsonLayer);
+          currentEventsGeoJsonLayer = null;
+        }
+        fetch('pulse.php?current_events=true')
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.features) {
+              const eventIcon = L.AwesomeMarkers.icon({
+                  icon: 'globe',
+                  markerColor: 'cadetblue',
+                  prefix: 'fa'
+              });
+              currentEventsGeoJsonLayer = L.geoJSON(data, {
+                pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
+                onEachFeature: (feature, layer) => {
+                  const p = feature.properties;
+                  let llmSentence = p.llm_sentence ? escapeHtml(p.llm_sentence) : '';
+                  let eventText = p.event_text ? escapeHtml(p.event_text) : '';
+                  let eventLinksHtml = '';
+                  if (Array.isArray(p.event_links) && p.event_links.length > 0) {
+                    eventLinksHtml = `
+                      <div style="margin-top:6px;">
+                        <b>Related sources:</b>
+                        <ul style="margin:0;padding-left:18px;">
+                          ${p.event_links.map(link => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join('')}
+                        </ul>
+                      </div>
+                    `;
+                  }
+                  let popupHtml = `
+                    <strong><a href="${p.url}" target="_blank">${p.title}</a></strong><br>
+                    <div style="max-height:100px;overflow:auto;">
+                      <em>${eventText}</em>
+                    </div>
+                    ${eventLinksHtml}
+                    <hr>
+                    <div style="max-height:80px;overflow:auto;">
+                      <b>Top headlines:</b>
+                      <ul style="margin:0;padding-left:18px;">
+                        ${Array.isArray(p.headlines_urls) ? p.headlines_urls.map(h => `<li><a href="${h.url}" target="_blank">${h.title}</a></li>`).join('') : ''}
+                      </ul>
+                    </div>
+                    <hr>
+                    <div style="font-size:90%;color:#888;">
+                      <b>LLM evaluated sentence for geolocation:</b><br>
+                      <span>${llmSentence}</span>
+                    </div>
+                  `;
+                  layer.bindPopup(popupHtml);
+                  layer.on('click', function(e) {
+                    layer.openPopup();
+                  });
+                }
+              });
+              currentEventsGeoJsonLayer.addTo(currentEventsLayer);
+              currentEventsLoaded = true;
+            }
+          })
+          .catch(e => {
+            console.error("Error fetching current events:", e);
+            // Show a user-friendly error if desired
+            alert("Failed to load current events data.");
           });
-          marker.on('click', (e) => {
-            L.DomEvent.stopPropagation(e);
-            fetchAndShowCityInfo(e.latlng);
-          });
-          marker.addTo(citiesLayer);
-        });
-      });
-      function escapeHtml(s){
-        if(!s) return '';
-        return String(s)
-          .replace(/&/g,'&amp;')
-          .replace(/</g,'&lt;')
-          .replace(/>/g,'&gt;')
-          .replace(/"/g,'&quot;')
-          .replace(/'/g,'&#39;');
       }
 
+      // Remove pins when overlay is removed
+      map.on('overlayremove', function(e) {
+        if (e.name === 'Current Events' && currentEventsGeoJsonLayer) {
+          currentEventsLayer.removeLayer(currentEventsGeoJsonLayer);
+          currentEventsGeoJsonLayer = null;
+          currentEventsLoaded = false;
+        }
+      });
+
+      // Only load markers when overlay is added, and remove any default markers
+      map.on('overlayadd', function(e) {
+        if (e.name === 'Current Events') {
+          if (currentEventsGeoJsonLayer) {
+            currentEventsLayer.removeLayer(currentEventsGeoJsonLayer);
+            currentEventsGeoJsonLayer = null;
+            currentEventsLoaded = false;
+          }
+          loadCurrentEvents();
+        }
+        if (e.name === 'Live News') {
+          startLiveNews();
+        }
+      });
+
+      const earthquakesLayer = L.geoJSON(null, {
+        pointToLayer: function (feature, latlng) {
+          const props = feature.properties || {};
+          const mag = Math.max(props.mag || 1, 0.1);
+          const time = props.time || Date.now();
+          const hours = (Date.now() - time) / 3600000; // age in hours
+
+          let fillColor = '#cccccc'; // default (old)
+          if (hours <= 24) fillColor = 'red';
+          else if (hours <= 24 * 7) fillColor = 'orange';
+          else if (hours <= 24 * 14) fillColor = 'yellow';
+
+          return L.circleMarker(latlng, {
+            radius: Math.min(Math.max(mag * 2, 6), 14),
+            fillColor: fillColor,
+            color: '#000',
+            weight: 1,
+            opacity: 0.9,
+            fillOpacity: 0.9
+          });
+        },
+        onEachFeature: function (feature, layer) {
+          const props = feature.properties;
+          let popupContent = `<strong>Earthquake Details</strong><br>`;
+          popupContent += `Magnitude: ${props.mag}<br>`;
+          popupContent += `Location: ${props.place}<br>`;
+          popupContent += `Time: ${new Date(props.time).toLocaleString()}<br>`;
+          if (props.tsunami === 1) {
+            popupContent += `Tsunami: Yes<br>`;
+          } else {
+            popupContent += `Tsunami: No<br>`;
+          }
+          // Add USGS details link if available
+          if (props.url) {
+            popupContent += `<a href="${props.url}" target="_blank" rel="noopener noreferrer">More details (USGS)</a>`;
+          }
+          layer.bindPopup(popupContent);
+        }
+      });
+
+      fetch('pulse.php?earthquakes=true').then(r=>r.json()).then(data=>{
+        earthquakesLayer.addData(data);
+      });
+
+      // Add earthquakes layer into overlays after earthquakesLayer exists
+      overlays['Earthquakes'] = earthquakesLayer;
+
+      // Add layer control (already created above)
+      const layerControl = L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: false }).addTo(map);
+
+      // Allow clicking the map to look up nearby info / live news
+      map.on('click', function(e) {
+        fetchAndShowCityInfo(e.latlng);
+      });
+      
+      // --- Live News ---
+      let liveNewsTimer;
+      let lastNewsTimestamp = 0;
+
+      function startLiveNews() {
+        if (liveNewsTimer) return; // Already running
+        liveNewsTimer = setInterval(fetchLiveNews, 60000); // Update every minute
+        fetchLiveNews(); // Initial fetch
+      }
+
+      function fetchLiveNews() {
+        fetch('pulse.php?live_news=true&since=' + lastNewsTimestamp)
+          .then(response => response.json())
+          .then(data => {
+            if (data && data.features) {
+              const newsIcon = L.AwesomeMarkers.icon({
+                  icon: 'info',
+                  markerColor: 'orange',
+                  prefix: 'fa'
+              });
+              const newItems = data.features.filter(item => item.properties.published_ts > lastNewsTimestamp);
+              newItems.forEach(item => {
+                const marker = L.geoJSON(item, {
+                  pointToLayer: (feature, latlng) => L.marker(latlng, { icon: newsIcon }),
+                  onEachFeature: (feature, layer) => {
+                    const p = feature.properties;
+                    let description = `<strong>${escapeHtml(p.title)}</strong>`;
+                    description += `<br><em>${escapeHtml(p.summary)}</em>`;
+                    description += `<br><small>Source: ${escapeHtml(p.source)}</small>`;
+                    layer.bindPopup(description);
+                  }
+                });
+                liveNewsLayer.addLayer(marker);
+              });
+              if (newItems.length > 0) {
+                lastNewsTimestamp = newItems[newItems.length - 1].properties.published_ts;
+              }
+            }
+          })
+          .catch(e => console.error("Error fetching live news:", e));
+      }
+
+      // --- City Info (Restored Logic) ---
       function showInfoPopup(data, latlng) {
         let html = 'No information found for this area.';
         let all_articles = [];
@@ -704,7 +759,6 @@
           if (hasNearestCity) {
             const city = data.nearest_city;
             const search_query = `${city.name}${city.state ? ', ' + city.state : ''}${city.country ? ', ' + city.country : ''}`;
-            // Changed to Wikipedia search URL
             const zoom = Math.max(map.getZoom(), 12);
             html += `<b>Nearest City:</b> <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(city.name)}</a> <a href="https://news.google.com/search?q=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">(news)</a><br><small><a href="https://www.google.com/maps/@${latlng.lat},${latlng.lng},${zoom}z/data=!3m1!1e3" target="_blank" rel="noopener noreferrer">Google Satellite</a> &middot; <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latlng.lat},${latlng.lng}" target="_blank" rel="noopener noreferrer">Street View</a> &middot; <a href="https://www.openstreetmap.org/#map=${zoom}/${latlng.lat}/${latlng.lng}" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></small><hr>`;
             
@@ -740,7 +794,6 @@
             html += '<div id="wiki-topics" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
             html += '<b>Wikipedia Related Area Topics:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
             data.wiki_topics.forEach(topic => {
-              // Changed to Wikipedia search URL
               html += `<li style="margin-bottom: 0.5em;"><a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(topic)}" target="_blank" rel="noopener noreferrer">${escapeHtml(topic)}</a></li>`;
             });
             html += '</ul></div>';
@@ -791,150 +844,43 @@
           infoPanel.update('<i>Error looking up location information. Please try again.</i>');
         };
 
+        // Use the Python script for city lookup (requires find_cities.py on server)
+        // Note: The PHP endpoint for this is ?lat=...&lon=...&radius=...
+        // The PHP code provided in the prompt handles this via shell_exec('python3 find_cities.py ...')
+        // We need to parse that output. The PHP code returns the raw output from python.
+        // Assuming find_cities.py returns JSON with nearest_city and other_cities.
+        
         const citySearchPromise = fetch(`pulse.php?lat=${lat}&lon=${lon}&radius=${radius}`).then(r => r.json());
         const wikiSearchPromise = fetch(`pulse.php?geo_lookup=true&lat=${lat}&lon=${lon}`).then(r => r.json());
         const wikidataSearchPromise = fetch(`pulse.php?wikidata_lookup=true&lat=${lat}&lon=${lon}`).then(r => r.json());
 
         Promise.all([citySearchPromise, wikiSearchPromise, wikidataSearchPromise])
           .then(([cityData, wikiData, wikidata]) => {
+            // cityData is expected to be the JSON output from find_cities.py
+            // If find_cities.py returns a list of cities (as in previous versions), we might need to adapt.
+            // However, the provided "old code" snippet uses `data.nearest_city` and `data.other_cities`.
+            // The PHP code for `if (isset($_GET['lat']) ...)` executes `find_cities.py`.
+            // If `find_cities.py` returns a list, we need to structure it to match `showInfoPopup` expectations.
+            
+            // Check if cityData is an array (list of cities) or object
+            let structuredCityData = {};
+            if (Array.isArray(cityData)) {
+                if (cityData.length > 0) {
+                    structuredCityData.nearest_city = cityData[0];
+                    structuredCityData.other_cities = cityData.slice(1);
+                }
+            } else {
+                structuredCityData = cityData;
+            }
+
             const combinedData = {
-                ...cityData,
+                ...structuredCityData,
                 wiki_topics: wikiData.titles || [],
                 wikidata: wikidata
             };
             showInfoPopup(combinedData, latlng);
           }).catch(handleFailure);
       }
-
-      // --- Live News Functionality ---
-      let liveNewsInterval = null;
-      let lastNewsTimestamp = Math.floor(Date.now() / 1000);
-
-      function addLiveNewsMarker(feature) {
-        if (!feature || !feature.geometry || !feature.geometry.coordinates) return;
-        const props = feature.properties;
-        const [lon, lat] = feature.geometry.coordinates;
-
-        // Sparkle animation
-        const sparkleIcon = L.divIcon({
-          className: 'leaflet-div-icon', // needed for some resets
-          html: `<div class="sparkle"></div>`,
-          iconSize: [40, 40],
-          iconAnchor: [20, 20]
-        });
-        const sparkleMarker = L.marker([lat, lon], { icon: sparkleIcon, interactive: false, zIndexOffset: 1000 });
-        sparkleMarker.addTo(map);
-        setTimeout(() => map.removeLayer(sparkleMarker), 1200);
-
-        // Add the actual news marker after a short delay
-        setTimeout(() => {
-            const newsIcon = L.AwesomeMarkers.icon({
-                icon: props.icon || 'info-circle',
-                markerColor: props.markerColor || 'red',
-                prefix: 'fa'
-            });
-            const newsMarker = L.marker([lat, lon], { icon: newsIcon });
-            
-            const html = `
-              <div class="news-popup">
-                <div class="news-title"><a href="${props.news_link}" target="_blank" rel="noopener noreferrer">${escapeHtml(props.title)}</a></div>
-                <div class="news-source">${escapeHtml(props.news_source)} &middot; ${escapeHtml(props.place)}</div>
-                <div class="news-summary">${escapeHtml(props.summary)}</div>
-                <div style="margin-top:6px">
-                    <a href="${props.news_link}" target="_blank" rel="noopener noreferrer">Open article</a>
-                </div>
-              </div>`;
-            
-            newsMarker.bindPopup(html);
-            newsMarker.addTo(liveNewsLayer);
-        }, 200);
-      }
-
-      function fetchLiveNews() {
-        fetch(`pulse.php?live_news=true&since=${lastNewsTimestamp}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data.features && data.features.length > 0) {
-              lastNewsTimestamp = data.latest;
-              data.features.reverse().forEach((feature, index) => {
-                // Stagger the appearance of markers
-                setTimeout(() => addLiveNewsMarker(feature), index * 500);
-              });
-            }
-          })
-          .catch(e => console.error("Error fetching live news:", e));
-      }
-
-      function startLiveNews() {
-        if (liveNewsInterval) return;
-        lastNewsTimestamp = Math.floor(Date.now() / 1000) - 3600; // Look back 1 hr on first start
-        fetchLiveNews();
-        liveNewsInterval = setInterval(fetchLiveNews, 20000); // Poll every 20 seconds
-      }
-
-      function stopLiveNews() {
-        if (!liveNewsInterval) return;
-        clearInterval(liveNewsInterval);
-        liveNewsInterval = null;
-        // Do not clear layers, so user can see last fetched items
-        // liveNewsLayer.clearLayers();
-      }
-      
-      map.on('overlayadd', function(e) {
-        if (e.name === 'Live News') {
-          startLiveNews();
-        }
-      });
-      
-      // --- Current Events (Wikipedia) ---
-      let currentEventsLoaded = false;
-      function loadCurrentEvents() {
-        if (currentEventsLoaded) return; // Load only once
-        
-        fetch('pulse.php?current_events=true')
-          .then(r => r.json())
-          .then(data => {
-            if (data && data.features) {
-              const eventIcon = L.AwesomeMarkers.icon({
-                  icon: 'globe',
-                  markerColor: 'cadetblue',
-                  prefix: 'fa'
-              });
-              L.geoJSON(data, {
-                pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
-                onEachFeature: (feature, layer) => {
-                  const props = feature.properties;
-                  if (props.event_text) {
-                    const searchTerm = props.place || props.event_text.split(' ').slice(0, 5).join(' ');
-                    const html = `
-                      <div>${escapeHtml(props.event_text)}</div>
-                      <div style="margin-top:6px">
-                        <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(searchTerm)}" target="_blank" rel="noopener noreferrer">Search on Wikipedia</a>
-                      </div>`;
-                    layer.bindPopup(html);
-                  }
-                }
-              }).addTo(currentEventsLayer);
-              currentEventsLoaded = true;
-            }
-          })
-          .catch(e => console.error("Error fetching current events:", e));
-      }
-
-      map.on('overlayadd', function(e) {
-        if (e.name === 'Current Events') {
-          loadCurrentEvents();
-        }
-        if (e.name === 'Live News') {
-          startLiveNews();
-        }
-      });
-      // --- End Current Events ---
-      // --- End Live News ---
-
-      map.on('click', function(e) {
-        fetchAndShowCityInfo(e.latlng);
-      });
 
       // --- On-Demand Data Refresh Control ---
       const RefreshControl = L.Control.extend({
@@ -980,7 +926,7 @@
                             lastNewsTimestamp = 0; // Force reload of all recent news
                             fetchLiveNews();
                         }
-                    })
+                      })
                     .catch(err => {
                         console.error('Refresh script error:', err);
                         alert('An error occurred while refreshing the data: ' + err.message);
@@ -1062,6 +1008,118 @@
           overlays[name].addTo(map);
         }
       });
+
+      // Load cities into the existing citiesLayer
+      fetch('pulse.php?cities=all')
+        .then(r => r.json())
+        .then(cities => {
+          if (!Array.isArray(cities)) return;
+          cities.forEach(city => {
+            try {
+              const marker = L.circleMarker([city.lat, city.lng], {
+                radius: 3,
+                fillColor: "#ff7800",
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+              });
+              marker.on('click', (e) => {
+                L.DomEvent.stopPropagation(e);
+                fetchAndShowCityInfo(e.latlng);
+              });
+              marker.addTo(citiesLayer);
+            } catch (e) { console.error('City marker error', e); }
+          });
+        })
+        .catch(e => console.error('Failed to load cities:', e));
+        
+      // Helper: haversine distance in km
+      function haversineKm(lat1, lon1, lat2, lon2) {
+        const toRad = d => d * Math.PI / 180;
+        const R = 6371; // km
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      // Fetch live news and show markers near the given latlng within radiusKm
+      function fetchLiveNewsForLocation(latlng, radiusKm) {
+        // clear previous news markers for this query
+        liveNewsLayer.clearLayers();
+        
+        // Clear and prepare panel
+        if (infoPanelContent) infoPanelContent.innerHTML = '<div style="padding:10px;">Searching for news...</div>';
+        if (infoPanel) infoPanel.style.display = 'block';
+
+        fetch('pulse.php?live_news=true&since=0')
+          .then(r => r.json())
+          .then(data => {
+            if (!data || !Array.isArray(data.features)) {
+                if (infoPanelContent) infoPanelContent.innerHTML = '<div style="padding:10px;">No news data available.</div>';
+                return;
+            }
+            
+            const newsIcon = L.AwesomeMarkers.icon({ icon: 'info', markerColor: 'orange', prefix: 'fa' });
+            let firstMarker = null;
+            const nearbyItems = [];
+
+            data.features.forEach(f => {
+              const coords = f.geometry && f.geometry.coordinates;
+              if (!coords) return;
+              const lon = coords[0], lat = coords[1];
+              const dist = haversineKm(latlng.lat, latlng.lng, lat, lon);
+              
+              if (dist <= radiusKm) {
+                const marker = L.marker([lat, lon], { icon: newsIcon });
+                const p = f.properties || {};
+                const desc = `<strong>${escapeHtml(p.title || 'News')}</strong><br><em>${escapeHtml(p.summary||'')}</em><br><small>${escapeHtml(p.source||'')}</small>`;
+                marker.bindPopup(desc);
+                liveNewsLayer.addLayer(marker);
+                if (!firstMarker) firstMarker = marker;
+                
+                // Add to list for panel
+                nearbyItems.push({ ...p, dist: dist });
+              }
+            });
+
+            // Update Panel Content
+            if (infoPanelContent) {
+                if (nearbyItems.length === 0) {
+                    infoPanelContent.innerHTML = `<div style="padding:10px;">No news found within ${radiusKm}km.</div>`;
+                } else {
+                    // Sort by distance or date? Let's do date (newest first)
+                    nearbyItems.sort((a, b) => (b.published_ts || 0) - (a.published_ts || 0));
+                    
+                    const html = nearbyItems.map(item => `
+                        <div style="border-bottom:1px solid #eee; padding: 10px 0;">
+                            <div style="font-weight:bold; margin-bottom:4px;">
+                                <a href="${item.url || item.link || '#'}" target="_blank">${escapeHtml(item.title)}</a>
+                            </div>
+                            <div style="font-size:0.9em; color:#555; margin-bottom:4px;">
+                                ${new Date((item.published_ts || 0) * 1000).toLocaleString()} - ${escapeHtml(item.source || 'Unknown')}
+                            </div>
+                            <div style="font-size:0.95em;">${escapeHtml(item.summary || '')}</div>
+                        </div>
+                    `).join('');
+                    
+                    infoPanelContent.innerHTML = `<h5 style="margin-top:0; padding-bottom:5px; border-bottom:2px solid #ddd;">Nearby News (${nearbyItems.length})</h5>` + html;
+                }
+            }
+
+            // if any, open popup for the first nearby news item
+            if (firstMarker) {
+              firstMarker.openPopup();
+              if (!map.hasLayer(liveNewsLayer)) liveNewsLayer.addTo(map);
+            }
+          })
+          .catch(err => {
+              console.error('Error fetching nearby live news:', err);
+              if (infoPanelContent) infoPanelContent.innerHTML = '<div style="padding:10px; color:red;">Error loading news.</div>';
+          });
+      }
     </script>
   </body>
 </html>

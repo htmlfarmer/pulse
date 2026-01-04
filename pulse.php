@@ -391,12 +391,6 @@
   </head>
   <body>
     <div id="map"></div>
-    
-    <!-- Add the Info Panel HTML here -->
-    <div id="info-panel" class="info-panel">
-      <div class="info-panel-close" id="info-panel-close">&times;</div>
-      <div id="info-panel-content"></div>
-    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
@@ -466,7 +460,8 @@
             this._div.innerHTML = '<span class="info-panel-close">&times;</span><div class="info-panel-content"></div>';
             
             const closeButton = this._div.querySelector('.info-panel-close');
-            L.DomEvent.on(closeButton, 'click', () => {
+            L.DomEvent.on(closeButton, 'click', (e) => {
+                L.DomEvent.stop(e); // Prevent propagation
                 this.hide();
                 if (searchCircle) {
                     map.removeLayer(searchCircle);
@@ -491,18 +486,6 @@
       });
       const infoPanel = new InfoControl({ position: 'topright' });
       infoPanel.addTo(map);
-
-      // --- Theme switcher for popups ---
-      const mapContainer = document.getElementById('map');
-      
-      // Function to set theme based on layer name
-      function setTheme(layerName) {
-        if (layerName === 'Dark') {
-          mapContainer.classList.add('dark-mode');
-        } else {
-          mapContainer.classList.remove('dark-mode');
-        }
-      }
 
       const citiesLayer = L.layerGroup();
       const liveNewsLayer = L.layerGroup();
@@ -664,7 +647,7 @@
       overlays['Earthquakes'] = earthquakesLayer;
 
       // Add layer control (already created above)
-      const layerControl = L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: false }).addTo(map);
+      const layerControl = L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: true }).addTo(map);
 
       // Allow clicking the map to look up nearby info / live news
       map.on('click', function(e) {
@@ -1033,93 +1016,6 @@
           });
         })
         .catch(e => console.error('Failed to load cities:', e));
-        
-      // Helper: haversine distance in km
-      function haversineKm(lat1, lon1, lat2, lon2) {
-        const toRad = d => d * Math.PI / 180;
-        const R = 6371; // km
-        const dLat = toRad(lat2 - lat1);
-        const dLon = toRad(lon2 - lon1);
-        const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
-      }
-
-      // Fetch live news and show markers near the given latlng within radiusKm
-      function fetchLiveNewsForLocation(latlng, radiusKm) {
-        // clear previous news markers for this query
-        liveNewsLayer.clearLayers();
-        
-        // Clear and prepare panel
-        if (infoPanelContent) infoPanelContent.innerHTML = '<div style="padding:10px;">Searching for news...</div>';
-        if (infoPanel) infoPanel.style.display = 'block';
-
-        fetch('pulse.php?live_news=true&since=0')
-          .then(r => r.json())
-          .then(data => {
-            if (!data || !Array.isArray(data.features)) {
-                if (infoPanelContent) infoPanelContent.innerHTML = '<div style="padding:10px;">No news data available.</div>';
-                return;
-            }
-            
-            const newsIcon = L.AwesomeMarkers.icon({ icon: 'info', markerColor: 'orange', prefix: 'fa' });
-            let firstMarker = null;
-            const nearbyItems = [];
-
-            data.features.forEach(f => {
-              const coords = f.geometry && f.geometry.coordinates;
-              if (!coords) return;
-              const lon = coords[0], lat = coords[1];
-              const dist = haversineKm(latlng.lat, latlng.lng, lat, lon);
-              
-              if (dist <= radiusKm) {
-                const marker = L.marker([lat, lon], { icon: newsIcon });
-                const p = f.properties || {};
-                const desc = `<strong>${escapeHtml(p.title || 'News')}</strong><br><em>${escapeHtml(p.summary||'')}</em><br><small>${escapeHtml(p.source||'')}</small>`;
-                marker.bindPopup(desc);
-                liveNewsLayer.addLayer(marker);
-                if (!firstMarker) firstMarker = marker;
-                
-                // Add to list for panel
-                nearbyItems.push({ ...p, dist: dist });
-              }
-            });
-
-            // Update Panel Content
-            if (infoPanelContent) {
-                if (nearbyItems.length === 0) {
-                    infoPanelContent.innerHTML = `<div style="padding:10px;">No news found within ${radiusKm}km.</div>`;
-                } else {
-                    // Sort by distance or date? Let's do date (newest first)
-                    nearbyItems.sort((a, b) => (b.published_ts || 0) - (a.published_ts || 0));
-                    
-                    const html = nearbyItems.map(item => `
-                        <div style="border-bottom:1px solid #eee; padding: 10px 0;">
-                            <div style="font-weight:bold; margin-bottom:4px;">
-                                <a href="${item.url || item.link || '#'}" target="_blank">${escapeHtml(item.title)}</a>
-                            </div>
-                            <div style="font-size:0.9em; color:#555; margin-bottom:4px;">
-                                ${new Date((item.published_ts || 0) * 1000).toLocaleString()} - ${escapeHtml(item.source || 'Unknown')}
-                            </div>
-                            <div style="font-size:0.95em;">${escapeHtml(item.summary || '')}</div>
-                        </div>
-                    `).join('');
-                    
-                    infoPanelContent.innerHTML = `<h5 style="margin-top:0; padding-bottom:5px; border-bottom:2px solid #ddd;">Nearby News (${nearbyItems.length})</h5>` + html;
-                }
-            }
-
-            // if any, open popup for the first nearby news item
-            if (firstMarker) {
-              firstMarker.openPopup();
-              if (!map.hasLayer(liveNewsLayer)) liveNewsLayer.addTo(map);
-            }
-          })
-          .catch(err => {
-              console.error('Error fetching nearby live news:', err);
-              if (infoPanelContent) infoPanelContent.innerHTML = '<div style="padding:10px; color:red;">Error loading news.</div>';
-          });
-      }
     </script>
   </body>
 </html>

@@ -1,4 +1,25 @@
 <?php
+  if (isset($_GET['run_pulse_py'])) {
+      header('Content-Type: application/json');
+      set_time_limit(300); // 5 minutes, because the LLM can be slow
+      $command = 'cd ' . __DIR__ . ' && python3 pulse.py 2>&1';
+      $output = shell_exec($command);
+      
+      if ($output === null) {
+          http_response_code(500);
+          echo json_encode(['status' => 'error', 'message' => 'Failed to execute script. Check server logs and file permissions.']);
+      } else {
+          // Check for fatal errors in output, as shell_exec doesn't give a reliable status code
+          if (strpos($output, 'FATAL:') !== false) {
+              http_response_code(500);
+              echo json_encode(['status' => 'error', 'message' => 'Script executed with fatal errors.', 'output' => $output]);
+          } else {
+              echo json_encode(['status' => 'success', 'message' => 'Data refresh script executed.', 'output' => $output]);
+          }
+      }
+      exit;
+  }
+
   if (isset($_GET['proxy_gibs'])) {
     $date = isset($_GET['date']) ? $_GET['date'] : '';
     $z = isset($_GET['z']) ? intval($_GET['z']) : 0;
@@ -113,6 +134,91 @@
     exit;
   }
 
+  if (isset($_GET['live_news'])) {
+    header('Content-Type: application/json');
+    $since = isset($_GET['since']) ? intval($_GET['since']) : 0;
+
+    $live_news_file = 'data/live_news.json';
+
+    if (!file_exists($live_news_file)) {
+        echo json_encode(['type' => 'FeatureCollection', 'features' => [], 'latest' => $since]);
+        exit;
+    }
+
+    $live_data_json = file_get_contents($live_news_file);
+    $live_data = json_decode($live_data_json, true);
+
+    if (!$live_data || !isset($live_data['features'])) {
+        echo json_encode(['type' => 'FeatureCollection', 'features' => [], 'latest' => $since]);
+        exit;
+    }
+
+    $features_since = array_filter($live_data['features'], function($feature) use ($since) {
+        return isset($feature['properties']['published_ts']) && $feature['properties']['published_ts'] > $since;
+    });
+
+    // Re-index the array to ensure it's a JSON array, not an object
+    $features_since = array_values($features_since);
+
+    echo json_encode([
+        'type' => 'FeatureCollection',
+        'features' => $features_since,
+        'latest' => $live_data['latest'] ?? $since
+    ]);
+    exit;
+  }
+
+  if (isset($_GET['wikidata_lookup']) && isset($_GET['lat']) && isset($_GET['lon'])) {
+    header('Content-Type: application/json');
+    $lat = floatval($_GET['lat']);
+    $lon = floatval($_GET['lon']);
+    
+    // Step 1: Find the nearest Wikidata item using geosearch
+    $radius = 10000; // 10km search radius
+    $geosearch_url = "https://www.wikidata.org/w/api.php?action=query&list=geosearch&gscoord={$lat}|{$lon}&gsradius={$radius}&gslimit=1&format=json";
+    
+    $opts = [ "http" => [ "header" => "User-Agent: Pulse/1.0 (pulse.app; contact@example.com)\r\n" ] ];
+    $context = stream_context_create($opts);
+    
+    $geosearch_response_json = @file_get_contents($geosearch_url, false, $context);
+    if ($geosearch_response_json === FALSE) {
+        echo json_encode(['error' => 'Failed to fetch geosearch data from Wikidata.']);
+        exit;
+    }
+    
+    $geosearch_data = json_decode($geosearch_response_json, true);
+    $qid = null;
+    if (isset($geosearch_data['query']['geosearch'][0]['title'])) {
+        $qid = $geosearch_data['query']['geosearch'][0]['title'];
+    }
+
+    if ($qid) {
+        // Step 2: Get details for the found Wikidata item (QID)
+        $entity_url = "https://www.wikidata.org/w/api.php?action=wbgetentities&ids={$qid}&format=json&props=descriptions|claims&languages=en";
+        $entity_response_json = @file_get_contents($entity_url, false, $context);
+        if ($entity_response_json === FALSE) {
+            echo json_encode(['error' => 'Failed to fetch entity data from Wikidata.']);
+            exit;
+        }
+        $entity_data = json_decode($entity_response_json, true);
+        echo json_encode($entity_data);
+    } else {
+        echo json_encode(['result' => null]);
+    }
+    exit;
+  }
+
+  if (isset($_GET['current_events'])) {
+    header('Content-Type: application/json');
+    $events_file = 'data/current_events.geojson';
+    if (file_exists($events_file)) {
+        readfile($events_file);
+    } else {
+        echo json_encode(['type' => 'FeatureCollection', 'features' => []]);
+    }
+    exit;
+  }
+
   if (isset($_GET['earthquakes'])) {
     header('Content-Type: application/json');
     $url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
@@ -204,9 +310,7 @@
     exit;
   }
 
-  // Execute the python script to refresh the geojson data
-  $output = shell_exec('python3 pulse.py');
-  // todo: consider adding error handling here
+  // Python script is now run on-demand via a button in the UI.
   
   // Calculate yesterday's date on the server to avoid client clock issues.
   $yesterday = new DateTime('yesterday', new DateTimeZone('UTC'));
@@ -252,6 +356,63 @@
       }
       .dark-mode .news-source {
         color: #ccc;
+      }
+      .info-panel {
+        background: white;
+        padding: 10px;
+        padding-top: 25px; /* space for close button */
+        position: relative;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+        max-width: 400px;
+        max-height: 80vh; /* 80% of viewport height */
+        overflow-y: auto;
+        display: none; /* Hidden by default */
+      }
+      .info-panel-close {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 25px;
+        line-height: 1;
+        cursor: pointer;
+        color: #555;
+        font-weight: bold;
+      }
+      .dark-mode .info-panel {
+        background: #333;
+        color: #fff;
+      }
+      .dark-mode .info-panel-close {
+        color: #ccc;
+      }
+      .sparkle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 40px;
+        height: 40px;
+        background: radial-gradient(circle, rgba(255,0,0,0.8) 0%, rgba(255,255,0,0.6) 50%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+        animation: sparkle-effect 1.2s ease-out;
+        pointer-events: none;
+      }
+
+      @keyframes sparkle-effect {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 1;
+        }
+        70% {
+          transform: translate(-50%, -50%) scale(1.5);
+          opacity: 0.5;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(2);
+          opacity: 0;
+        }
       }
     </style>
   </head>
@@ -308,8 +469,12 @@
       dateControl.addTo(map);
 
       const citiesLayer = L.layerGroup();
+      const liveNewsLayer = L.layerGroup();
+      const currentEventsLayer = L.layerGroup();
 
       const overlays = {
+        'Current Events': currentEventsLayer,
+        'Live News': liveNewsLayer,
         'Cities': citiesLayer,
         'Weather': L.tileLayer(`pulse.php?proxy_gibs=true&date=${date}&z={z}&y={y}&x={x}`, {
           attribution: '&copy; NASA GIBS',
@@ -349,7 +514,14 @@
           const props = feature.properties;
           const date = new Date(props.time).toLocaleString();
           const html = `<b>Magnitude ${props.mag}</b><br>${props.place}<br>${date}<br><a href="${props.url}" target="_blank" rel="noopener noreferrer">More details (USGS)</a>`;
-          layer.bindPopup(html);
+          layer.on('click', (e) => {
+            if (searchCircle) {
+                map.removeLayer(searchCircle);
+                searchCircle = null;
+            }
+            infoPanel.update(html);
+            L.DomEvent.stopPropagation(e);
+          });
         }
       });
 
@@ -360,6 +532,42 @@
       overlays['Earthquakes'] = earthquakesLayer;
 
       L.control.layers(baseLayers, overlays).addTo(map);
+
+      let searchCircle;
+      let infoPanel;
+
+      // --- Info Panel Control ---
+      const InfoControl = L.Control.extend({
+        onAdd: function(map) {
+            this._div = L.DomUtil.create('div', 'info-panel');
+            this._div.innerHTML = '<span class="info-panel-close">&times;</span><div class="info-panel-content"></div>';
+            
+            const closeButton = this._div.querySelector('.info-panel-close');
+            L.DomEvent.on(closeButton, 'click', () => {
+                this.hide();
+                if (searchCircle) {
+                    map.removeLayer(searchCircle);
+                    searchCircle = null;
+                }
+            }, this);
+            
+            // Stop clicks from propagating to the map
+            L.DomEvent.disableClickPropagation(this._div);
+            return this._div;
+        },
+
+        update: function(html) {
+            this._div.querySelector('.info-panel-content').innerHTML = html;
+            this._div.style.display = 'block';
+        },
+
+        hide: function() {
+            this._div.style.display = 'none';
+            this._div.querySelector('.info-panel-content').innerHTML = '';
+        }
+      });
+      infoPanel = new InfoControl({ position: 'topright' });
+      infoPanel.addTo(map);
 
       // --- Theme switcher for popups ---
       const mapContainer = document.getElementById('map');
@@ -423,8 +631,6 @@
       //     map.fitBounds(group.getBounds().pad(0.5));
       //   }
       // }).catch(e=>console.error(e));
-
-      let searchCircle;
 
       fetch('pulse.php?cities=all').then(r=>r.json()).then(cities=>{
         cities.forEach(city => {
@@ -502,7 +708,7 @@
             const zoom = Math.max(map.getZoom(), 12);
             html += `<b>Nearest City:</b> <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(city.name)}</a> <a href="https://news.google.com/search?q=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">(news)</a><br><small><a href="https://www.google.com/maps/@${latlng.lat},${latlng.lng},${zoom}z/data=!3m1!1e3" target="_blank" rel="noopener noreferrer">Google Satellite</a> &middot; <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latlng.lat},${latlng.lng}" target="_blank" rel="noopener noreferrer">Street View</a> &middot; <a href="https://www.openstreetmap.org/#map=${zoom}/${latlng.lat}/${latlng.lng}" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></small><hr>`;
             
-            html += '<div id="news-headlines" style="max-height: 250px; overflow-y: auto;">Loading news...</div>';
+            html += '<div id="news-headlines">Loading news...</div>';
 
             fetch(`pulse.php?news_for_city=${encodeURIComponent(search_query)}`)
               .then(r=>r.json())
@@ -522,7 +728,7 @@
               });
           }
           if (hasOtherCities) {
-            html += '<div id="other-cities" style="max-height: 150px; overflow-y: auto; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+            html += '<div id="other-cities" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
             html += '<b>Other cities in area:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
             data.other_cities.forEach(city => {
               const search_query = `${city.name}, ${city.state}, ${city.country}`;
@@ -531,7 +737,7 @@
             html += '</ul></div>';
           }
           if (hasWikiTopics) {
-            html += '<div id="wiki-topics" style="max-height: 150px; overflow-y: auto; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+            html += '<div id="wiki-topics" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
             html += '<b>Wikipedia Related Area Topics:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
             data.wiki_topics.forEach(topic => {
               // Changed to Wikipedia search URL
@@ -540,15 +746,23 @@
             html += '</ul></div>';
           }
         }
-        L.popup({maxHeight: 500, maxWidth: 400, autoPanPadding: [100, 100]})
-          .setLatLng(latlng)
-          .setContent(html)
-          .openOn(map);
         
-        if (searchCircle) {
-          map.removeLayer(searchCircle);
-          searchCircle = null; // Reset the circle
+        if (data.wikidata && data.wikidata.entities) {
+          const qids = Object.keys(data.wikidata.entities);
+          if (qids.length > 0) {
+            const qid = qids[0];
+            const entity = data.wikidata.entities[qid];
+            if (entity && entity.descriptions && entity.descriptions.en) {
+              if (html === 'No information found for this area.') html = '';
+              html += '<div id="wikidata-details" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+              html += `<b><a href="https://www.wikidata.org/wiki/${qid}" target="_blank" rel="noopener noreferrer">Wikidata Details</a>:</b>`;
+              html += '<p style="margin-bottom: 0;">' + escapeHtml(entity.descriptions.en.value) + '</p>';
+              html += '</div>';
+            }
+          }
         }
+
+        infoPanel.update(html);
       }
 
       function fetchAndShowCityInfo(latlng) {
@@ -574,24 +788,213 @@
               map.removeLayer(searchCircle);
               searchCircle = null;
           }
+          infoPanel.update('<i>Error looking up location information. Please try again.</i>');
         };
 
         const citySearchPromise = fetch(`pulse.php?lat=${lat}&lon=${lon}&radius=${radius}`).then(r => r.json());
         const wikiSearchPromise = fetch(`pulse.php?geo_lookup=true&lat=${lat}&lon=${lon}`).then(r => r.json());
+        const wikidataSearchPromise = fetch(`pulse.php?wikidata_lookup=true&lat=${lat}&lon=${lon}`).then(r => r.json());
 
-        Promise.all([citySearchPromise, wikiSearchPromise])
-          .then(([cityData, wikiData]) => {
+        Promise.all([citySearchPromise, wikiSearchPromise, wikidataSearchPromise])
+          .then(([cityData, wikiData, wikidata]) => {
             const combinedData = {
                 ...cityData,
-                wiki_topics: wikiData.titles || []
+                wiki_topics: wikiData.titles || [],
+                wikidata: wikidata
             };
             showInfoPopup(combinedData, latlng);
           }).catch(handleFailure);
       }
 
+      // --- Live News Functionality ---
+      let liveNewsInterval = null;
+      let lastNewsTimestamp = Math.floor(Date.now() / 1000);
+
+      function addLiveNewsMarker(feature) {
+        if (!feature || !feature.geometry || !feature.geometry.coordinates) return;
+        const props = feature.properties;
+        const [lon, lat] = feature.geometry.coordinates;
+
+        // Sparkle animation
+        const sparkleIcon = L.divIcon({
+          className: 'leaflet-div-icon', // needed for some resets
+          html: `<div class="sparkle"></div>`,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
+        });
+        const sparkleMarker = L.marker([lat, lon], { icon: sparkleIcon, interactive: false, zIndexOffset: 1000 });
+        sparkleMarker.addTo(map);
+        setTimeout(() => map.removeLayer(sparkleMarker), 1200);
+
+        // Add the actual news marker after a short delay
+        setTimeout(() => {
+            const newsIcon = L.AwesomeMarkers.icon({
+                icon: props.icon || 'info-circle',
+                markerColor: props.markerColor || 'red',
+                prefix: 'fa'
+            });
+            const newsMarker = L.marker([lat, lon], { icon: newsIcon });
+            
+            const html = `
+              <div class="news-popup">
+                <div class="news-title"><a href="${props.news_link}" target="_blank" rel="noopener noreferrer">${escapeHtml(props.title)}</a></div>
+                <div class="news-source">${escapeHtml(props.news_source)} &middot; ${escapeHtml(props.place)}</div>
+                <div class="news-summary">${escapeHtml(props.summary)}</div>
+                <div style="margin-top:6px">
+                    <a href="${props.news_link}" target="_blank" rel="noopener noreferrer">Open article</a>
+                </div>
+              </div>`;
+            
+            newsMarker.bindPopup(html);
+            newsMarker.addTo(liveNewsLayer);
+        }, 200);
+      }
+
+      function fetchLiveNews() {
+        fetch(`pulse.php?live_news=true&since=${lastNewsTimestamp}`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.features && data.features.length > 0) {
+              lastNewsTimestamp = data.latest;
+              data.features.reverse().forEach((feature, index) => {
+                // Stagger the appearance of markers
+                setTimeout(() => addLiveNewsMarker(feature), index * 500);
+              });
+            }
+          })
+          .catch(e => console.error("Error fetching live news:", e));
+      }
+
+      function startLiveNews() {
+        if (liveNewsInterval) return;
+        lastNewsTimestamp = Math.floor(Date.now() / 1000) - 3600; // Look back 1 hr on first start
+        fetchLiveNews();
+        liveNewsInterval = setInterval(fetchLiveNews, 20000); // Poll every 20 seconds
+      }
+
+      function stopLiveNews() {
+        if (!liveNewsInterval) return;
+        clearInterval(liveNewsInterval);
+        liveNewsInterval = null;
+        // Do not clear layers, so user can see last fetched items
+        // liveNewsLayer.clearLayers();
+      }
+      
+      map.on('overlayadd', function(e) {
+        if (e.name === 'Live News') {
+          startLiveNews();
+        }
+      });
+      
+      // --- Current Events (Wikipedia) ---
+      let currentEventsLoaded = false;
+      function loadCurrentEvents() {
+        if (currentEventsLoaded) return; // Load only once
+        
+        fetch('pulse.php?current_events=true')
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.features) {
+              const eventIcon = L.AwesomeMarkers.icon({
+                  icon: 'globe',
+                  markerColor: 'cadetblue',
+                  prefix: 'fa'
+              });
+              L.geoJSON(data, {
+                pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
+                onEachFeature: (feature, layer) => {
+                  const props = feature.properties;
+                  if (props.event_text) {
+                    const searchTerm = props.place || props.event_text.split(' ').slice(0, 5).join(' ');
+                    const html = `
+                      <div>${escapeHtml(props.event_text)}</div>
+                      <div style="margin-top:6px">
+                        <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(searchTerm)}" target="_blank" rel="noopener noreferrer">Search on Wikipedia</a>
+                      </div>`;
+                    layer.bindPopup(html);
+                  }
+                }
+              }).addTo(currentEventsLayer);
+              currentEventsLoaded = true;
+            }
+          })
+          .catch(e => console.error("Error fetching current events:", e));
+      }
+
+      map.on('overlayadd', function(e) {
+        if (e.name === 'Current Events') {
+          loadCurrentEvents();
+        }
+        if (e.name === 'Live News') {
+          startLiveNews();
+        }
+      });
+      // --- End Current Events ---
+      // --- End Live News ---
+
       map.on('click', function(e) {
         fetchAndShowCityInfo(e.latlng);
       });
+
+      // --- On-Demand Data Refresh Control ---
+      const RefreshControl = L.Control.extend({
+        onAdd: function(map) {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control refresh-control');
+            const link = L.DomUtil.create('a', '', container);
+            link.href = '#';
+            link.title = 'Refresh Data from Source';
+            link.setAttribute('role', 'button');
+            link.setAttribute('aria-label', 'Refresh Data');
+
+            L.DomEvent.on(link, 'click', L.DomEvent.stop).on(link, 'click', function() {
+                if (link.classList.contains('loading')) return;
+                
+                if (!confirm('This will run the data processing script on the server. It can take several minutes, especially if the LLM is running. Continue?')) return;
+
+                link.classList.add('loading');
+                link.title = 'Refreshing data... This may take a few minutes.';
+                
+                fetch('pulse.php?run_pulse_py=true')
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => { throw new Error(err.message || 'Server error') });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Script output:', data.output);
+                        alert('Data refresh complete! Reloading relevant layers...');
+                        
+                        // Invalidate and reload layers that have been loaded
+                        if (currentEventsLoaded) {
+                            currentEventsLoaded = false;
+                            currentEventsLayer.clearLayers();
+                            if(map.hasLayer(currentEventsLayer)) {
+                                loadCurrentEvents();
+                            }
+                        }
+                        // Live news will get updated on its own timer, but we can clear it
+                        // to show only the newest items from the regenerated file.
+                        liveNewsLayer.clearLayers();
+                        if (map.hasLayer(liveNewsLayer)) {
+                            lastNewsTimestamp = 0; // Force reload of all recent news
+                            fetchLiveNews();
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Refresh script error:', err);
+                        alert('An error occurred while refreshing the data: ' + err.message);
+                    })
+                    .finally(() => {
+                        link.classList.remove('loading');
+                        link.title = 'Refresh Data from Source';
+                    });
+            });
+
+            return container;
+        },
+      });
+      new RefreshControl({ position: 'topleft' }).addTo(map);
 
       // --- URL State Management & Initial Load ---
       let currentBaseLayerName;
@@ -649,10 +1052,10 @@
       currentBaseLayerName = initialBaseLayerName;
       setTheme(initialBaseLayerName);
       
-      // Set overlays. Default to all on if 'overlays' param is not in URL.
+      // Set overlays. Default to all off if 'overlays' param is not in URL.
       const initialOverlays = urlOverlays !== null 
           ? (urlOverlays === '' ? [] : urlOverlays.split(',')) 
-          : ['Weather', 'Cities', 'Earthquakes'];
+          : [];
 
       initialOverlays.forEach(name => {
         if (overlays[name] && !map.hasLayer(overlays[name])) {

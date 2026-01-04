@@ -22,6 +22,13 @@ import re
 import shutil
 import os
 from urllib.parse import urljoin
+from datetime import timedelta
+
+try:
+    from llama_cpp import Llama
+except ImportError:
+    print("FATAL: llama-cpp-python is not installed. Please run 'pip install llama-cpp-python'.", file=sys.stderr)
+    sys.exit(1)
 
 import feedparser
 import requests
@@ -186,6 +193,161 @@ def categorize_article(title: str) -> Dict[str, str]:
     return {"category": "News", "icon": "info-circle", "markerColor": "gray"}
 
 
+# --- Local LLM Integration & Advanced Geolocation ---
+
+class SuppressStderr:
+    """A context manager to suppress C-level stderr output from llama_cpp."""
+    def __enter__(self):
+        self.original_stderr = os.dup(2)
+        self.devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(self.devnull, 2)
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        os.dup2(self.original_stderr, 2)
+        os.close(self.devnull)
+
+class AIModel:
+    """An interface for the local language model."""
+    def __init__(self, model_path):
+        self.llm = None
+        self.config = {
+            "llama_params": { "n_ctx": 2048, "n_threads": 8, "n_gpu_layers": 0, "verbose": False },
+            "generation_params": {
+                "temperature": 0.2, "top_k": 40, "top_p": 0.95,
+                "repeat_penalty": 1.1, "max_tokens": 50, "stop": ["\n", "<|eot_id|>"],
+            }
+        }
+        logging.info("--> AI Core: Loading model for geolocation...")
+        try:
+            with SuppressStderr():
+                self.llm = Llama(model_path=model_path, **self.config["llama_params"])
+            logging.info("--> AI Core: Model loaded successfully.")
+        except Exception as e:
+            logging.error(f"!!! FATAL: Error loading model: {e}")
+
+    def ask(self, user_question: str) -> str:
+        """Asks the AI a question and returns the cleaned string response."""
+        if not self.llm:
+            logging.error("Error: The AI model is not loaded.")
+            return "Error: Model not loaded."
+
+        messages = [
+            {"role": "system", "content": "You are a geolocator. Based on the news headline, identify the main city and country. Respond ONLY with the format 'City, Country'. If you cannot determine the location, respond with 'Unknown'."},
+            {"role": "user", "content": user_question}
+        ]
+        
+        try:
+            response = self.llm.create_chat_completion(messages=messages, **self.config["generation_params"])
+            content = response['choices'][0]['message'].get('content')
+            return content.strip() if content else "Unknown"
+        except Exception as e:
+            logging.error(f"Error during AI generation: {e}")
+            return "Error: Generation failed."
+
+def get_coords_from_wikidata(location_name: str, user_agent: str) -> Optional[Tuple[float, float]]:
+    """Queries Wikidata for a location name and returns its coordinates if found."""
+    if not location_name or location_name.lower() in ["unknown", "error: model not loaded.", "error: generation failed."]:
+        return None
+
+    logging.info(f"  -> Querying Wikidata for: {location_name}")
+    search_url = f"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={quote_plus(location_name)}&language=en&limit=1&format=json"
+    headers = {"User-Agent": user_agent}
+    
+    try:
+        search_response = requests.get(search_url, headers=headers, timeout=10)
+        search_data = search_response.json()
+        if not search_data.get('search'):
+            logging.warning(f"  -> Wikidata: No search results for '{location_name}'.")
+            return None
+        
+        qid = search_data['search'][0]['id']
+        entity_url = f"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={qid}&format=json&props=claims"
+        entity_response = requests.get(entity_url, headers=headers, timeout=10)
+        entity_data = entity_response.json()
+        
+        claims = entity_data.get('entities', {}).get(qid, {}).get('claims', {})
+        if 'P625' in claims: # P625 is "coordinate location"
+            coords = claims['P625'][0]['mainsnak']['datavalue']['value']
+            lat, lon = coords['latitude'], coords['longitude']
+            logging.info(f"  -> Wikidata: Found coordinates ({lat}, {lon}) for {location_name} ({qid}).")
+            return (lat, lon)
+        else:
+            logging.warning(f"  -> Wikidata: No coordinates (P625) found for {location_name} ({qid}).")
+            return None
+    except Exception as e:
+        logging.error(f"  -> Wikidata API error for '{location_name}': {e}")
+        return None
+
+def fetch_and_process_current_events(out_path: Path, user_agent: str):
+    """
+    Fetches current events from Wikipedia for today and yesterday, uses a local LLM to guess the
+    location, confirms with Wikidata, and saves the geolocated events as GeoJSON.
+    """
+    model_path = "/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf"
+    if not Path(model_path).exists():
+        logging.error(f"LLM model not found at {model_path}. Skipping current events processing.")
+        return
+    ai_model = AIModel(model_path)
+    if not ai_model.llm:
+        logging.error("Failed to load LLM. Skipping current events processing.")
+        return
+
+    logging.info("Fetching Wikipedia Current Events for LLM geolocation...")
+    url = "https://en.wikipedia.org/wiki/Portal:Current_events"
+    headers = {"User-Agent": user_agent}
+    
+    try:
+        response = requests.get(url, headers=headers, timeout=15)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        logging.error(f"Failed to fetch current events page: {e}")
+        return
+
+    soup = BeautifulSoup(response.content, 'html.parser')
+    features = []
+    
+    # Per user request, mock the current date as Jan 3, 2026 for consistent processing
+    today = datetime(2026, 1, 3)
+    yesterday = today - timedelta(days=1)
+    dates_to_process = [today, yesterday]
+    
+    for date in dates_to_process:
+        date_str_id = date.strftime("%B_%-d").replace("_0", "_") # January_3
+        date_header = soup.find('span', id=date_str_id)
+        
+        if not date_header:
+            logging.warning(f"Could not find event section for {date.strftime('%B %d')}.")
+            continue
+        
+        logging.info(f"Processing events for {date.strftime('%B %d, %Y')}...")
+        event_list = date_header.find_parent('h2').find_next_sibling('ul')
+        if not event_list: continue
+
+        for item in event_list.find_all('li'):
+            text = item.get_text(' ', strip=True)
+            if not text: continue
+
+            logging.info(f"Event: {text[:100]}...")
+            llm_prompt = f"News headline: \"{text}\"\nWhat is the primary city and country?"
+            location_guess = ai_model.ask(llm_prompt)
+            coords = get_coords_from_wikidata(location_guess, user_agent)
+            
+            if coords:
+                feature = {
+                    "type": "Feature",
+                    "properties": {
+                        "event_text": text, "place": location_guess, "source": "Wikipedia Current Events"
+                    },
+                    "geometry": {"type": "Point", "coordinates": [coords[1], coords[0]]} # lon, lat
+                }
+                features.append(feature)
+            else:
+                logging.warning(f"  -> Could not geolocate event via LLM/Wikidata.")
+            time.sleep(0.5)
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(to_geojson(features), ensure_ascii=False, indent=2), encoding="utf-8")
+    logging.info(f"Wrote {len(features)} geolocated current events to {out_path}")
+
 def main():
     signal.signal(signal.SIGINT, handle_shutdown_signal)
     # (Argument parsing is unchanged)
@@ -300,12 +462,43 @@ def main():
     # --- MODIFIED: Finalization Step ---
     logging.info("Run finished. Generating output files from database...")
     all_features = _get_all_features_from_db(conn)
+
+    # --- Generate live news data file ---
+    live_news_out_path = Path('data/live_news.json')
+    try:
+        cur = conn.execute('SELECT geojson_feature, published_ts FROM articles ORDER BY published_ts DESC LIMIT 15')
+        features = []
+        max_ts = 0
+        rows = cur.fetchall()
+        # Reverse so oldest are first, for chronological display on client
+        for row in reversed(rows):
+            feature_obj = json.loads(row[0])
+            ts = int(row[1])
+            feature_obj['properties']['published_ts'] = ts
+            features.append(feature_obj)
+            if ts > max_ts:
+                max_ts = ts
+        
+        live_data = {
+            'type': 'FeatureCollection',
+            'features': features,
+            'latest': max_ts
+        }
+        live_news_out_path.write_text(json.dumps(live_data, ensure_ascii=False), encoding="utf-8")
+        logging.info(f"Wrote {len(features)} recent articles to {live_news_out_path}")
+    except Exception as e:
+        logging.error(f"Failed to generate live news file: {e}")
+
     conn.close() # Close DB connection
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(to_geojson(all_features), ensure_ascii=False, indent=2), encoding="utf-8")
     logging.info(f"Wrote {len(all_features)} total historical features to {out_path}")
+
+    # --- NEW: Process Wikipedia Current Events ---
+    current_events_out_path = Path('data/current_events.geojson')
+    fetch_and_process_current_events(current_events_out_path, user_agent)
 
     # (The rest of the file generation for news.html, etc. is unchanged)
     # ...

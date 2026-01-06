@@ -129,47 +129,50 @@
     exit;
   }
 
-  if (isset($_GET['wikidata_lookup']) && isset($_GET['lat']) && isset($_GET['lon'])) {
+    if (
+    filter_input(INPUT_GET, 'wikidata_lookup', FILTER_VALIDATE_BOOLEAN) !== null &&
+    filter_input(INPUT_GET, 'lat', FILTER_VALIDATE_FLOAT) !== false &&
+    filter_input(INPUT_GET, 'lon', FILTER_VALIDATE_FLOAT) !== false
+    ) {
     header('Content-Type: application/json');
-    $lat = floatval($_GET['lat']);
-    $lon = floatval($_GET['lon']);
-    
+    $lat = filter_input(INPUT_GET, 'lat', FILTER_VALIDATE_FLOAT);
+    $lon = filter_input(INPUT_GET, 'lon', FILTER_VALIDATE_FLOAT);
+    if ($lat === false || $lon === false) {
+      echo json_encode(['error' => 'Invalid coordinates.']);
+      exit;
+    }
     // Step 1: Find the nearest Wikidata item using geosearch
     $radius = 10000; // 10km search radius
     $geosearch_url = "https://www.wikidata.org/w/api.php?action=query&list=geosearch&gscoord={$lat}|{$lon}&gsradius={$radius}&gslimit=1&format=json";
-    
     $opts = [ "http" => [ "header" => "User-Agent: Pulse/1.0 (pulse.app; contact@example.com)\r\n" ] ];
     $context = stream_context_create($opts);
-    
     $geosearch_response_json = @file_get_contents($geosearch_url, false, $context);
     if ($geosearch_response_json === FALSE) {
-        echo json_encode(['error' => 'Failed to fetch geosearch data from Wikidata.']);
-        exit;
+      echo json_encode(['error' => 'Failed to fetch geosearch data from Wikidata.']);
+      exit;
     }
-    
     $geosearch_data = json_decode($geosearch_response_json, true);
     $qid = null;
     if (isset($geosearch_data['query']['geosearch'][0]['title'])) {
-        $qid = $geosearch_data['query']['geosearch'][0]['title'];
+      $qid = $geosearch_data['query']['geosearch'][0]['title'];
     }
-
     if ($qid) {
-        // Step 2: Get details for the found Wikidata item (QID)
-        $entity_url = "https://www.wikidata.org/w/api.php?action=wbgetentities&ids={$qid}&format=json&props=descriptions|claims&languages=en";
-        $entity_response_json = @file_get_contents($entity_url, false, $context);
-        if ($entity_response_json === FALSE) {
-            echo json_encode(['error' => 'Failed to fetch entity data from Wikidata.']);
-            exit;
-        }
-        $entity_data = json_decode($entity_response_json, true);
-        echo json_encode($entity_data);
+      // Step 2: Get details for the found Wikidata item (QID)
+      $entity_url = "https://www.wikidata.org/w/api.php?action=wbgetentities&ids={$qid}&format=json&props=descriptions|claims&languages=en";
+      $entity_response_json = @file_get_contents($entity_url, false, $context);
+      if ($entity_response_json === FALSE) {
+        echo json_encode(['error' => 'Failed to fetch entity data from Wikidata.']);
+        exit;
+      }
+      $entity_data = json_decode($entity_response_json, true);
+      echo json_encode($entity_data);
     } else {
-        echo json_encode(['result' => null]);
+      echo json_encode(['result' => null]);
     }
     exit;
-  }
+    }
 
-  if (isset($_GET['current_events'])) {
+  if (filter_input(INPUT_GET, 'current_events', FILTER_VALIDATE_BOOLEAN) !== null) {
     header('Content-Type: application/json');
     $events_file = 'data/current_events.geojson';
     if (file_exists($events_file)) {
@@ -180,7 +183,7 @@
     exit;
   }
 
-  if (isset($_GET['earthquakes'])) {
+  if (filter_input(INPUT_GET, 'earthquakes', FILTER_VALIDATE_BOOLEAN) !== null) {
     header('Content-Type: application/json');
     $url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson";
     $data = @file_get_contents($url);
@@ -396,6 +399,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
     <script>
       // Utility function for escaping HTML (was missing)
+
+      // Add setTheme function to handle base layer theme changes
+      function setTheme(layerName) {
+        // Example: toggle dark mode based on layer name
+        if (layerName && typeof layerName === 'string' && layerName.toLowerCase().includes('dark')) {
+          document.body.classList.add('dark-mode');
+        } else {
+          document.body.classList.remove('dark-mode');
+        }
+      }
       function escapeHtml(text) {
         if (!text) return '';
         return text.toString()

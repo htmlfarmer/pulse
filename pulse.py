@@ -2,7 +2,7 @@
 """
 pulse.py
 
-Finds and stores a history of the 5 most recent news articles for major
+Finds and stores a history of the most recent news articles for major
 cities, mapping them based on solar cycles with clustering for usability.
 """
 import argparse
@@ -18,23 +18,15 @@ import random
 import signal
 import sys
 import sqlite3
-import re
-import shutil
 import os
-from urllib.parse import urljoin
-from datetime import timedelta
 
 try:
     from llama_cpp import Llama
 except ImportError:
     print("FATAL: llama-cpp-python is not installed. Please run 'pip install llama-cpp-python'.", file=sys.stderr)
     sys.exit(1)
-
-import feedparser
 import requests
 from bs4 import BeautifulSoup
-from astral.location import LocationInfo
-from astral.sun import sun
 
 # --- Global flag for graceful shutdown ---
 SHUTDOWN_REQUESTED = False
@@ -152,26 +144,6 @@ def _remove_city_from_queue(conn, city_name):
     conn.execute('DELETE FROM city_queue WHERE city_name = ?', (city_name,))
     conn.commit()
 
-def get_sun_events_for_city(lat, lon):
-    try:
-        location = LocationInfo(timezone="UTC", latitude=lat, longitude=lon)
-        s = sun(location.observer, date=datetime.now().date(), tzinfo=timezone.utc)
-        events = [SunEvent(k, v) for k, v in s.items() if k in ['sunrise', 'noon', 'sunset']]
-        if not events: return None
-        noon_time, sunrise_time, sunset_time = s['noon'], s['sunrise'], s['sunset']
-        events.append(SunEvent("mid_morning", sunrise_time + (noon_time - sunrise_time) / 2))
-        events.append(SunEvent("mid_afternoon", noon_time + (sunset_time - noon_time) / 2))
-        return sorted(events, key=lambda x: x.time_utc)
-    except Exception: return None
-
-def fetch_wikipedia_summaries(titles: List[str], user_agent: Optional[str] = None) -> List[Dict]:
-	# (This function is unchanged)
-    return [] # Simplified for brevity, original code works
-
-def article_text_from_summary(summary, link, user_agent):
-    # (This function is unchanged)
-    return summary, None # Simplified for brevity, original code works
-
 def to_geojson(features: List[Dict]) -> Dict:
 	return {"type": "FeatureCollection", "features": features}
 
@@ -213,28 +185,35 @@ class AIModel:
             "llama_params": { "n_ctx": 2048, "n_threads": 8, "n_gpu_layers": 0, "verbose": False },
             "generation_params": {
                 "temperature": 0.2, "top_k": 40, "top_p": 0.95,
-                "repeat_penalty": 1.1, "max_tokens": 50, "stop": ["\n", "<|eot_id|>"],
+                "repeat_penalty": 1.1, "max_tokens": 50, "stop": ["<|eot_id|>"] # ["\n", "<|eot_id|>"]
             }
         }
+        self.default_system_prompt = "You are a helpful assistant. Keep your answers concise."
         logging.info("--> AI Core: Loading model for geolocation...")
         try:
             with SuppressStderr():
                 self.llm = Llama(model_path=model_path, **self.config["llama_params"])
-            logging.info("--> AI Core: Model loaded successfully.")
+            if self.llm is not None:
+                logging.info("--> AI Core: Model loaded successfully.")
+            else:
+                logging.error("!!! FATAL: AI Model not loaded (llm is None).")
         except Exception as e:
             logging.error(f"!!! FATAL: Error loading model: {e}")
+            os.system('notify-send "AI Model Error" "Could not load the language model. Check terminal." -i error')
 
-    def ask(self, user_question: str) -> str:
-        """Asks the AI a question and returns the cleaned string response."""
+    def ask(self, user_question: str, system_prompt: str = None) -> str:
+        """Asks the AI a question and returns the cleaned string response. Allows custom system prompt."""
         if not self.llm:
             logging.error("Error: The AI model is not loaded.")
             return "Error: Model not loaded."
 
+        if system_prompt is None:
+            system_prompt = "You are a geolocator. Based on the news headline, identify the main city and country. Respond ONLY with the format 'City, Country'. If you cannot determine the location, respond with 'Unknown'."
+
         messages = [
-            {"role": "system", "content": "You are a geolocator. Based on the news headline, identify the main city and country. Respond ONLY with the format 'City, Country'. If you cannot determine the location, respond with 'Unknown'."},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_question}
         ]
-        
         try:
             response = self.llm.create_chat_completion(messages=messages, **self.config["generation_params"])
             content = response['choices'][0]['message'].get('content')
@@ -282,7 +261,8 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
     Fetches current events from Wikipedia for today and yesterday, uses a local LLM to guess the
     location, confirms with Wikidata, and saves the geolocated events as GeoJSON.
     """
-    model_path = "/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf"
+    #model_path = "/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf"
+    model_path = "/home/asher/.lmstudio/models/lmstudio-community/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q8_0.gguf"
     if not Path(model_path).exists():
         logging.error(f"LLM model not found at {model_path}. Skipping current events processing.")
         return
@@ -291,10 +271,9 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
         logging.error("Failed to load LLM. Skipping current events processing.")
         return
 
-    logging.info("Fetching Wikipedia Current Events for LLM geolocation...")
+    logging.info("Fetching full Wikipedia Current Events page for LLM extraction...")
     url = "https://en.wikipedia.org/wiki/Portal:Current_events"
     headers = {"User-Agent": user_agent}
-    
     try:
         response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
@@ -302,49 +281,182 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
         logging.error(f"Failed to fetch current events page: {e}")
         return
 
+
+    # Extract only the day/date sections and their news items
     soup = BeautifulSoup(response.content, 'html.parser')
-    features = []
-    
-    # Per user request, mock the current date as Jan 3, 2026 for consistent processing
-    today = datetime(2026, 1, 3)
-    yesterday = today - timedelta(days=1)
-    dates_to_process = [today, yesterday]
-    
-    for date in dates_to_process:
-        date_str_id = date.strftime("%B_%-d").replace("_0", "_") # January_3
-        date_header = soup.find('span', id=date_str_id)
-        
-        if not date_header:
-            logging.warning(f"Could not find event section for {date.strftime('%B %d')}.")
-            continue
-        
-        logging.info(f"Processing events for {date.strftime('%B %d, %Y')}...")
-        event_list = date_header.find_parent('h2').find_next_sibling('ul')
-        if not event_list: continue
+    for tag in soup(['script', 'style', 'header', 'footer', 'nav', 'aside']):
+        tag.decompose()
 
-        for item in event_list.find_all('li'):
-            text = item.get_text(' ', strip=True)
-            if not text: continue
+    # Find all h3 headers that are dates (e.g., 'January 5, 2026 (Monday)')
+    import re as _re
+    # Find all date sections and extract news items from each, stopping at .current-events-more
+    date_id_re = _re.compile(r'^\d{4}_[A-Z][a-z]+_\d{1,2}$')
+    news_items = []
+    more_link_found = False
+    for div in soup.find_all('div', id=True):
+        if 'current-events-more' in div.get('class', []):
+            more_link_found = True
+            break
+        if date_id_re.match(div['id']):
+            content_div = div.find('div', class_='current-events-content description')
+            if content_div:
+                current_category = None
+                for elem in content_div.children:
+                    if getattr(elem, 'name', None) == 'p':
+                        # If <p> contains only a category header (bold or matches known set), set as current_category
+                        b = elem.find('b')
+                        ptext = elem.get_text(' ', strip=True)
+                        # Heuristic: if <p> is just a category header (bold and short, or matches known set)
+                        if b and len(ptext) < 40 and (b.get_text(strip=True) == ptext):
+                            current_category = ptext
+                        elif ptext:
+                            # Prepend category if available
+                            if current_category:
+                                news_items.append(f"{current_category}: {ptext}")
+                            else:
+                                news_items.append(ptext)
+                    elif getattr(elem, 'name', None) == 'ul':
+                        for li in elem.find_all('li', recursive=False):
+                            litext = li.get_text(' ', strip=True)
+                            if litext:
+                                if current_category:
+                                    news_items.append(f"{current_category}: {litext}")
+                                else:
+                                    news_items.append(litext)
+    # If no .current-events-more found, just process all date sections found
 
-            logging.info(f"Event: {text[:100]}...")
-            llm_prompt = f"News headline: \"{text}\"\nWhat is the primary city and country?"
-            location_guess = ai_model.ask(llm_prompt)
-            coords = get_coords_from_wikidata(location_guess, user_agent)
-            
-            if coords:
-                feature = {
-                    "type": "Feature",
-                    "properties": {
-                        "event_text": text, "place": location_guess, "source": "Wikipedia Current Events"
-                    },
-                    "geometry": {"type": "Point", "coordinates": [coords[1], coords[0]]} # lon, lat
-                }
-                features.append(feature)
-            else:
-                logging.warning(f"  -> Could not geolocate event via LLM/Wikidata.")
-            time.sleep(0.5)
 
+
+    # Erase the output file at the start of each run
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text('', encoding="utf-8")
+
+    # Process each news item one at a time with the LLM
+    features = []
+    import json as _json
+    if not news_items:
+        logging.warning("No news items found for the current date section.")
+    # --- Minimal direct LLM test ---
+    for idx, news_item in enumerate(news_items):
+        single_prompt = (
+            "You are a news geolocator. Given the following news item, extract a JSON object with: "
+            "'title', 'summary', 'place' (city, country), 'lat', 'lng' (for the city country and place), and 'event_text' (the full story text). "
+            "Be as detailed as possible in the summary and event_text fields. "
+            "If you do not know the latitude or longitude, estimate them based on the place. "
+            "Respond ONLY with a JSON object, no extra text. "
+            f"News Item: {news_item}"
+        )
+        system_prompt = (
+            "You are a helpful assistant that extracts a single news story as a JSON object with 'title', 'summary', 'place', 'lat', 'lng', and 'event_text'. "
+            "Be as detailed as possible in the summary and event_text fields. "
+            "If you do not know the latitude or longitude, estimate them based on the place. "
+            "Do not include any extra commentary or explanation."
+        )
+        ai_model.config["generation_params"]["max_tokens"] = 2048
+        llm_response = ai_model.ask(single_prompt, system_prompt=system_prompt)
+        # Remove code block markers and join lines if needed
+        cleaned = llm_response.strip()
+        # Extract only the content between ```json and the next code block end (```)
+        if '```json' in cleaned:
+            start = cleaned.find('```json') + 7
+            end = cleaned.find('```', start)
+            if end == -1:
+                json_str = cleaned[start:].strip()
+            else:
+                json_str = cleaned[start:end].strip()
+            cleaned = json_str
+        elif '```' in cleaned:
+            start = cleaned.find('```') + 3
+            end = cleaned.find('```', start)
+            if end == -1:
+                json_str = cleaned[start:].strip()
+            else:
+                json_str = cleaned[start:end].strip()
+            cleaned = json_str
+        # Otherwise, use the whole cleaned string
+        # Optionally, join lines if the output is split
+        try:
+            story = _json.loads(cleaned)
+            if not isinstance(story, dict):
+                raise ValueError("LLM did not return a dict")
+        except Exception as e:
+            logging.warning(f"LLM did not return valid JSON for item {idx}: {e}\nResponse: {llm_response[:300]}")
+            continue
+        title = story.get('title') or ''
+        summary = story.get('summary') or ''
+
+
+        # Support both string and dict for 'place', and allow lat/lng inside place or at top level
+        place = story.get('place')
+        city = country = ''
+        if isinstance(place, dict):
+            city = place.get('city', '')
+            country = place.get('country', '')
+            place_str = f"{city}, {country}".strip(', ')
+            lat = place.get('lat', story.get('lat'))
+            lng = place.get('lng', story.get('lng'))
+        elif isinstance(place, str):
+            place_str = place
+            lat = story.get('lat')
+            lng = story.get('lng')
+        else:
+            place_str = ''
+            lat = story.get('lat')
+            lng = story.get('lng')
+
+        event_text = story.get('event_text') or ''
+        try:
+            lat = float(lat)
+            lng = float(lng)
+        except (TypeError, ValueError):
+            lat = lng = None
+
+        coords = get_coords_from_wikidata(place_str, user_agent) if place_str else None
+        lat_wiki = lng_wiki = None
+        if coords:
+            lat_wiki, lng_wiki = coords[0], coords[1]
+
+        # If both LLM and Wikidata coords exist, compare them
+        def is_close(a, b, tol=1.0):
+            try:
+                return abs(float(a) - float(b)) <= tol
+            except Exception:
+                return False
+
+        use_llm = False
+        if lat is not None and lng is not None:
+            if lat_wiki is not None and lng_wiki is not None:
+                # If both exist, check if LLM is close to Wikidata
+                if is_close(lat, lat_wiki, tol=2.0) and is_close(lng, lng_wiki, tol=2.0):
+                    use_llm = True
+                else:
+                    use_llm = False
+            else:
+                use_llm = True
+        elif lat_wiki is not None and lng_wiki is not None:
+            lat, lng = lat_wiki, lng_wiki
+            use_llm = False
+
+        if lat is not None and lng is not None:
+            feature = {
+                "type": "Feature",
+                "properties": {
+                    "title": title,
+                    "summary": summary,
+                    "place": place,
+                    "lat": lat,
+                    "lng": lng,
+                    "event_text": event_text,
+                    "source": "Wikipedia Current Events",
+                    "geolocation_source": "llm"
+                },
+                "geometry": {"type": "Point", "coordinates": [lng, lat]}
+            }
+            features.append(feature)
+        else:
+            logging.warning(f"Could not geolocate story: {title} / {place_str}")
+        time.sleep(0.5)
+
     out_path.write_text(json.dumps(to_geojson(features), ensure_ascii=False, indent=2), encoding="utf-8")
     logging.info(f"Wrote {len(features)} geolocated current events to {out_path}")
 
@@ -373,91 +485,7 @@ def main():
         city_queue = _get_city_queue(conn)
     logging.info(f"Starting run with {len(city_queue)} cities in queue.")
 
-    now_utc = datetime.now(timezone.utc)
-    cities_processed = 0
-
-    for city_name in city_queue:
-        if SHUTDOWN_REQUESTED or (args.max_cities and cities_processed >= args.max_cities):
-            break
-        cities_processed += 1
-
-        lat, lon, _ = CITIES_CACHE.get(city_name, (None, None, None))
-        if not lat or not lon:
-            logging.warning(f"Skipping {city_name} due to missing coordinates.")
-            _remove_city_from_queue(conn, city_name)
-            continue
-            
-        sun_events = get_sun_events_for_city(lat, lon)
-        if not sun_events:
-            logging.warning(f"Skipping {city_name} due to missing sun event data.")
-            _remove_city_from_queue(conn, city_name)
-            continue
-            
-        target_event = next((e for e in sun_events if e.time_utc > now_utc), sun_events[-1])
-
-        last_check = _get_last_checked(conn, city_name)
-        if not args.force_check and last_check:
-            last_check_time, last_event_name = last_check
-            if last_event_name == target_event.name:
-                logging.debug(f"Skipping {city_name}, already processed for {target_event.name}.")
-                continue
-            if (now_utc - last_check_time).total_seconds() < 3600: # 1 hour cooldown
-                logging.debug(f"Skipping {city_name}, checked too recently.")
-                continue
-
-        # --- MODIFIED: Fetching and Storing Logic ---
-        logging.info(f"Processing {city_name} for sun event '{target_event.name}'...")
-        gnews_url = f"https://news.google.com/rss/search?q={quote_plus(f'{city_name}')}&hl=en-US&gl=US&ceid=US:en"
-        try:
-            feed = feedparser.parse(gnews_url)
-            if feed.entries:
-                entry = feed.entries[0]
-                lat, lon, country = CITIES_CACHE[city_name]
-
-                # Convert published time to a timestamp for sorting
-                published_ts = int(time.mktime(entry.published_parsed)) if hasattr(entry, 'published_parsed') else int(time.time())
-
-                category_info = categorize_article(entry.title)
-
-                # Clean up summary HTML using BeautifulSoup
-                summary_text = BeautifulSoup(entry.summary, 'html.parser').get_text(separator=' ', strip=True)
-
-                # Create a Wikipedia search query from the title (e.g., "NYC Forecast Warns..." -> "NYC Forecast Warns")
-                wiki_topic = re.split(r' - | \| ', entry.title)[0]
-
-                feature = {
-                    "type": "Feature", "properties": {
-                        "title": entry.title, "news_link": entry.link,
-                        "news_source": entry.get("source", {}).get("title", "Google News"),
-                        "place": city_name, "summary": summary_text,
-                        "published": entry.published,
-                        "wiki_topic": wiki_topic,
-                        **category_info
-                    }, "geometry": {"type": "Point", "coordinates": [lon, lat]}
-                }
-
-                article_data = {
-                    "city": city_name, "link": entry.link, "title": entry.title,
-                    "source": entry.get("source", {}).get("title", "Google News"),
-                    "summary": summary_text, "published_ts": published_ts,
-                    "image": None, # Image fetching can be re-added here
-                    "feature": feature
-                }
-
-                # --- NEW: Categorize article and add to data ---
-                category_data = categorize_article(entry.title)
-                article_data.update(category_data)
-
-                _store_article_in_db(conn, article_data)
-                _trim_article_history(conn, city_name, max_articles=5)
-                logging.info(f"  -> Stored: {entry.title[:60]}...")
-            
-            _set_last_checked(conn, city_name, target_event.name)
-        except Exception as e:
-            logging.error(f"  -> Failed to process {city_name}: {e}")
-        
-        _remove_city_from_queue(conn, city_name)
-        time.sleep(0.5)
+    # (Removed sun event logic. If you want to process cities, add your new logic here.)
 
     # --- MODIFIED: Finalization Step ---
     logging.info("Run finished. Generating output files from database...")
@@ -499,9 +527,6 @@ def main():
     # --- NEW: Process Wikipedia Current Events ---
     current_events_out_path = Path('data/current_events.geojson')
     fetch_and_process_current_events(current_events_out_path, user_agent)
-
-    # (The rest of the file generation for news.html, etc. is unchanged)
-    # ...
 
 if __name__ == "__main__":
     main()

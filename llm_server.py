@@ -1,0 +1,317 @@
+#!/usr/bin/env python3
+"""
+Simple LLM HTTP server using FastAPI.
+- Loads a local GGUF model once on startup (configurable via MODEL_PATH env var)
+- POST /ask accepts JSON { prompt, system_prompt?, generation_params? } and returns { response }
+- POST /shutdown optionally protected by LLM_SHUTDOWN_TOKEN env var (if set)
+- Writes .llm_server_pid in the project dir for compatibility with existing scripts
+
+Run: python3 llm_server.py
+Or run via: uvicorn llm_server:app --host 127.0.0.1 --port 5005
+
+This server intentionally does NOT keep conversation state between requests: each /ask call is independent.
+"""
+
+import os
+import json
+import logging
+import threading
+from pathlib import Path
+from typing import Optional, Dict, Any
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+
+try:
+    from llama_cpp import Llama
+except Exception:
+    Llama = None
+
+APP_DIR = Path(__file__).resolve().parent
+PID_FILE = APP_DIR / '.llm_server_pid'
+DEFAULT_MODEL = os.environ.get('MODEL_PATH', '/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf')
+SHUTDOWN_TOKEN = os.environ.get('LLM_SHUTDOWN_TOKEN')
+HOST = os.environ.get('LLM_HOST', '127.0.0.1')
+PORT = int(os.environ.get('LLM_PORT', '5005'))
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+app = FastAPI()
+
+class AskRequest(BaseModel):
+    prompt: str
+    system_prompt: Optional[str] = None
+    generation_params: Optional[Dict[str, Any]] = None
+
+class AskResponse(BaseModel):
+    response: str
+
+@app.on_event('startup')
+def startup_event():
+    if Llama is None:
+        logging.error('llama_cpp not available; cannot start LLM server.')
+        return
+
+    model_path = os.environ.get('MODEL_PATH', DEFAULT_MODEL)
+    if not Path(model_path).exists():
+        logging.error(f'Model path not found: {model_path}')
+        return
+
+    # Default Llama params (tuned for local 24/7 server; adjust via env or request)
+    llama_params = {
+        'model_path': model_path,
+        'n_ctx': int(os.environ.get('LLM_N_CTX', '2048')),
+        'n_threads': int(os.environ.get('LLM_N_THREADS', '4')),
+        'n_gpu_layers': int(os.environ.get('LLM_N_GPU_LAYERS', '0')),
+        'verbose': False
+    }
+
+    logging.info(f"Loading model from {model_path} ...")
+    try:
+        app.state.llm = Llama(**llama_params)
+        logging.info('Model loaded successfully.')
+    except Exception as e:
+        logging.exception('Failed to load model: %s', e)
+        app.state.llm = None
+
+    # write pid file for external control (pulse.php may still expect a pid file)
+    try:
+        pid = os.getpid()
+        PID_FILE.write_text(str(pid))
+        logging.info(f'Wrote PID {pid} to {PID_FILE}')
+    except Exception:
+        logging.exception('Failed to write PID file')
+
+@app.on_event('shutdown')
+def shutdown_event():
+    try:
+        if PID_FILE.exists():
+            PID_FILE.unlink()
+            logging.info('Removed PID file.')
+    except Exception:
+        logging.exception('Error removing PID file on shutdown')
+
+@app.get('/health')
+def health():
+    return {'status': 'ok', 'model_loaded': bool(getattr(app.state, 'llm', None))}
+
+
+@app.get('/', response_class=HTMLResponse)
+def index():
+        # Simple test UI to submit prompts to /ask
+        html = '''
+        <!doctype html>
+        <html>
+        <head><meta charset="utf-8"><title>LLM Server Test</title></head>
+        <body style="font-family: Arial, Helvetica, sans-serif; margin:20px;">
+            <h2>LLM Server Test</h2>
+            <form id="frm">
+                <label>System prompt (optional)</label><br>
+                <input id="system" style="width:100%" placeholder="System prompt"><br><br>
+                <label>Prompt</label><br>
+                <textarea id="prompt" rows="6" style="width:100%" placeholder="Enter your prompt"></textarea><br>
+                <button type="submit">Ask</button>
+            </form>
+            <h3>Response</h3>
+            <pre id="resp" style="white-space:pre-wrap; background:#f6f6f6; padding:12px; border-radius:6px; max-width:800px;"></pre>
+
+            <script>
+                document.getElementById('frm').addEventListener('submit', async function(e){
+                    e.preventDefault();
+                    const prompt = document.getElementById('prompt').value;
+                    const system = document.getElementById('system').value || undefined;
+                    const payload = { prompt: prompt };
+                    if (system) payload.system_prompt = system;
+                    const r = await fetch('/ask', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
+                    const j = await r.json();
+                    document.getElementById('resp').textContent = JSON.stringify(j, null, 2);
+                });
+            </script>
+        </body>
+        </html>
+        '''
+        return HTMLResponse(content=html)
+
+@app.post('/ask', response_model=AskResponse)
+def ask(req: AskRequest):
+    llm = getattr(app.state, 'llm', None)
+    if not llm:
+        raise HTTPException(status_code=500, detail='LLM not loaded')
+
+    # Ensure statelessness: only include the system and user messages from this request
+    system_prompt = req.system_prompt or 'You are a helpful assistant. Keep answers concise.'
+    messages = [
+        {'role': 'system', 'content': system_prompt},
+        {'role': 'user', 'content': req.prompt}
+    ]
+
+    # Default generation params; individual requests may override.
+    gen = {
+        'temperature': float(os.environ.get('LLM_TEMPERATURE', '0.2')),
+        'top_k': int(os.environ.get('LLM_TOP_K', '40')),
+        'top_p': float(os.environ.get('LLM_TOP_P', '0.95')),
+        'repeat_penalty': float(os.environ.get('LLM_REPEAT_PENALTY', '1.1')),
+        'max_tokens': int(os.environ.get('LLM_MAX_TOKENS', '512')),
+        'stop': ["<|eot_id|>"]
+    }
+    if req.generation_params:
+        gen.update(req.generation_params)
+
+    try:
+        # llama_cpp Llama exposes create_chat_completion similar to the helper script
+        response = llm.create_chat_completion(messages=messages, **gen)
+        content = response['choices'][0]['message'].get('content')
+        text = content.strip() if content else ''
+        return {'response': text}
+    except Exception as e:
+        logging.exception('LLM generation error: %s', e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post('/shutdown')
+def shutdown(request: Request):
+    # Optional token protection
+    if SHUTDOWN_TOKEN:
+        token = request.query_params.get('token') or request.headers.get('X-Shutdown-Token')
+        if token != SHUTDOWN_TOKEN:
+            raise HTTPException(status_code=403, detail='Invalid shutdown token')
+
+    # Respond first, then schedule shutdown 0.2s later to allow response to reach client
+    def _exit():
+        logging.info('Shutting down LLM server as requested.')
+        try:
+            if PID_FILE.exists():
+                PID_FILE.unlink()
+        except Exception:
+            pass
+        os._exit(0)
+
+    threading.Timer(0.2, _exit).start()
+    return {'status': 'shutting_down'}
+
+if __name__ == '__main__':
+    # Simple CLI: start/stop/status. Use `start` (foreground) or `start --background`.
+    import argparse
+    import subprocess
+    import signal
+    import sys
+    import time
+
+    def start_foreground():
+        import uvicorn
+        uvicorn.run('llm_server:app', host=HOST, port=PORT, log_level='info')
+
+    def start_background(logfile='/tmp/llm_server.log'):
+        if PID_FILE.exists():
+            try:
+                existing = int(PID_FILE.read_text().strip())
+                # check if running
+                os.kill(existing, 0)
+                print(f"Server already running with PID {existing}")
+                return
+            except Exception:
+                pass
+        cmd = [sys.executable, str(__file__), 'start']
+        with open(logfile, 'ab') as out:
+            p = subprocess.Popen(cmd, stdout=out, stderr=out, cwd=str(APP_DIR))
+        # Give it a moment to start and write its pid file
+        time.sleep(0.5)
+        if p.poll() is None:
+            print(f"Started background server (PID {p.pid}), logging to {logfile}")
+            try:
+                PID_FILE.write_text(str(p.pid))
+            except Exception:
+                pass
+        else:
+            print('Failed to start server. Check log:', logfile)
+
+    def stop_server(timeout=3):
+        if not PID_FILE.exists():
+            print('No PID file found; server may not be running.')
+            return
+        try:
+            pid = int(PID_FILE.read_text().strip())
+        except Exception:
+            print('Invalid PID file. Removing it.')
+            PID_FILE.unlink(missing_ok=True)
+            return
+        try:
+            os.kill(pid, signal.SIGTERM)
+            # Wait briefly for process to exit
+            for _ in range(timeout * 10):
+                time.sleep(0.1)
+                try:
+                    os.kill(pid, 0)
+                except Exception:
+                    break
+            else:
+                # still running; force kill
+                os.kill(pid, signal.SIGKILL)
+            print(f'Stopped server (PID {pid}).')
+        except ProcessLookupError:
+            print('Process not found; removing stale PID file.')
+        except PermissionError:
+            print('Permission denied when trying to stop process.')
+        finally:
+            PID_FILE.unlink(missing_ok=True)
+
+    def status_server():
+        if not PID_FILE.exists():
+            print('No PID file found; server not running.')
+            return
+        try:
+            pid = int(PID_FILE.read_text().strip())
+            os.kill(pid, 0)
+            print(f'Server appears to be running with PID {pid}.')
+        except Exception:
+            print('PID file exists but process not running. PID file may be stale.')
+
+    parser = argparse.ArgumentParser(description='LLM server control')
+    sub = parser.add_subparsers(dest='cmd')
+    sub.add_parser('start', help='Start server in foreground')
+    sbg = sub.add_parser('start-bg', help='Start server in background (detached)')
+    sbg.add_argument('--log', default='/tmp/llm_server.log', help='Log file for background server')
+    sub.add_parser('stop', help='Stop server using PID file')
+    sub.add_parser('stop-all', help='Stop all running llm_server.py processes')
+    sub.add_parser('restart-all', help='Stop all instances then start one background instance')
+    sub.add_parser('status', help='Show server status')
+    args = parser.parse_args()
+
+    if args.cmd == 'start-bg':
+        start_background(logfile=args.log)
+    elif args.cmd == 'stop':
+        stop_server()
+    elif args.cmd == 'stop-all':
+        # Attempt to kill all running llm_server.py processes
+        try:
+            import subprocess
+            subprocess.run(['pkill', '-f', 'llm_server.py'], check=False)
+            # remove known PID files
+            for p in (PID_FILE, APP_DIR / '.llm_pid'):
+                try:
+                    if p.exists():
+                        p.unlink()
+                except Exception:
+                    pass
+            print('Requested stop for all llm_server.py processes.')
+        except Exception as e:
+            print('Failed to stop all processes:', e)
+    elif args.cmd == 'restart-all':
+        try:
+            import subprocess
+            subprocess.run(['pkill', '-f', 'llm_server.py'], check=False)
+        except Exception:
+            pass
+        # remove PID files
+        for p in (PID_FILE, APP_DIR / '.llm_pid'):
+            try:
+                if p.exists():
+                    p.unlink()
+            except Exception:
+                pass
+        # start one background instance
+        start_background(logfile=args.log if hasattr(args, 'log') else '/tmp/llm_server.log')
+    elif args.cmd == 'status':
+        status_server()
+    else:
+        # Default: start foreground (also covers 'start' command)
+        start_foreground()

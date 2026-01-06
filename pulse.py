@@ -261,8 +261,7 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
     Fetches current events from Wikipedia for today and yesterday, uses a local LLM to guess the
     location, confirms with Wikidata, and saves the geolocated events as GeoJSON.
     """
-    #model_path = "/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf"
-    model_path = "/home/asher/.lmstudio/models/lmstudio-community/DeepSeek-R1-Distill-Qwen-1.5B-GGUF/DeepSeek-R1-Distill-Qwen-1.5B-Q8_0.gguf"
+    model_path = "/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf"
     if not Path(model_path).exists():
         logging.error(f"LLM model not found at {model_path}. Skipping current events processing.")
         return

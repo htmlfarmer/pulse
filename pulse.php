@@ -1,4 +1,19 @@
 <?php
+// Simple request logger for debugging; writes to system temp folder.
+function pulse_log($tag, $message = '') {
+  $logfile = sys_get_temp_dir() . '/pulse_requests.log';
+  $ip = $_SERVER['REMOTE_ADDR'] ?? 'cli';
+  $time = gmdate('Y-m-d H:i:s');
+  $php = defined('PHP_BINARY') ? PHP_BINARY : 'php';
+  $ver = phpversion();
+  $uri = $_SERVER['REQUEST_URI'] ?? '';
+  $method = $_SERVER['REQUEST_METHOD'] ?? 'CLI';
+  // keep message to a reasonable length
+  $m = is_string($message) ? str_replace("\n", ' ', $message) : json_encode($message);
+  $m = mb_substr($m, 0, 2000);
+  $entry = "[$time] [$tag] ip={$ip} php={$php} ver={$ver} method={$method} uri={$uri} msg={$m}" . PHP_EOL;
+  @file_put_contents($logfile, $entry, FILE_APPEND | LOCK_EX);
+}
   if (isset($_GET['run_pulse_py'])) {
       header('Content-Type: application/json');
       set_time_limit(300); // 5 minutes, because the LLM can be slow
@@ -274,6 +289,99 @@
     exit;
   }
 
+  // LLM query endpoint: forwards JSON POST with { prompt, system_prompt } to local HTTP LLM server
+  if (isset($_GET['ask_llm'])) {
+    header('Content-Type: application/json');
+
+    // Accept either POST with JSON body, or GET with ?prompt=... for quick testing
+    $method = $_SERVER['REQUEST_METHOD'];
+    if ($method === 'POST') {
+      $body = file_get_contents('php://input');
+      if (!$body) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Empty request body']);
+        exit;
+      }
+    } elseif ($method === 'GET' && isset($_GET['prompt'])) {
+      $payload = ['prompt' => $_GET['prompt']];
+      if (isset($_GET['system_prompt'])) $payload['system_prompt'] = $_GET['system_prompt'];
+      $body = json_encode($payload);
+    } else {
+      http_response_code(400);
+      echo json_encode(['error' => 'Invalid request method or missing prompt']);
+      exit;
+    }
+
+    // Log the ask_llm invocation (safe-truncate body)
+    try { pulse_log('ask_llm', $body); } catch(Exception $e) {}
+
+    // Quick health check before forwarding
+    $health_url = 'http://127.0.0.1:5005/health';
+    $hch = curl_init($health_url);
+    curl_setopt($hch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($hch, CURLOPT_CONNECTTIMEOUT, 1);
+    curl_setopt($hch, CURLOPT_TIMEOUT, 2);
+    $hresp = curl_exec($hch);
+    $hcode = curl_getinfo($hch, CURLINFO_HTTP_CODE);
+    curl_close($hch);
+    if ($hresp === false || $hcode !== 200) {
+      http_response_code(502);
+      echo json_encode(['error' => 'LLM server unavailable', 'details' => $hresp ?: 'no response']);
+      exit;
+    }
+
+    // Forward to local LLM HTTP server
+    $llm_url = 'http://127.0.0.1:5005/ask';
+    $ch = curl_init($llm_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+    // short timeout to avoid tying up PHP workers; adjust as needed
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $curl_err = curl_error($ch);
+    curl_close($ch);
+
+    if ($response === false || $http_code !== 200) {
+      http_response_code(502);
+      echo json_encode(['error' => 'LLM server error', 'http_code' => $http_code, 'details' => $curl_err ?: $response]);
+      exit;
+    }
+
+    // The LLM server already returns JSON { response: "..." }
+    echo $response;
+    exit;
+  }
+
+  // Endpoint to stop any running LLM process
+  if (isset($_GET['stop_llm'])) {
+    header('Content-Type: application/json');
+    $pid_file = __DIR__ . '/.llm_pid';
+    if (!file_exists($pid_file)) {
+      echo json_encode(['status' => 'none', 'message' => 'No running LLM process found.']);
+      exit;
+    }
+    $pid = intval(@file_get_contents($pid_file));
+    if ($pid <= 0) {
+      @unlink($pid_file);
+      echo json_encode(['status' => 'none', 'message' => 'No valid PID found.']);
+      exit;
+    }
+    // Try to kill the process
+    exec('kill -9 ' . $pid . ' 2>&1', $out, $rc);
+    @unlink($pid_file);
+    if ($rc === 0) {
+      echo json_encode(['status' => 'killed', 'pid' => $pid]);
+    } else {
+      echo json_encode(['status' => 'failed', 'pid' => $pid, 'output' => $out]);
+    }
+    exit;
+  }
+
   // Python script is now run on-demand via a button in the UI.
   
   // Calculate yesterday's date on the server to avoid client clock issues.
@@ -294,11 +402,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css" />
     <style>
       html,body,#map { height: 100%; margin: 0; padding: 0 }
-      .news-popup { max-width: 360px; }
+      .news-popup { max-width: 640px; }
       .leaflet-popup-content-wrapper, .leaflet-popup-content {
-        max-width: 350px !important;
-        max-height: 260px !important;
-        overflow-y: auto !important;
+        max-width: 640px !important;
       }
       .leaflet-popup-content {
         font-size: 15px;
@@ -307,6 +413,23 @@
       .news-title { font-weight: 600; margin-bottom: 6px; }
       .news-source { color: #666; font-size: 90%; }
       .news-summary { margin-top: 6px; }
+      .event-text { max-height: none; overflow: visible; }
+      .event-headlines { margin-top: 6px; }
+      .news-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 10px;
+        align-items: start;
+      }
+      .news-list li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .news-list img { width: 60px; height: 60px; object-fit: cover; }
       .date-control {
         background: rgba(255, 255, 255, 0.7);
         padding: 2px 5px;
@@ -376,6 +499,35 @@
         pointer-events: none;
       }
 
+      /* LLM console at bottom for diagnostics */
+      .llm-console {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 0;
+        max-height: 220px;
+        background: rgba(18,18,18,0.95);
+        color: #e6eef8;
+        font-family: monospace;
+        font-size: 13px;
+        overflow-y: auto;
+        padding: 8px 12px 12px 12px;
+        border-radius: 6px 6px 0 0;
+        z-index: 2000;
+        display: none;
+      }
+      .llm-console .entry { 
+        margin-bottom: 6px;
+        white-space: pre-wrap; /* preserve newlines and wrap long lines */
+        overflow-wrap: anywhere; /* break long words if needed */
+        word-break: break-word;
+      }
+      .llm-console .entry.info { color: #9fd3ff; }
+      .llm-console .entry.warn { color: #ffd27a; }
+      .llm-console .entry.error { color: #ff8a8a; }
+      .llm-console .controls { position: absolute; right: 12px; top: 6px; }
+      .llm-console .controls button { margin-left: 6px; }
+
       @keyframes sparkle-effect {
         0% {
           transform: translate(-50%, -50%) scale(0);
@@ -394,6 +546,15 @@
   </head>
   <body>
     <div id="map"></div>
+
+    <!-- LLM console for diagnostics and visible 'thinking' logs -->
+    <div id="llm-console" class="llm-console" aria-live="polite">
+      <div class="controls">
+        <button id="llm-console-toggle" class="btn btn-sm btn-light">Hide</button>
+        <button id="llm-console-clear" class="btn btn-sm btn-light">Clear</button>
+      </div>
+      <div id="llm-console-entries"></div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
@@ -418,6 +579,23 @@
           .replace(/"/g, "&quot;")
           .replace(/'/g, "&#039;");
       }
+
+      // LLM console logging helper
+      function logToConsole(message, level) {
+        try {
+          const el = document.getElementById('llm-console');
+          const entries = document.getElementById('llm-console-entries');
+          if (!el || !entries) return;
+          const entry = document.createElement('div');
+          entry.className = 'entry ' + (level || 'info');
+          const ts = new Date().toLocaleTimeString();
+          entry.textContent = `${ts} - ${message}`;
+          entries.appendChild(entry);
+          el.style.display = 'block';
+          entries.scrollTop = entries.scrollHeight;
+        } catch (e) { console.error('logToConsole error', e); }
+      }
+
 
       const map = L.map('map').setView([39.8283, -98.5795], 4);
 
@@ -517,6 +695,9 @@
         // 'Earthquakes' will be added after earthquakesLayer is created
       };
 
+      // Toggle to enable/disable asking the LLM
+      let llmEnabled = true;
+
       // --- Current Events (Wikipedia) ---
       let currentEventsLoaded = false;
 
@@ -554,14 +735,14 @@
                   }
                   let popupHtml = `
                     <strong><a href="${p.url}" target="_blank">${p.title}</a></strong><br>
-                    <div style="max-height:100px;overflow:auto;">
+                    <div class="event-text">
                       <em>${eventText}</em>
                     </div>
                     ${eventLinksHtml}
                     <hr>
-                    <div style="max-height:80px;overflow:auto;">
+                    <div class="event-headlines">
                       <b>Top headlines:</b>
-                      <ul style="margin:0;padding-left:18px;">
+                      <ul class="news-list">
                         ${Array.isArray(p.headlines_urls) ? p.headlines_urls.map(h => `<li><a href="${h.url}" target="_blank">${h.title}</a></li>`).join('') : ''}
                       </ul>
                     </div>
@@ -712,39 +893,6 @@
       // --- City Info (Restored Logic) ---
       function showInfoPopup(data, latlng) {
         let html = 'No information found for this area.';
-        let all_articles = [];
-        let current_article_index = 0;
-        const articles_to_load = 5;
-
-        function render_articles() {
-          const newsDiv = document.getElementById('news-headlines');
-          if (!newsDiv) return;
-
-          let newsHtml = newsDiv.innerHTML;
-          if (current_article_index === 0) {
-              newsHtml = '<b>Top Headlines:</b><ul style="padding:0;margin:0;list-style:none">';
-          }
-
-          const articles_to_render = all_articles.slice(current_article_index, current_article_index + articles_to_load);
-          
-          articles_to_render.forEach(article => {
-            newsHtml += `
-              <li style="margin-bottom: 1em; display: flex; align-items: center;">
-                ${article.image ? `<img src="${article.image}" style="width:60px;height:60px;margin-right:10px">` : ''}
-                <div>
-                  <a href="${article.link}" target="_blank" rel="noopener noreferrer">${escapeHtml(article.title)}</a>
-                  <div style="font-size:90%"><i>${escapeHtml(article.source)}</i></div>
-                </div>
-              </li>`;
-          });
-
-          newsDiv.innerHTML = newsHtml + (current_article_index === 0 ? '</ul>' : '');
-          current_article_index += articles_to_load;
-
-          if (current_article_index >= all_articles.length) {
-            newsDiv.onscroll = null; // No more articles to load
-          }
-        }
 
         const hasNearestCity = data && data.nearest_city;
         const hasOtherCities = data && data.other_cities && data.other_cities.length > 0;
@@ -758,24 +906,7 @@
             const zoom = Math.max(map.getZoom(), 12);
             html += `<b>Nearest City:</b> <a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(city.name)}</a> <a href="https://news.google.com/search?q=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">(news)</a><br><small><a href="https://www.google.com/maps/@${latlng.lat},${latlng.lng},${zoom}z/data=!3m1!1e3" target="_blank" rel="noopener noreferrer">Google Satellite</a> &middot; <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${latlng.lat},${latlng.lng}" target="_blank" rel="noopener noreferrer">Street View</a> &middot; <a href="https://www.openstreetmap.org/#map=${zoom}/${latlng.lat}/${latlng.lng}" target="_blank" rel="noopener noreferrer">OpenStreetMap</a></small><hr>`;
             
-            html += '<div id="news-headlines">Loading news...</div>';
-
-            fetch(`pulse.php?news_for_city=${encodeURIComponent(search_query)}`)
-              .then(r=>r.json())
-              .then(news => {
-                all_articles = news;
-                const newsDiv = document.getElementById('news-headlines');
-                if (news && news.length > 0) {
-                  render_articles();
-                  newsDiv.onscroll = () => {
-                    if ((newsDiv.scrollTop + newsDiv.clientHeight) >= newsDiv.scrollHeight - 10) {
-                      render_articles();
-                    }
-                  };
-                } else {
-                  newsDiv.innerHTML = '<i>No news found for this area.</i>';
-                }
-              });
+            // News headlines removed from popup (background news still fetched for LLM)
           }
           if (hasOtherCities) {
             html += '<div id="other-cities" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
@@ -794,6 +925,14 @@
             });
             html += '</ul></div>';
           }
+        }
+        // Show an LLM-produced summary if present
+        if (data.llm) {
+          if (html === 'No information found for this area.') html = '';
+          html += '<div id="llm-summary" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+          html += '<b>AI Summary:</b>'; 
+          html += `<div style="white-space:pre-wrap;margin-top:6px;">${escapeHtml(data.llm)}</div>`;
+          html += '</div>';
         }
         
         if (data.wikidata && data.wikidata.entities) {
@@ -874,7 +1013,57 @@
                 wiki_topics: wikiData.titles || [],
                 wikidata: wikidata
             };
-            showInfoPopup(combinedData, latlng);
+            // If we have a nearest city, fetch recent headlines for it so the LLM has context
+            const nearest = combinedData.nearest_city;
+            const search_query = nearest ? `${nearest.name}${nearest.state ? ', ' + nearest.state : ''}${nearest.country ? ', ' + nearest.country : ''}` : '';
+            const newsPromise = nearest ? fetch(`pulse.php?news_for_city=${encodeURIComponent(search_query)}`).then(r=>r.json()).catch(()=>[]) : Promise.resolve([]);
+
+            newsPromise.then(news => {
+              combinedData.news = news || [];
+              // Show initial popup immediately with available info (news may be present)
+              showInfoPopup(combinedData, latlng);
+
+              // Build a concise prompt for the LLM
+              let prompt = 'You are a local news biographer. Given the following context below, answer and give the historical essence and the most important historical events in the area? Give a detailed summary (2-4 sentences), mention any likely causes or themes, and list 3-20 short tags." Context: ';
+              prompt += `Nearest city: ${search_query} `;
+              if (combinedData.other_cities && combinedData.other_cities.length) {
+                prompt += 'Other nearby cities: ' + combinedData.other_cities.slice(0,6).map(c=>c.name).join(', ') + ' ';
+              }
+              if (combinedData.wiki_topics && combinedData.wiki_topics.length) {
+                prompt += 'Area topics from Wikipedia: ' + combinedData.wiki_topics.slice(0,8).join('; ') + ' ';
+              }
+              if (combinedData.news && combinedData.news.length) {
+                prompt += 'Recent headlines (titles):\n' + combinedData.news.slice(0,6).map(a=> '- ' + (a.title || a)).join(' ') + ' ';
+              }
+
+              if (typeof llmEnabled === 'undefined' || llmEnabled) {
+                // Indicate the LLM started: show a temporary 'Thinking...' message in the popup
+                combinedData.llm = 'Thinking...';
+                showInfoPopup(combinedData, latlng);
+                logToConsole(`Started LLM for ${search_query}`, 'info');
+
+                const llmPayload = { prompt: prompt, system_prompt: 'You are a helpful, concise local news analyst. Keep answers short.' };
+                // Log the exact request sent to the LLM into the console for debugging/visibility
+                try { logToConsole('LLM request: ' + JSON.stringify(llmPayload), 'info'); } catch(e) {}
+                fetch('pulse.php?ask_llm=true', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(llmPayload)
+                }).then(r=>r.json()).then(llmResp => {
+                  combinedData.llm = llmResp.response || llmResp.error || 'No LLM response';
+                  // Log the full LLM response (console has wrapping enabled)
+                  try { logToConsole(`LLM response for ${search_query}: ${String(combinedData.llm)}`,'info'); } catch(e) {}
+                  showInfoPopup(combinedData, latlng);
+                }).catch(err => {
+                  combinedData.llm = 'LLM call failed';
+                  logToConsole(`LLM error for ${search_query}: ${err}`, 'error');
+                  showInfoPopup(combinedData, latlng);
+                });
+              } else {
+                combinedData.llm = 'LLM disabled';
+                showInfoPopup(combinedData, latlng);
+              }
+            });
           }).catch(handleFailure);
       }
 
@@ -937,6 +1126,65 @@
         },
       });
       new RefreshControl({ position: 'topleft' }).addTo(map);
+
+      // --- LLM Control (enable/disable and stop) ---
+      const LLMControl = L.Control.extend({
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control llm-control');
+          const link = L.DomUtil.create('a', '', container);
+          link.href = '#';
+          link.title = 'Toggle LLM (On/Off)';
+          link.setAttribute('role', 'button');
+          link.setAttribute('aria-label', 'LLM Toggle');
+          link.textContent = llmEnabled ? 'LLM: On' : 'LLM: Off';
+
+          L.DomEvent.on(link, 'click', L.DomEvent.stop).on(link, 'click', function() {
+            llmEnabled = !llmEnabled;
+            link.textContent = llmEnabled ? 'LLM: On' : 'LLM: Off';
+            if (!llmEnabled) {
+              // Attempt to stop any running LLM process on the server
+              fetch('pulse.php?stop_llm=true').then(r=>r.json()).then(res=>{
+                logToConsole(`stop_llm: ${JSON.stringify(res)}`,'info');
+                alert('LLM disabled. Any running model process was requested to stop.');
+              }).catch(()=>{
+                logToConsole('stop_llm: request failed','error');
+                alert('LLM disabled. Could not contact server to stop any running process.');
+              });
+            }
+          });
+
+          return container;
+        }
+      });
+      new LLMControl({ position: 'topleft' }).addTo(map);
+
+      // Wire up the console controls
+      document.addEventListener('click', function initLLMConsoleHandlers(e){
+        // Ensure we only bind once
+        document.removeEventListener('click', initLLMConsoleHandlers);
+        const toggle = document.getElementById('llm-console-toggle');
+        const clear = document.getElementById('llm-console-clear');
+        const consoleEl = document.getElementById('llm-console');
+        const entries = document.getElementById('llm-console-entries');
+        if (toggle && clear && consoleEl && entries) {
+          toggle.addEventListener('click', function(){
+            if (consoleEl.style.display === 'none' || consoleEl.style.display === '') {
+              consoleEl.style.display = 'block';
+              toggle.textContent = 'Hide';
+            } else {
+              consoleEl.style.display = 'none';
+              toggle.textContent = 'Show';
+            }
+          });
+          clear.addEventListener('click', function(){
+            // Clear entries but leave a small notice so the console area remains visible
+            entries.innerHTML = '<div class="entry info">Console cleared</div>';
+            // Ensure console is visible and scrolled to the bottom
+            consoleEl.style.display = 'block';
+            try { entries.scrollTop = entries.scrollHeight; } catch(e){}
+          });
+        }
+      });
 
       // --- URL State Management & Initial Load ---
       let currentBaseLayerName;

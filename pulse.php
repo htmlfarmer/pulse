@@ -596,6 +596,23 @@ function pulse_log($tag, $message = '') {
         } catch (e) { console.error('logToConsole error', e); }
       }
 
+      // Append streaming text to a console entry while preserving word boundaries between chunks.
+      function appendStreamText(el, chunk) {
+        if (!chunk) return;
+        try {
+          // If chunk starts with newline, append directly
+          if (/^\r?\n/.test(chunk)) { el.textContent += chunk; return; }
+          const existing = el.textContent || '';
+          if (existing && !(/\s$/.test(existing)) && !(/^\s/.test(chunk))) {
+            // Avoid adding space before closing punctuation or after opening punctuation
+            const last = existing.slice(-1);
+            if (!/^[\.,;:!?\)\]\}]/.test(chunk) && !/[([{\/"'`]/.test(last)) {
+              el.textContent += ' ';
+            }
+          }
+        } catch (e) { /* ignore */ }
+        el.textContent += chunk;
+      }
 
       const map = L.map('map').setView([39.8283, -98.5795], 4);
 
@@ -1071,106 +1088,38 @@ function pulse_log($tag, $message = '') {
                 const llmPayload = { prompt: prompt, system_prompt: 'You are a helpful, concise local news analyst. Keep answers short.' };
                 // Log the exact request sent to the LLM into the console for debugging/visibility
                 try { logToConsole('LLM request: ' + JSON.stringify(llmPayload), 'info'); } catch(e) {}
-                // Try asking the local LLM server directly first, then fall back to proxying via pulse.php
-                (function(){
-                  const directUrl = 'http://127.0.0.1:5005/ask';
-                  const proxyUrl = 'pulse.php?ask_llm=true';
-
-                  // Helper to call an endpoint with POST JSON
-                  function postJson(url, payload, timeoutMs) {
-                    const controller = new AbortController();
-                    const signal = controller.signal;
-                    let timeoutId = null;
-                    if (timeoutMs) timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-                    return fetch(url, {
+                // Only attempt direct streaming to local LLM server (no proxy fallback).
+                const directUrl = 'http://127.0.0.1:5005/ask';
+                (async function directStreamOnly(){
+                  try {
+                    const r = await fetch(directUrl + '?stream=1', {
                       method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(payload),
-                      signal
-                    }).finally(() => { if (timeoutId) clearTimeout(timeoutId); });
-                  }
+                      headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+                      body: JSON.stringify(llmPayload)
+                    });
+                    if (!r.ok) throw new Error('Direct LLM server returned ' + r.status);
 
-                  // First try direct server with streaming (may require CORS from llm_server).
-                  (async function(){
-                    try {
-                      const r = await fetch(directUrl + '?stream=1', {
-               method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
-                        body: JSON.stringify(llmPayload)
-             });
+                    const reader = r.body.getReader();
+                    const dec = new TextDecoder();
+                    let buf = '';
+                    let llm_partial = '';
+                    let streamEntry = null;
 
-                      if (!r.ok) throw new Error('Direct LLM server returned ' + r.status);
-
-                      const reader = r.body.getReader();
-                      const dec = new TextDecoder();
-                      let buf = '';
-                      let llm_partial = '';
-                      let streamEntry = null; // Will hold the single div for the stream
-
-                      // Read streaming SSE-style events
-                      while (true) {
-                        const { done, value } = await reader.read();
-                        if (done) break;
-                        buf += dec.decode(value, { stream: true });
-                        const parts = buf.split('\n\n');
-                        buf = parts.pop();
-                        for (const part of parts) {
-                          const lines = part.split('\n');
-                          const dataLines = lines.filter(l => l.startsWith('data:'));
-                          if (dataLines.length) {
-                            const data = dataLines.map(l => l.slice(6)).join('\n');
-                            if (data === '[DONE]') {
-                              // finished
-                              try { logToConsole('LLM stream done for ' + search_query, 'info'); } catch(e){}
-                            } else if (data.startsWith('[ERROR]')) {
-                              try { logToConsole('LLM stream error: ' + data, 'error'); } catch(e){}
-                            } else {
-                              // append partial text to console and popup
-                              const chunkText = (data || '').toString();
-                              if (!chunkText.trim() || chunkText.trim().toLowerCase() === 'assistant') {
-                                // ignore non-content tokens
-                              } else {
-                              if (!streamEntry) {
-                                  // Create a single console entry for the whole stream
-                                const entries = document.getElementById('llm-console-entries');
-                                streamEntry = document.createElement('div');
-                                streamEntry.className = 'entry info stream-entry';
-                                const ts = new Date().toLocaleTimeString();
-                                  streamEntry.textContent = `${ts} - `; // Start with timestamp
-                                entries.appendChild(streamEntry);
-                              }
-                              llm_partial += chunkText;
-                                streamEntry.textContent += chunkText; // Append text to the same entry
-                              combinedData.llm = llm_partial;
-                              showInfoPopup(combinedData, latlng);
-                              // Scroll console
-                              try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
-                            }
-                            }
-                          } else {
-                            // fallback raw append for non-standard chunks
-                            const chunkText = (part || '').toString();
-                            if (chunkText.trim() && chunkText.trim().toLowerCase() !== 'assistant') {
-                            if (!streamEntry) {
-                              const entries = document.getElementById('llm-console-entries');
-                              streamEntry = document.createElement('div');
-                              streamEntry.className = 'entry info stream-entry';
-                              const ts = new Date().toLocaleTimeString();
-                              streamEntry.textContent = `${ts} - `;
-                              entries.appendChild(streamEntry);
-                            }
-                            llm_partial += chunkText;
-                            streamEntry.textContent += chunkText;
-                            combinedData.llm = llm_partial;
-                            showInfoPopup(combinedData, latlng);
-                            try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
-                          }
-                        }
-                      }
-                      }
-
-                      // flush remaining buffer if any
-                      if (buf && buf.trim() && buf.trim().toLowerCase() !== 'assistant') {
+                    while (true) {
+                      const { done, value } = await reader.read();
+                      if (done) break;
+                      buf += dec.decode(value, { stream: true });
+                      const parts = buf.split('\n\n');
+                      buf = parts.pop();
+                      for (const part of parts) {
+                        const lines = part.split('\n');
+                        const dataLines = lines.filter(l => l.startsWith('data:'));
+                        if (dataLines.length) {
+                          let data = dataLines.map(l => l.slice(6)).join('\n');
+                          if (data === '[DONE]') { try { logToConsole('LLM stream done for ' + search_query, 'info'); } catch(e){}; continue; }
+                          if (data.startsWith('[ERROR]')) { try { logToConsole('LLM stream error: ' + data, 'error'); } catch(e){}; continue; }
+                          data = data.replace(/^\s*assistant[:\s]*/i, '').trim();
+                          if (!data) continue;
                           if (!streamEntry) {
                             const entries = document.getElementById('llm-console-entries');
                             streamEntry = document.createElement('div');
@@ -1179,32 +1128,54 @@ function pulse_log($tag, $message = '') {
                             streamEntry.textContent = `${ts} - `;
                             entries.appendChild(streamEntry);
                           }
-                        llm_partial += buf;
-                        streamEntry.textContent += buf;
+                          llm_partial += data;
+                          appendStreamText(streamEntry, data);
                           combinedData.llm = llm_partial;
                           showInfoPopup(combinedData, latlng);
+                          try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                        } else {
+                          let chunkText = (part || '').toString().replace(/^\s*assistant[:\s]*/i, '').trim();
+                          if (!chunkText) continue;
+                          if (!streamEntry) {
+                            const entries = document.getElementById('llm-console-entries');
+                            streamEntry = document.createElement('div');
+                            streamEntry.className = 'entry info stream-entry';
+                            const ts = new Date().toLocaleTimeString();
+                            streamEntry.textContent = `${ts} - `;
+                            entries.appendChild(streamEntry);
+                          }
+                          llm_partial += chunkText;
+                          appendStreamText(streamEntry, chunkText);
+                          combinedData.llm = llm_partial;
+                          showInfoPopup(combinedData, latlng);
+                          try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
                         }
-                      try { logToConsole(`LLM (direct) completed for ${search_query}`, 'info'); } catch(e) {}
-           } catch (err) {
-                      // Direct call failed — fall back to proxying through pulse.php
-                      try { logToConsole('Direct LLM server call failed, falling back to proxy: ' + String(err), 'warn'); } catch(e) {}
-                      postJson(proxyUrl, llmPayload, 120000)
-                        .then(r => {
-                          if (!r.ok) throw new Error('Proxy returned ' + r.status);
-                          return r.json();
-                        })
-                        .then(llmResp => {
-                          combinedData.llm = llmResp.response || llmResp.error || 'No LLM response';
-                          try { logToConsole(`LLM (proxy) response for ${search_query}: ${String(combinedData.llm)}`,'info'); } catch(e) {}
-                          showInfoPopup(combinedData, latlng);
-                        })
-                        .catch(err2 => {
-                          combinedData.llm = 'LLM call failed';
-                          logToConsole(`LLM error for ${search_query}: ${err2}`, 'error');
-                          showInfoPopup(combinedData, latlng);
-                        });
+                      }
                     }
-                  })();
+
+                    if (buf && buf.trim()) {
+                      const tail = buf.replace(/^\s*assistant[:\s]*/i, '').trim();
+                      if (tail) {
+                        if (!streamEntry) {
+                          const entries = document.getElementById('llm-console-entries');
+                          streamEntry = document.createElement('div');
+                          streamEntry.className = 'entry info stream-entry';
+                          const ts = new Date().toLocaleTimeString();
+                          streamEntry.textContent = `${ts} - `;
+                          entries.appendChild(streamEntry);
+                        }
+                        llm_partial += tail;
+                        appendStreamText(streamEntry, tail);
+                        combinedData.llm = llm_partial;
+                        showInfoPopup(combinedData, latlng);
+                      }
+                    }
+                    try { logToConsole(`LLM (direct) completed for ${search_query}`, 'info'); } catch(e) {}
+                  } catch (err) {
+                    try { logToConsole('Direct LLM server call failed: ' + String(err), 'error'); } catch(e) {}
+                    combinedData.llm = 'LLM call failed';
+                    showInfoPopup(combinedData, latlng);
+                  }
                 })();
               } else {
                 combinedData.llm = 'LLM disabled';
@@ -1343,7 +1314,7 @@ function pulse_log($tag, $message = '') {
             url.searchParams.set('lat', center.lat.toFixed(5));
             url.searchParams.set('lon', center.lng.toFixed(5));
             url.searchParams.set('zoom', zoom);
-        url.searchParams.set('base', currentBaseLayerName);
+            url.searchParams.set('base', currentBaseLayerName);
 
             const activeOverlays = [];
             for (const name in overlays) {

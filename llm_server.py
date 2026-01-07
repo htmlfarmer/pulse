@@ -36,7 +36,9 @@ APP_DIR = Path(__file__).resolve().parent
 PID_FILE = APP_DIR / '.llm_server_pid'
 DEFAULT_MODEL = os.environ.get('MODEL_PATH', '/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf')
 SHUTDOWN_TOKEN = os.environ.get('LLM_SHUTDOWN_TOKEN')
-HOST = os.environ.get('LLM_HOST', '127.0.0.1')
+# Default to 0.0.0.0 so the server is reachable from other machines on the LAN;
+# override with LLM_HOST env var if you want to bind to a specific address.
+HOST = os.environ.get('LLM_HOST', '0.0.0.0')
 PORT = int(os.environ.get('LLM_PORT', '5005'))
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -59,6 +61,21 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     response: str
+
+def format_sse(data: str) -> str:
+    """
+    Format a string as one or more SSE 'data:' lines, preserving blank lines.
+    Ensures output ends with the required double-newline separator.
+    """
+    if data is None:
+        return 'data: \n\n'
+    # Split on LF (preserves empty items for consecutive newlines)
+    parts = data.split('\n')
+    out_lines = []
+    for p in parts:
+        # For empty line produce an empty data: to preserve blank line
+        out_lines.append(f"data: {p}")
+    return '\n'.join(out_lines) + '\n\n'
 
 @app.on_event('startup')
 def startup_event():
@@ -130,81 +147,92 @@ def index():
             <pre id="resp" style="white-space:pre-wrap; background:#f6f6f6; padding:12px; border-radius:6px; max-width:800px;"></pre>
 
             <script>
-                document.getElementById('frm').addEventListener('submit', async function(e){
-                    e.preventDefault();
-                    const prompt = document.getElementById('prompt').value;
-                    const system = document.getElementById('system').value || undefined;
-                    const payload = { prompt: prompt };
-                    if (system) payload.system_prompt = system;
-
-                    const respEl = document.getElementById('resp');
-                    respEl.textContent = '';
-
-                    try {
-                        const r = await fetch('/ask?stream=1', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'text/event-stream'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-
-                        const ct = (r.headers.get('content-type') || '').toLowerCase();
-                        if (!r.ok) {
-                            const txt = await r.text();
-                            respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
-                            return;
-                        }
-
-                        // If server returned JSON (no streaming), show it and return
-                        if (ct.includes('application/json')) {
-                            const j = await r.json();
-                            respEl.textContent = JSON.stringify(j, null, 2);
-                            return;
-                        }
-
-                        // Otherwise consume the body as a stream (SSE style framing expected)
-                        const reader = r.body.getReader();
-                        const dec = new TextDecoder();
-                        let buf = '';
-
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            if (done) break;
-                            buf += dec.decode(value, { stream: true });
-                            // SSE events are separated by double-newline
-                            const parts = buf.split('\\n\\n');
-                            buf = parts.pop();
-                            for (const part of parts) {
-                                // each part may contain lines like "data: ..." or "event: done"
-                                const lines = part.split('\\n');
-                                let dataLines = lines.filter(l => l.startsWith('data:'));
-                                if (dataLines.length) {
-                                    const data = dataLines.map(l => l.slice(6)).join('\\n');
-                                    if (data === '[DONE]') {
-                                        // done marker; optionally stop
-                                    } else {
-                                        respEl.textContent += data;
-                                    }
-                                } else {
-                                    // fallback: append raw chunk
-                                    respEl.textContent += part;
-                                }
-                                // keep UI scrolled
-                                respEl.scrollTop = respEl.scrollHeight;
-                            }
-                        }
-
-                        // flush any remaining buffer
-                        if (buf && buf.trim()) {
-                            respEl.textContent += buf;
-                        }
-                    } catch (err) {
-                        respEl.textContent = 'Request failed: ' + String(err);
+                // Append a stream chunk but ensure words don't run together across chunk boundaries.
+                function appendChunk(el, chunk) {
+                  if (!chunk) return;
+                  try {
+                    // If existing text does not end with whitespace and chunk does not start with whitespace, add a space.
+                    if (el.textContent && !(/\s$/.test(el.textContent)) && !(/^\s/.test(chunk))) {
+                      el.textContent += ' ';
                     }
-                });
-            </script>
+                  } catch (e) { /* ignore regex errors in exotic environments */ }
+                  el.textContent += chunk;
+                }
+                document.getElementById('frm').addEventListener('submit', async function(e){
+                     e.preventDefault();
+                     const prompt = document.getElementById('prompt').value;
+                     const system = document.getElementById('system').value || undefined;
+                     const payload = { prompt: prompt };
+                     if (system) payload.system_prompt = system;
+ 
+                     const respEl = document.getElementById('resp');
+                     respEl.textContent = '';
+ 
+                     try {
+                         const r = await fetch('/ask?stream=1', {
+                             method: 'POST',
+                             headers: {
+                                 'Content-Type': 'application/json',
+                                 'Accept': 'text/event-stream'
+                             },
+                             body: JSON.stringify(payload)
+                         });
+ 
+                         const ct = (r.headers.get('content-type') || '').toLowerCase();
+                         if (!r.ok) {
+                             const txt = await r.text();
+                             respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
+                             return;
+                         }
+ 
+                         // If server returned JSON (no streaming), show it and return
+                         if (ct.includes('application/json')) {
+                             const j = await r.json();
+                             respEl.textContent = JSON.stringify(j, null, 2);
+                             return;
+                         }
+ 
+                         // Otherwise consume the body as a stream (SSE style framing expected)
+                         const reader = r.body.getReader();
+                         const dec = new TextDecoder();
+                         let buf = '';
+ 
+                         while (true) {
+                             const { done, value } = await reader.read();
+                             if (done) break;
+                             buf += dec.decode(value, { stream: true });
+                             // SSE events are separated by double-newline
+                             const parts = buf.split('\\n\\n');
+                             buf = parts.pop();
+                             for (const part of parts) {
+                                 // each part may contain lines like "data: ..." or "event: done"
+                                 const lines = part.split('\\n');
+                                 let dataLines = lines.filter(l => l.startsWith('data:'));
+                                 if (dataLines.length) {
+                                     const data = dataLines.map(l => l.slice(6)).join('\\n');
+                                     if (data === '[DONE]') {
+                                         // done marker; optionally stop
+                                     } else {
+                                        appendChunk(respEl, data);
+                                     }
+                                 } else {
+                                     // fallback: append raw chunk
+                                    appendChunk(respEl, part);
+                                 }
+                                 // keep UI scrolled
+                                 respEl.scrollTop = respEl.scrollHeight;
+                             }
+                         }
+ 
+                         // flush any remaining buffer
+                        if (buf && buf.trim()) {
+                            appendChunk(respEl, buf);
+                        }
+                     } catch (err) {
+                         respEl.textContent = 'Request failed: ' + String(err);
+                     }
+                 });
+             </script>
         </body>
         </html>
         '''
@@ -238,7 +266,6 @@ async def ask(request: Request, req: AskRequest):
     accept = request.headers.get('accept', '') or ''
     stream_requested = 'text/event-stream' in accept or request.query_params.get('stream') in ('1', 'true')
 
-    # If the client requested streaming (SSE), attempt to stream token deltas.
     if stream_requested:
         async def event_stream():
             try:

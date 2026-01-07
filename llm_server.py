@@ -18,9 +18,11 @@ import logging
 import threading
 from pathlib import Path
 from typing import Optional, Dict, Any
+import asyncio
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 try:
@@ -37,6 +39,16 @@ PORT = int(os.environ.get('LLM_PORT', '5005'))
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 app = FastAPI()
+
+# Allow browser pages (the Pulse UI) to call the local LLM server directly.
+# For local development this is permissive; for production set more restrictive origins.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class AskRequest(BaseModel):
     prompt: str
@@ -122,9 +134,73 @@ def index():
                     const system = document.getElementById('system').value || undefined;
                     const payload = { prompt: prompt };
                     if (system) payload.system_prompt = system;
-                    const r = await fetch('/ask', { method: 'POST', headers: { 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
-                    const j = await r.json();
-                    document.getElementById('resp').textContent = JSON.stringify(j, null, 2);
+
+                    const respEl = document.getElementById('resp');
+                    respEl.textContent = '';
+
+                    try {
+                        const r = await fetch('/ask?stream=1', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'text/event-stream'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const ct = (r.headers.get('content-type') || '').toLowerCase();
+                        if (!r.ok) {
+                            const txt = await r.text();
+                            respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
+                            return;
+                        }
+
+                        // If server returned JSON (no streaming), show it and return
+                        if (ct.includes('application/json')) {
+                            const j = await r.json();
+                            respEl.textContent = JSON.stringify(j, null, 2);
+                            return;
+                        }
+
+                        // Otherwise consume the body as a stream (SSE style framing expected)
+                        const reader = r.body.getReader();
+                        const dec = new TextDecoder();
+                        let buf = '';
+
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            buf += dec.decode(value, { stream: true });
+                            // SSE events are separated by double-newline
+                            const parts = buf.split('\\n\\n');
+                            buf = parts.pop();
+                            for (const part of parts) {
+                                // each part may contain lines like "data: ..." or "event: done"
+                                const lines = part.split('\\n');
+                                let dataLines = lines.filter(l => l.startsWith('data:'));
+                                if (dataLines.length) {
+                                    const data = dataLines.map(l => l.slice(6)).join('\\n');
+                                    if (data === '[DONE]') {
+                                        // done marker; optionally stop
+                                    } else {
+                                        respEl.textContent += data;
+                                    }
+                                } else {
+                                    // fallback: append raw chunk
+                                    respEl.textContent += part;
+                                }
+                                // keep UI scrolled
+                                respEl.scrollTop = respEl.scrollHeight;
+                            }
+                        }
+
+                        // flush any remaining buffer
+                        if (buf && buf.trim()) {
+                            respEl.textContent += buf;
+                        }
+                    } catch (err) {
+                        respEl.textContent = 'Request failed: ' + String(err);
+                    }
                 });
             </script>
         </body>
@@ -132,8 +208,8 @@ def index():
         '''
         return HTMLResponse(content=html)
 
-@app.post('/ask', response_model=AskResponse)
-def ask(req: AskRequest):
+@app.post('/ask')
+async def ask(request: Request, req: AskRequest):
     llm = getattr(app.state, 'llm', None)
     if not llm:
         raise HTTPException(status_code=500, detail='LLM not loaded')
@@ -157,8 +233,53 @@ def ask(req: AskRequest):
     if req.generation_params:
         gen.update(req.generation_params)
 
+    accept = request.headers.get('accept', '') or ''
+    stream_requested = 'text/event-stream' in accept or request.query_params.get('stream') in ('1', 'true')
+
+    # If the client requested streaming (SSE), attempt to stream token deltas.
+    if stream_requested:
+        async def event_stream():
+            try:
+                # Try using llama_cpp streaming API if available
+                for chunk in llm.create_chat_completion(messages=messages, stream=True, **gen):
+                    try:
+                        # chunk structure may vary; attempt to extract partial text
+                        choice = (chunk.get('choices') or [{}])[0]
+                        # Many stream implementations put partial text under 'delta' or 'message'
+                        delta = choice.get('delta') or choice.get('message') or {}
+                        text_part = ''
+                        if isinstance(delta, dict):
+                            text_part = delta.get('content') or delta.get('role') or ''
+                        else:
+                            text_part = str(delta)
+                        if text_part:
+                            yield f"data: {text_part}\n\n"
+                            await asyncio.sleep(0)
+                    except Exception:
+                        # Non-fatal: continue streaming
+                        continue
+                # Signal done
+                yield "event: done\ndata: [DONE]\n\n"
+            except Exception:
+                # Streaming not supported or failed; fall back to non-streaming chunked emit
+                try:
+                    response = llm.create_chat_completion(messages=messages, **gen)
+                    content = response['choices'][0]['message'].get('content') if response and 'choices' in response else ''
+                    content = (content or '').strip()
+                    # Emit in small chunks so callers can process incrementally
+                    chunk_size = 200
+                    for i in range(0, len(content), chunk_size):
+                        yield f"data: {content[i:i+chunk_size]}\n\n"
+                        await asyncio.sleep(0)
+                    yield "event: done\ndata: [DONE]\n\n"
+                except Exception as e:
+                    logging.exception('LLM generation error (stream fallback): %s', e)
+                    yield f"event: error\ndata: {str(e)}\n\n"
+
+        return StreamingResponse(event_stream(), media_type='text/event-stream')
+
+    # Non-streaming (JSON) behaviour for backwards compatibility
     try:
-        # llama_cpp Llama exposes create_chat_completion similar to the helper script
         response = llm.create_chat_completion(messages=messages, **gen)
         content = response['choices'][0]['message'].get('content')
         text = content.strip() if content else ''

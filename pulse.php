@@ -87,7 +87,7 @@ function pulse_log($tag, $message = '') {
     // Using Wikipedia's geosearch API
     $radius = 10000; // 10km search radius
     $url = "https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord={$lat}|{$lon}&gsradius={$radius}&gslimit=5&format=json";
-    
+
     // Wikipedia API requires a User-Agent header.
     $opts = [ "http" => [ "header" => "User-Agent: Pulse/1.0 (pulse.app; contact@example.com)\r\n" ] ];
     $context = stream_context_create($opts);
@@ -925,6 +925,18 @@ function pulse_log($tag, $message = '') {
             });
             html += '</ul></div>';
           }
+          // Recent headlines section (re-added to main popup)
+          if (data.news && Array.isArray(data.news) && data.news.length) {
+            html += '<div id="recent-headlines" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+            html += '<b>Recent headlines:</b>';
+            html += '<ul class="news-list" style="margin-top:6px;">';
+            data.news.slice(0,6).forEach(a => {
+              const title = a && a.title ? a.title : (typeof a === 'string' ? a : 'Untitled');
+              const link = a && a.link ? a.link : '#';
+              html += `<li style="margin-bottom:0.4em;"><a href="${link}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a></li>`;
+            });
+            html += '</ul></div>';
+          }
         }
         // Show an LLM-produced summary if present
         if (data.llm) {
@@ -956,6 +968,20 @@ function pulse_log($tag, $message = '') {
       function fetchAndShowCityInfo(latlng) {
         const lat = latlng.lat;
         const lon = latlng.lng;
+
+        // Clear the LLM console immediately when a new area is clicked
+        try {
+          const entries = document.getElementById('llm-console-entries');
+          const consoleEl = document.getElementById('llm-console');
+          if (entries) {
+            entries.innerHTML = '<div class="entry info">Console cleared</div>';
+            if (consoleEl) consoleEl.style.display = 'block';
+            try { entries.scrollTop = entries.scrollHeight; } catch(e){}
+          }
+        } catch (e) { /* ignore */ }
+
+        // Update info panel immediately so user sees a response
+        try { infoPanel.update('<i>Updating details...</i>'); } catch(e) {}
 
         if (searchCircle) {
           map.removeLayer(searchCircle);
@@ -1045,20 +1071,56 @@ function pulse_log($tag, $message = '') {
                 const llmPayload = { prompt: prompt, system_prompt: 'You are a helpful, concise local news analyst. Keep answers short.' };
                 // Log the exact request sent to the LLM into the console for debugging/visibility
                 try { logToConsole('LLM request: ' + JSON.stringify(llmPayload), 'info'); } catch(e) {}
-                fetch('pulse.php?ask_llm=true', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify(llmPayload)
-                }).then(r=>r.json()).then(llmResp => {
-                  combinedData.llm = llmResp.response || llmResp.error || 'No LLM response';
-                  // Log the full LLM response (console has wrapping enabled)
-                  try { logToConsole(`LLM response for ${search_query}: ${String(combinedData.llm)}`,'info'); } catch(e) {}
-                  showInfoPopup(combinedData, latlng);
-                }).catch(err => {
-                  combinedData.llm = 'LLM call failed';
-                  logToConsole(`LLM error for ${search_query}: ${err}`, 'error');
-                  showInfoPopup(combinedData, latlng);
-                });
+                // Try asking the local LLM server directly first, then fall back to proxying via pulse.php
+                (function(){
+                  const directUrl = 'http://127.0.0.1:5005/ask';
+                  const proxyUrl = 'pulse.php?ask_llm=true';
+
+                  // Helper to call an endpoint with POST JSON
+                  function postJson(url, payload, timeoutMs) {
+                    const controller = new AbortController();
+                    const signal = controller.signal;
+                    let timeoutId = null;
+                    if (timeoutMs) timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+                    return fetch(url, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(payload),
+                      signal
+                    }).finally(() => { if (timeoutId) clearTimeout(timeoutId); });
+                  }
+
+                  // First try direct server (may require CORS from llm_server). Use long timeout for model generation.
+                  postJson(directUrl, llmPayload, 120000)
+                    .then(r => {
+                      if (!r.ok) throw new Error('Direct LLM server returned ' + r.status);
+                      return r.json();
+                    })
+                    .then(llmResp => {
+                      combinedData.llm = llmResp.response || llmResp.error || 'No LLM response';
+                      try { logToConsole(`LLM (direct) response for ${search_query}: ${String(combinedData.llm)}`,'info'); } catch(e) {}
+                      showInfoPopup(combinedData, latlng);
+                    })
+                    .catch(err => {
+                      // Direct call failed — fall back to proxying through pulse.php
+                      try { logToConsole('Direct LLM server call failed, falling back to proxy: ' + String(err), 'warn'); } catch(e) {}
+                      postJson(proxyUrl, llmPayload, 120000)
+                        .then(r => {
+                          if (!r.ok) throw new Error('Proxy returned ' + r.status);
+                          return r.json();
+                        })
+                        .then(llmResp => {
+                          combinedData.llm = llmResp.response || llmResp.error || 'No LLM response';
+                          try { logToConsole(`LLM (proxy) response for ${search_query}: ${String(combinedData.llm)}`,'info'); } catch(e) {}
+                          showInfoPopup(combinedData, latlng);
+                        })
+                        .catch(err2 => {
+                          combinedData.llm = 'LLM call failed';
+                          logToConsole(`LLM error for ${search_query}: ${err2}`, 'error');
+                          showInfoPopup(combinedData, latlng);
+                        });
+                    });
+                })();
               } else {
                 combinedData.llm = 'LLM disabled';
                 showInfoPopup(combinedData, latlng);

@@ -1004,7 +1004,7 @@ function pulse_log($tag, $message = '') {
           }
           infoPanel.update('<i>Error looking up location information. Please try again.</i>');
         };
-
+ 
         // Use the Python script for city lookup (requires find_cities.py on server)
         // Note: The PHP endpoint for this is ?lat=...&lon=...&radius=...
         // The PHP code provided in the prompt handles this via shell_exec('python3 find_cities.py ...')
@@ -1094,10 +1094,10 @@ function pulse_log($tag, $message = '') {
                   (async function(){
                     try {
                       const r = await fetch(directUrl + '?stream=1', {
-                        method: 'POST',
+               method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
                         body: JSON.stringify(llmPayload)
-                      });
+             });
 
                       if (!r.ok) throw new Error('Direct LLM server returned ' + r.status);
 
@@ -1130,62 +1130,62 @@ function pulse_log($tag, $message = '') {
                               if (!chunkText.trim() || chunkText.trim().toLowerCase() === 'assistant') {
                                 // ignore non-content tokens
                               } else {
-                                if (!streamEntry) {
+                              if (!streamEntry) {
                                   // Create a single console entry for the whole stream
-                                  const entries = document.getElementById('llm-console-entries');
-                                  streamEntry = document.createElement('div');
-                                  streamEntry.className = 'entry info stream-entry';
-                                  const ts = new Date().toLocaleTimeString();
+                                const entries = document.getElementById('llm-console-entries');
+                                streamEntry = document.createElement('div');
+                                streamEntry.className = 'entry info stream-entry';
+                                const ts = new Date().toLocaleTimeString();
                                   streamEntry.textContent = `${ts} - `; // Start with timestamp
-                                  entries.appendChild(streamEntry);
-                                }
-                                llm_partial += chunkText;
-                                streamEntry.textContent += chunkText; // Append text to the same entry
-                                combinedData.llm = llm_partial;
-                                showInfoPopup(combinedData, latlng);
-                                // Scroll console
-                                try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                                entries.appendChild(streamEntry);
                               }
+                              llm_partial += chunkText;
+                                streamEntry.textContent += chunkText; // Append text to the same entry
+                              combinedData.llm = llm_partial;
+                              showInfoPopup(combinedData, latlng);
+                              // Scroll console
+                              try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                            }
                             }
                           } else {
                             // fallback raw append for non-standard chunks
                             const chunkText = (part || '').toString();
                             if (chunkText.trim() && chunkText.trim().toLowerCase() !== 'assistant') {
-                                if (!streamEntry) {
-                                  const entries = document.getElementById('llm-console-entries');
-                                  streamEntry = document.createElement('div');
-                                  streamEntry.className = 'entry info stream-entry';
-                                  const ts = new Date().toLocaleTimeString();
-                                  streamEntry.textContent = `${ts} - `;
-                                  entries.appendChild(streamEntry);
-                                }
-                                llm_partial += chunkText;
-                                streamEntry.textContent += chunkText;
-                                combinedData.llm = llm_partial;
-                                showInfoPopup(combinedData, latlng);
-                                try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                            if (!streamEntry) {
+                              const entries = document.getElementById('llm-console-entries');
+                              streamEntry = document.createElement('div');
+                              streamEntry.className = 'entry info stream-entry';
+                              const ts = new Date().toLocaleTimeString();
+                              streamEntry.textContent = `${ts} - `;
+                              entries.appendChild(streamEntry);
                             }
+                            llm_partial += chunkText;
+                            streamEntry.textContent += chunkText;
+                            combinedData.llm = llm_partial;
+                            showInfoPopup(combinedData, latlng);
+                            try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
                           }
                         }
+                      }
                       }
 
                       // flush remaining buffer if any
                       if (buf && buf.trim() && buf.trim().toLowerCase() !== 'assistant') {
-                        if (!streamEntry) {
-                          const entries = document.getElementById('llm-console-entries');
-                          streamEntry = document.createElement('div');
-                          streamEntry.className = 'entry info stream-entry';
-                          const ts = new Date().toLocaleTimeString();
-                          streamEntry.textContent = `${ts} - `;
-                          entries.appendChild(streamEntry);
-                        }
+                          if (!streamEntry) {
+                            const entries = document.getElementById('llm-console-entries');
+                            streamEntry = document.createElement('div');
+                            streamEntry.className = 'entry info stream-entry';
+                            const ts = new Date().toLocaleTimeString();
+                            streamEntry.textContent = `${ts} - `;
+                            entries.appendChild(streamEntry);
+                          }
                         llm_partial += buf;
                         streamEntry.textContent += buf;
-                        combinedData.llm = llm_partial;
-                        showInfoPopup(combinedData, latlng);
-                      }
+                          combinedData.llm = llm_partial;
+                          showInfoPopup(combinedData, latlng);
+                        }
                       try { logToConsole(`LLM (direct) completed for ${search_query}`, 'info'); } catch(e) {}
-                    } catch (err) {
+           } catch (err) {
                       // Direct call failed — fall back to proxying through pulse.php
                       try { logToConsole('Direct LLM server call failed, falling back to proxy: ' + String(err), 'warn'); } catch(e) {}
                       postJson(proxyUrl, llmPayload, 120000)
@@ -1209,8 +1209,8 @@ function pulse_log($tag, $message = '') {
               } else {
                 combinedData.llm = 'LLM disabled';
                 showInfoPopup(combinedData, latlng);
-              }
-            });
+           }
+         });
           }).catch(handleFailure);
       }
 
@@ -1336,20 +1336,20 @@ function pulse_log($tag, $message = '') {
       // --- URL State Management & Initial Load ---
       let currentBaseLayerName;
       
-      function updateUrl() {
-        const center = map.getCenter();
-        const zoom = map.getZoom();
-        const url = new URL(window.location);
-        url.searchParams.set('lat', center.lat.toFixed(5));
-        url.searchParams.set('lon', center.lng.toFixed(5));
-        url.searchParams.set('zoom', zoom);
+        function updateUrl() {
+            const center = map.getCenter();
+            const zoom = map.getZoom();
+            const url = new URL(window.location);
+            url.searchParams.set('lat', center.lat.toFixed(5));
+            url.searchParams.set('lon', center.lng.toFixed(5));
+            url.searchParams.set('zoom', zoom);
         url.searchParams.set('base', currentBaseLayerName);
 
-        const activeOverlays = [];
-        for (const name in overlays) {
+            const activeOverlays = [];
+            for (const name in overlays) {
           if (map.hasLayer(overlays[name])) {
             activeOverlays.push(name);
-          }
+            }
         }
 
         if (activeOverlays.length > 0) {
@@ -1358,17 +1358,17 @@ function pulse_log($tag, $message = '') {
           url.searchParams.delete('overlays');
         }
 
-        window.history.replaceState({}, '', url);
-      }
+            window.history.replaceState({}, '', url);
+        }
 
-      map.on('moveend', updateUrl);
-      map.on('overlayadd', updateUrl);
-      map.on('overlayremove', updateUrl);
+        map.on('moveend', updateUrl);
+        map.on('overlayadd', updateUrl);
+        map.on('overlayremove', updateUrl);
       map.on('baselayerchange', function(e) {
         setTheme(e.name);
-        currentBaseLayerName = e.name;
-        updateUrl();
-      });
+          currentBaseLayerName = e.name;
+          updateUrl();
+        });
 
       const urlParams = new URLSearchParams(window.location.search);
       const urlLat = urlParams.get('lat');
@@ -1381,7 +1381,7 @@ function pulse_log($tag, $message = '') {
       if (urlLat && urlLon) {
         const zoom = urlZoom ? parseInt(urlZoom, 10) : map.getZoom();
         map.setView([parseFloat(urlLat), parseFloat(urlLon)], zoom);
-      }
+            }
 
       // Set base layer
       const initialBaseLayerName = (urlBase && baseLayers[urlBase]) ? urlBase : 'Satellite';
@@ -1401,12 +1401,12 @@ function pulse_log($tag, $message = '') {
       });
 
       // Load cities into the existing citiesLayer
-      fetch('pulse.php?cities=all')
-        .then(r => r.json())
-        .then(cities => {
-          if (!Array.isArray(cities)) return;
-          cities.forEach(city => {
-            try {
+        fetch('pulse.php?cities=all')
+          .then(r => r.json())
+          .then(cities => {
+            if (!Array.isArray(cities)) return;
+            cities.forEach(city => {
+              try {
               const marker = L.circleMarker([city.lat, city.lng], {
                 radius: 3,
                 fillColor: "#ff7800",
@@ -1421,8 +1421,8 @@ function pulse_log($tag, $message = '') {
               });
               marker.addTo(citiesLayer);
             } catch (e) { console.error('City marker error', e); }
-          });
-        })
+            });
+          })
         .catch(e => console.error('Failed to load cities:', e));
     </script>
   </body>

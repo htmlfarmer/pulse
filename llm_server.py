@@ -12,6 +12,7 @@ Or run via: uvicorn llm_server:app --host 127.0.0.1 --port 5005
 This server intentionally does NOT keep conversation state between requests: each /ask call is independent.
 """
 
+import html
 import os
 import json
 import logging
@@ -19,9 +20,10 @@ import threading
 from pathlib import Path
 from typing import Optional, Dict, Any
 import asyncio
+import re
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -243,18 +245,22 @@ async def ask(request: Request, req: AskRequest):
                 # Try using llama_cpp streaming API if available
                 for chunk in llm.create_chat_completion(messages=messages, stream=True, **gen):
                     try:
-                        # chunk structure may vary; attempt to extract partial text
                         choice = (chunk.get('choices') or [{}])[0]
-                        # Many stream implementations put partial text under 'delta' or 'message'
+                        # Only emit actual content pieces. Some models emit a 'role' token first
+                        # (e.g. "assistant") in the stream; ignore that and wait for 'content'.
                         delta = choice.get('delta') or choice.get('message') or {}
                         text_part = ''
                         if isinstance(delta, dict):
-                            text_part = delta.get('content') or delta.get('role') or ''
+                            # prefer 'content' — do not emit 'role'
+                            text_part = delta.get('content') or ''
                         else:
                             text_part = str(delta)
+                        # strip any leading "assistant" artifact and skip empty results
                         if text_part:
-                            yield f"data: {text_part}\n\n"
-                            await asyncio.sleep(0)
+                            text_part = re.sub(r'^\s*assistant[:\s]*', '', text_part, flags=re.I)
+                            if text_part.strip():
+                                yield f"data: {text_part}\n\n"
+                                await asyncio.sleep(0)
                     except Exception:
                         # Non-fatal: continue streaming
                         continue
@@ -265,7 +271,7 @@ async def ask(request: Request, req: AskRequest):
                 try:
                     response = llm.create_chat_completion(messages=messages, **gen)
                     content = response['choices'][0]['message'].get('content') if response and 'choices' in response else ''
-                    content = (content or '').strip()
+                    content = (content or '').strip();
                     # Emit in small chunks so callers can process incrementally
                     chunk_size = 200
                     for i in range(0, len(content), chunk_size):

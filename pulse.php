@@ -56,7 +56,7 @@ function pulse_log($tag, $message = '') {
     $url = "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/{$date}/GoogleMapsCompatible_Level9/{$z}/{$y}/{$x}.jpg";
 
     $ch = curl_init();
-    
+
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HEADER, false);
@@ -1090,18 +1090,102 @@ function pulse_log($tag, $message = '') {
                     }).finally(() => { if (timeoutId) clearTimeout(timeoutId); });
                   }
 
-                  // First try direct server (may require CORS from llm_server). Use long timeout for model generation.
-                  postJson(directUrl, llmPayload, 120000)
-                    .then(r => {
+                  // First try direct server with streaming (may require CORS from llm_server).
+                  (async function(){
+                    try {
+                      const r = await fetch(directUrl + '?stream=1', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+                        body: JSON.stringify(llmPayload)
+                      });
+
                       if (!r.ok) throw new Error('Direct LLM server returned ' + r.status);
-                      return r.json();
-                    })
-                    .then(llmResp => {
-                      combinedData.llm = llmResp.response || llmResp.error || 'No LLM response';
-                      try { logToConsole(`LLM (direct) response for ${search_query}: ${String(combinedData.llm)}`,'info'); } catch(e) {}
-                      showInfoPopup(combinedData, latlng);
-                    })
-                    .catch(err => {
+
+                      const reader = r.body.getReader();
+                      const dec = new TextDecoder();
+                      let buf = '';
+                      let llm_partial = '';
+                      let streamEntry = null; // Will hold the single div for the stream
+
+                      // Read streaming SSE-style events
+                      while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        buf += dec.decode(value, { stream: true });
+                        const parts = buf.split('\n\n');
+                        buf = parts.pop();
+                        for (const part of parts) {
+                          const lines = part.split('\n');
+                          const dataLines = lines.filter(l => l.startsWith('data:'));
+                          if (dataLines.length) {
+                            const data = dataLines.map(l => l.slice(6)).join('\n');
+                            if (data === '[DONE]') {
+                              // finished
+                              try { logToConsole('LLM stream done for ' + search_query, 'info'); } catch(e){}
+                            } else if (data.startsWith('[ERROR]')) {
+                              try { logToConsole('LLM stream error: ' + data, 'error'); } catch(e){}
+                            } else {
+                              // append partial text to console and popup
+                              const chunkText = (data || '').toString();
+                              if (!chunkText.trim() || chunkText.trim().toLowerCase() === 'assistant') {
+                                // ignore non-content tokens
+                              } else {
+                                if (!streamEntry) {
+                                  // Create a single console entry for the whole stream
+                                  const entries = document.getElementById('llm-console-entries');
+                                  streamEntry = document.createElement('div');
+                                  streamEntry.className = 'entry info stream-entry';
+                                  const ts = new Date().toLocaleTimeString();
+                                  streamEntry.textContent = `${ts} - `; // Start with timestamp
+                                  entries.appendChild(streamEntry);
+                                }
+                                llm_partial += chunkText;
+                                streamEntry.textContent += chunkText; // Append text to the same entry
+                                combinedData.llm = llm_partial;
+                                showInfoPopup(combinedData, latlng);
+                                // Scroll console
+                                try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                              }
+                            }
+                          } else {
+                            // fallback raw append for non-standard chunks
+                            const chunkText = (part || '').toString();
+                            if (chunkText.trim() && chunkText.trim().toLowerCase() !== 'assistant') {
+                                if (!streamEntry) {
+                                  const entries = document.getElementById('llm-console-entries');
+                                  streamEntry = document.createElement('div');
+                                  streamEntry.className = 'entry info stream-entry';
+                                  const ts = new Date().toLocaleTimeString();
+                                  streamEntry.textContent = `${ts} - `;
+                                  entries.appendChild(streamEntry);
+                                }
+                                llm_partial += chunkText;
+                                streamEntry.textContent += chunkText;
+                                combinedData.llm = llm_partial;
+                                showInfoPopup(combinedData, latlng);
+                                try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                            }
+                          }
+                        }
+                      }
+
+                      // flush remaining buffer if any
+                      if (buf && buf.trim() && buf.trim().toLowerCase() !== 'assistant') {
+                        if (!streamEntry) {
+                          const entries = document.getElementById('llm-console-entries');
+                          streamEntry = document.createElement('div');
+                          streamEntry.className = 'entry info stream-entry';
+                          const ts = new Date().toLocaleTimeString();
+                          streamEntry.textContent = `${ts} - `;
+                          entries.appendChild(streamEntry);
+                        }
+                        llm_partial += buf;
+                        streamEntry.textContent += buf;
+                        combinedData.llm = llm_partial;
+                        showInfoPopup(combinedData, latlng);
+                      }
+                      try { logToConsole(`LLM (direct) completed for ${search_query}`, 'info'); } catch(e) {}
+                    } catch (err) {
                       // Direct call failed — fall back to proxying through pulse.php
                       try { logToConsole('Direct LLM server call failed, falling back to proxy: ' + String(err), 'warn'); } catch(e) {}
                       postJson(proxyUrl, llmPayload, 120000)
@@ -1119,7 +1203,8 @@ function pulse_log($tag, $message = '') {
                           logToConsole(`LLM error for ${search_query}: ${err2}`, 'error');
                           showInfoPopup(combinedData, latlng);
                         });
-                    });
+                    }
+                  })();
                 })();
               } else {
                 combinedData.llm = 'LLM disabled';

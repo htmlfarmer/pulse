@@ -133,9 +133,9 @@ def index():
         html = '''
         <!doctype html>
         <html>
-        <head><meta charset="utf-8"><title>LLM Server Test</title></head>
+        <head><meta charset="utf-8"><title>LLM Server</title></head>
         <body style="font-family: Arial, Helvetica, sans-serif; margin:20px;">
-            <h2>LLM Server Test</h2>
+            <h2>LLM Server</h2>
             <form id="frm">
                 <label>System prompt (optional)</label><br>
                 <input id="system" style="width:100%" placeholder="System prompt"><br><br>
@@ -145,6 +145,16 @@ def index():
             </form>
             <h3>Response</h3>
             <pre id="resp" style="white-space:pre-wrap; background:#f6f6f6; padding:12px; border-radius:6px; max-width:800px;"></pre>
+
+            <hr>
+            <h3>News Q&A</h3>
+            <p style="margin-top:0;"><small>Ask a concise question about recent news items — response streams below.</small></p>
+            <form id="news-qa">
+                <textarea id="qa_prompt" rows="3" style="width:100%" placeholder="Ask about the latest news in this area..."></textarea><br>
+                <button type="submit">Ask News</button>
+            </form>
+            <h4>Answer</h4>
+            <pre id="qa_resp" style="white-space:pre-wrap; background:#fff9e6; padding:12px; border-radius:6px; max-width:800px;"></pre>
 
             <script>
                 // Append a stream chunk but ensure words don't run together across chunk boundaries.
@@ -232,11 +242,59 @@ def index():
                          respEl.textContent = 'Request failed: ' + String(err);
                      }
                  });
-             </script>
-        </body>
-        </html>
-        '''
-        return HTMLResponse(content=html)
+ 
+                // News Q&A handler: sends the prompt with a concise news-analyst system prompt and streams into qa_resp
+                document.getElementById('news-qa').addEventListener('submit', async function(e){
+                     e.preventDefault();
+                     const prompt = document.getElementById('qa_prompt').value;
+                     if (!prompt || !prompt.trim()) return;
+                     const payload = { prompt: prompt, system_prompt: 'You are a concise news analyst. Answer briefly and focus on recent relevant events.' };
+ 
+                     const respEl = document.getElementById('qa_resp');
+                     respEl.textContent = '';
+                     try {
+                         const r = await fetch('/ask?stream=1', {
+                             method: 'POST',
+                             headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+                             body: JSON.stringify(payload)
+                         });
+                         if (!r.ok) {
+                             const txt = await r.text();
+                             respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
+                             return;
+                         }
+                         const reader = r.body.getReader();
+                         const dec = new TextDecoder();
+                         let buf = '';
+                         while (true) {
+                             const { done, value } = await reader.read();
+                             if (done) break;
+                             buf += dec.decode(value, { stream: true });
+                             const parts = buf.split('\\n\\n');
+                             buf = parts.pop();
+                             for (const part of parts) {
+                                 const lines = part.split('\\n');
+                                 let dataLines = lines.filter(l => l.startsWith('data:'));
+                                 if (dataLines.length) {
+                                     const data = dataLines.map(l => l.slice(6)).join('\\n');
+                                     if (data === '[DONE]') continue;
+                                     appendChunk(respEl, data);
+                                 } else {
+                                     appendChunk(respEl, part);
+                                 }
+                                 respEl.scrollTop = respEl.scrollHeight;
+                             }
+                         }
+                         if (buf && buf.trim()) appendChunk(respEl, buf);
+                     } catch (err) {
+                         respEl.textContent = 'Request failed: ' + String(err);
+                     }
+                });
+              </script>
+         </body>
+         </html>
+         '''
+         return HTMLResponse(content=html)
 
 @app.post('/ask')
 async def ask(request: Request, req: AskRequest):

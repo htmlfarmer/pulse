@@ -554,6 +554,14 @@ function pulse_log($tag, $message = '') {
         <button id="llm-console-clear" class="btn btn-sm btn-light">Clear</button>
       </div>
       <div id="llm-console-entries"></div>
+
+      <!-- Inline QA input for ad-hoc questions about the news -->
+      <div style="margin-top:8px;">
+        <textarea id="llm-query" rows="2" placeholder="Ask the LLM about recent news..." style="width:100%;resize:vertical;margin-bottom:6px;"></textarea>
+        <div style="text-align:right;">
+          <button id="llm-query-submit" class="btn btn-sm btn-primary">Ask LLM</button>
+        </div>
+      </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -614,6 +622,17 @@ function pulse_log($tag, $message = '') {
         el.textContent += chunk;
       }
 
+      // Safely append text into a single string, inserting a space between chunks when needed.
+      function appendWithSpace(existing, add) {
+        if (!add) return existing || '';
+        if (!existing) return add;
+        // if existing ends with whitespace or add starts with whitespace/punct, just concatenate
+        if (/\s$/.test(existing) || /^\s/.test(add)) return existing + add;
+        // don't insert space if add begins with closing punctuation or existing ends with opening punctuation
+        if (/^[\.,;:!?\)\]\}]/.test(add) || /[([{\/"'`]$/.test(existing)) return existing + add;
+        return existing + ' ' + add;
+      }
+
       const map = L.map('map').setView([39.8283, -98.5795], 4);
 
       // Re-enable browser context menu (for inspector) on the map.
@@ -665,7 +684,7 @@ function pulse_log($tag, $message = '') {
       const InfoControl = L.Control.extend({
         onAdd: function(map) {
             this._div = L.DomUtil.create('div', 'info-panel');
-            this._div.innerHTML = '<span class="info-panel-close">&times;</span><div class="info-panel-content"></div>';
+            this._div.innerHTML = '<div class="info-panel-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div class="info-panel-title" style="font-weight:600;">Info Panel</div><span class="info-panel-close" style="cursor:pointer;">&times;</span></div><div class="info-panel-content"></div>';
             
             const closeButton = this._div.querySelector('.info-panel-close');
             L.DomEvent.on(closeButton, 'click', (e) => {
@@ -724,67 +743,91 @@ function pulse_log($tag, $message = '') {
           currentEventsLayer.removeLayer(currentEventsGeoJsonLayer);
           currentEventsGeoJsonLayer = null;
         }
-        fetch('pulse.php?current_events=true')
-          .then(r => r.json())
-          .then(data => {
-            if (data && data.features) {
-              const eventIcon = L.AwesomeMarkers.icon({
-                  icon: 'globe',
-                  markerColor: 'cadetblue',
-                  prefix: 'fa'
-              });
-              currentEventsGeoJsonLayer = L.geoJSON(data, {
-                pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
-                onEachFeature: (feature, layer) => {
-                  const p = feature.properties;
-                  let llmSentence = p.llm_sentence ? escapeHtml(p.llm_sentence) : '';
-                  let eventText = p.event_text ? escapeHtml(p.event_text) : '';
-                  let eventLinksHtml = '';
-                  if (Array.isArray(p.event_links) && p.event_links.length > 0) {
-                    eventLinksHtml = `
-                      <div style="margin-top:6px;">
-                        <b>Related sources:</b>
-                        <ul style="margin:0;padding-left:18px;">
-                          ${p.event_links.map(link => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join('')}
-                        </ul>
-                      </div>
-                    `;
-                  }
-                  let popupHtml = `
-                    <strong><a href="${p.url}" target="_blank">${p.title}</a></strong><br>
-                    <div class="event-text">
-                      <em>${eventText}</em>
-                    </div>
-                    ${eventLinksHtml}
-                    <hr>
-                    <div class="event-headlines">
-                      <b>Top headlines:</b>
-                      <ul class="news-list">
-                        ${Array.isArray(p.headlines_urls) ? p.headlines_urls.map(h => `<li><a href="${h.url}" target="_blank">${h.title}</a></li>`).join('') : ''}
+        (async () => {
+          try {
+            const r = await fetch('pulse.php?current_events=true');
+            if (!r.ok) {
+              try { logToConsole('Failed to fetch current events: HTTP ' + r.status, 'warn'); } catch(e){}
+              return;
+            }
+            const txt = await r.text();
+            if (!txt || !txt.trim()) {
+              try { logToConsole('No current_events data found (empty file).', 'info'); } catch(e){}
+              return;
+            }
+            let data;
+            try {
+              data = JSON.parse(txt);
+            } catch (err) {
+              // don't throw — just log and return so UI remains usable
+              const snippet = txt.slice(0, 500);
+              console.error('Invalid JSON from current_events:', err, snippet);
+              try { logToConsole('Invalid JSON in current_events.geojson (see console).', 'error'); } catch(e){}
+              return;
+            }
+            if (!data || !Array.isArray(data.features)) {
+              try { logToConsole('current_events payload missing features array.', 'warn'); } catch(e){}
+              return;
+            }
+
+            const eventIcon = L.AwesomeMarkers.icon({
+                icon: 'globe',
+                markerColor: 'cadetblue',
+                prefix: 'fa'
+            });
+            currentEventsGeoJsonLayer = L.geoJSON(data, {
+              pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
+              onEachFeature: (feature, layer) => {
+                const p = feature.properties || {};
+                let llmSentence = p.llm_sentence ? escapeHtml(p.llm_sentence) : '';
+                let eventText = p.event_text ? escapeHtml(p.event_text) : '';
+                let eventLinksHtml = '';
+                if (Array.isArray(p.event_links) && p.event_links.length > 0) {
+                  eventLinksHtml = `
+                    <div style="margin-top:6px;">
+                      <b>Related sources:</b>
+                      <ul style="margin:0;padding-left:18px;">
+                        ${p.event_links.map(link => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join('')}
                       </ul>
                     </div>
-                    <hr>
-                    <div style="font-size:90%;color:#888;">
-                      <b>LLM evaluated sentence for geolocation:</b><br>
-                      <span>${llmSentence}</span>
-                    </div>
                   `;
-                  layer.bindPopup(popupHtml);
-                  layer.on('click', function(e) {
-                    layer.openPopup();
-                  });
                 }
-              });
-              currentEventsGeoJsonLayer.addTo(currentEventsLayer);
-              currentEventsLoaded = true;
-            }
-          })
-          .catch(e => {
+                let popupHtml = `
+                  <strong><a href="${p.url}" target="_blank">${p.title}</a></strong><br>
+                  <div class="event-text">
+                    <em>${eventText}</em>
+                  </div>
+                  ${eventLinksHtml}
+                  <hr>
+                  <div class="event-headlines">
+                    <b>Top headlines:</b>
+                    <ul class="news-list">
+                      ${Array.isArray(p.headlines_urls) ? p.headlines_urls.map(h => `<li><a href="${h.url}" target="_blank">${h.title}</a></li>`).join('') : ''}
+                    </ul>
+                  </div>
+                  <hr>
+                  <div style="font-size:90%;color:#888;">
+                    <b>LLM evaluated sentence for geolocation:</b><br>
+                    <span>${llmSentence}</span>
+                  </div>
+                `;
+                layer.bindPopup(popupHtml);
+                layer.on('click', function(e) {
+                  layer.openPopup();
+                });
+              }
+            });
+            currentEventsGeoJsonLayer.addTo(currentEventsLayer);
+            currentEventsLoaded = true;
+            try { logToConsole('Loaded current events (' + data.features.length + ' features)', 'info'); } catch(e){}
+          } catch (e) {
             console.error("Error fetching current events:", e);
-            // Show a user-friendly error if desired
-            alert("Failed to load current events data.");
-          });
-      }
+            try { logToConsole('Error loading current events: ' + String(e), 'error'); } catch(ex){}
+            // optional: show a non-blocking notice
+            // alert("Failed to load current events data.");
+          }
+        })();
+       }
 
       // Remove pins when overlay is removed
       map.on('overlayremove', function(e) {
@@ -879,37 +922,95 @@ function pulse_log($tag, $message = '') {
         fetch('pulse.php?live_news=true&since=' + lastNewsTimestamp)
           .then(response => response.json())
           .then(data => {
-            if (data && data.features) {
-              const newsIcon = L.AwesomeMarkers.icon({
-                  icon: 'info',
-                  markerColor: 'orange',
-                  prefix: 'fa'
+            if (!data || !data.features) return;
+            const newsIcon = L.AwesomeMarkers.icon({
+                icon: 'info',
+                markerColor: 'orange',
+                prefix: 'fa'
+            });
+
+            // Process items one-by-one so pins "drop" live and console is updated per story
+            let maxTs = lastNewsTimestamp;
+            data.features.forEach(item => {
+              const p = item.properties || {};
+              const ts = p.published_ts || 0;
+              if (ts <= lastNewsTimestamp) return; // skip already-seen
+
+              // compute latlng from GeoJSON geometry if available
+              let latlng = null;
+              try {
+                if (item.geometry && Array.isArray(item.geometry.coordinates)) {
+                  latlng = L.latLng(item.geometry.coordinates[1], item.geometry.coordinates[0]);
+                } else if (p.lat && p.lon) {
+                  latlng = L.latLng(p.lat, p.lon);
+                } else {
+                  latlng = map.getCenter();
+                }
+              } catch (e) { latlng = map.getCenter(); }
+
+              const marker = L.marker(latlng, { icon: newsIcon });
+              const title = p.title || 'Untitled';
+              const summary = p.summary || '';
+              const source = p.source || '';
+              const url = p.url || (p.link || '#');
+              const popupHtml = `<strong>${escapeHtml(title)}</strong><br><em>${escapeHtml(summary)}</em><br><small>Source: ${escapeHtml(source)}</small><br><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Read</a>`;
+
+              marker.bindPopup(popupHtml);
+
+              // clicking a live-news marker shows details in the Info Panel (and keeps popups)
+              marker.on('click', function(e) {
+                // Prepare a minimal combinedData expected by showInfoPopup
+                const combinedData = {
+                  nearest_city: null,
+                  other_cities: [],
+                  wiki_topics: [],
+                  news: [{ title: title, link: url, summary: summary, source: source }],
+                  wikidata: {}
+                };
+                showInfoPopup(combinedData, e.latlng || latlng);
               });
-              const newItems = data.features.filter(item => item.properties.published_ts > lastNewsTimestamp);
-              newItems.forEach(item => {
-                const marker = L.geoJSON(item, {
-                  pointToLayer: (feature, latlng) => L.marker(latlng, { icon: newsIcon }),
-                  onEachFeature: (feature, layer) => {
-                    const p = feature.properties;
-                    let description = `<strong>${escapeHtml(p.title)}</strong>`;
-                    description += `<br><em>${escapeHtml(p.summary)}</em>`;
-                    description += `<br><small>Source: ${escapeHtml(p.source)}</small>`;
-                    layer.bindPopup(description);
-                  }
-                });
-                liveNewsLayer.addLayer(marker);
-              });
-              if (newItems.length > 0) {
-                lastNewsTimestamp = newItems[newItems.length - 1].properties.published_ts;
-              }
-            }
+
+              // Add to layer (live drop)
+              liveNewsLayer.addLayer(marker);
+
+              // Update AI console with concise story entry
+              try { logToConsole(`${title} — ${source} (${new Date((p.published_ts||0)*1000).toLocaleString()})`, 'info'); } catch(e){}
+
+              if (ts > maxTs) maxTs = ts;
+            });
+
+            if (maxTs > lastNewsTimestamp) lastNewsTimestamp = maxTs;
           })
-          .catch(e => console.error("Error fetching live news:", e));
-      }
+          .catch(e => {
+            console.error("Error fetching live news:", e);
+            try { logToConsole('Error fetching live news: ' + String(e), 'error'); } catch(e){}
+          });
+       }
 
       // --- City Info (Restored Logic) ---
       function showInfoPopup(data, latlng) {
+        // If the info panel already has the LLM summary element, and we only have an updated LLM text,
+        // update that element in-place so we don't re-render anchors (which breaks clicks).
+        if (data && data.llm) {
+          const existingSummary = document.getElementById('llm-summary-content');
+          if (existingSummary) {
+            // update textContent to preserve text and spacing without replacing surrounding DOM
+            existingSummary.textContent = data.llm;
+            return;
+          }
+        }
         let html = 'No information found for this area.';
+
+        // Format coordinates for display and include a Google Satellite link above the numbers
+        const latStr = (latlng && latlng.lat != null) ? latlng.lat.toFixed(5) : '';
+        const lonStr = (latlng && latlng.lng != null) ? latlng.lng.toFixed(5) : '';
+        const gZoom = Math.max(map.getZoom() || 12, 12);
+        const gUrl = (latStr && lonStr) ? `https://www.google.com/maps/@${latStr},${lonStr},${gZoom}z/data=!3m1!1e3` : '#';
+        const coordsHtml = (latStr && lonStr)
+          ? `<div style="font-size:90%;color:#666;margin-bottom:6px;">
+               <a href="${gUrl}" target="_blank" rel="noopener noreferrer" style="color:#0066cc;text-decoration:underline;display:block;margin-bottom:4px;">Coordinates: ${latStr}, ${lonStr}</a>
+             </div>`
+          : '';
 
         const hasNearestCity = data && data.nearest_city;
         const hasOtherCities = data && data.other_cities && data.other_cities.length > 0;
@@ -918,6 +1019,8 @@ function pulse_log($tag, $message = '') {
         if (hasNearestCity || hasOtherCities || hasWikiTopics) {
           html = '';
           if (hasNearestCity) {
+            // show coordinates above the nearest-city block
+            html += coordsHtml;
             const city = data.nearest_city;
             const search_query = `${city.name}${city.state ? ', ' + city.state : ''}${city.country ? ', ' + city.country : ''}`;
             const zoom = Math.max(map.getZoom(), 12);
@@ -955,12 +1058,13 @@ function pulse_log($tag, $message = '') {
             html += '</ul></div>';
           }
         }
-        // Show an LLM-produced summary if present
+        // Show an LLM-produced summary if present. The inner content has an id so streaming updates
+        // can replace only this text (see early return above).
         if (data.llm) {
           if (html === 'No information found for this area.') html = '';
           html += '<div id="llm-summary" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
-          html += '<b>AI Summary:</b>'; 
-          html += `<div style="white-space:pre-wrap;margin-top:6px;">${escapeHtml(data.llm)}</div>`;
+          html += '<b>AI Summary:</b>';
+          html += `<div id="llm-summary-content" style="white-space:pre-wrap;margin-top:6px;">${escapeHtml(data.llm)}</div>`;
           html += '</div>';
         }
         
@@ -1067,7 +1171,7 @@ function pulse_log($tag, $message = '') {
               showInfoPopup(combinedData, latlng);
 
               // Build a concise prompt for the LLM
-              let prompt = 'You are a local news biographer. Given the following context below, answer and give the historical essence and the most important historical events in the area? Give a detailed summary (2-4 sentences), mention any likely causes or themes, and list 3-20 short tags." Context: ';
+              let prompt = 'Give the historical context of events in the area. Give a detailed summary (2-4 sentences), mention any likely historical causes or themes, and list 3-10short tags." Context: ';
               prompt += `Nearest city: ${search_query} `;
               if (combinedData.other_cities && combinedData.other_cities.length) {
                 prompt += 'Other nearby cities: ' + combinedData.other_cities.slice(0,6).map(c=>c.name).join(', ') + ' ';
@@ -1128,11 +1232,11 @@ function pulse_log($tag, $message = '') {
                             streamEntry.textContent = `${ts} - `;
                             entries.appendChild(streamEntry);
                           }
-                          llm_partial += data;
+                          llm_partial = appendWithSpace(llm_partial, data);
                           appendStreamText(streamEntry, data);
-                          combinedData.llm = llm_partial;
-                          showInfoPopup(combinedData, latlng);
-                          try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                           combinedData.llm = llm_partial;
+                           showInfoPopup(combinedData, latlng);
+                           try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
                         } else {
                           let chunkText = (part || '').toString().replace(/^\s*assistant[:\s]*/i, '').trim();
                           if (!chunkText) continue;
@@ -1144,11 +1248,11 @@ function pulse_log($tag, $message = '') {
                             streamEntry.textContent = `${ts} - `;
                             entries.appendChild(streamEntry);
                           }
-                          llm_partial += chunkText;
+                          llm_partial = appendWithSpace(llm_partial, chunkText);
                           appendStreamText(streamEntry, chunkText);
-                          combinedData.llm = llm_partial;
-                          showInfoPopup(combinedData, latlng);
-                          try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
+                           combinedData.llm = llm_partial;
+                           showInfoPopup(combinedData, latlng);
+                           try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
                         }
                       }
                     }
@@ -1164,12 +1268,12 @@ function pulse_log($tag, $message = '') {
                           streamEntry.textContent = `${ts} - `;
                           entries.appendChild(streamEntry);
                         }
-                        llm_partial += tail;
+                        llm_partial = appendWithSpace(llm_partial, tail);
                         appendStreamText(streamEntry, tail);
-                        combinedData.llm = llm_partial;
-                        showInfoPopup(combinedData, latlng);
-                      }
-                    }
+                         combinedData.llm = llm_partial;
+                         showInfoPopup(combinedData, latlng);
+                       }
+                     }
                     try { logToConsole(`LLM (direct) completed for ${search_query}`, 'info'); } catch(e) {}
                   } catch (err) {
                     try { logToConsole('Direct LLM server call failed: ' + String(err), 'error'); } catch(e) {}
@@ -1301,6 +1405,64 @@ function pulse_log($tag, $message = '') {
             consoleEl.style.display = 'block';
             try { entries.scrollTop = entries.scrollHeight; } catch(e){}
           });
+          // LLM console inline query handler
+          const qBtn = document.getElementById('llm-query-submit');
+          const qInput = document.getElementById('llm-query');
+          if (qBtn && qInput) {
+            qBtn.addEventListener('click', async (ev) => {
+              try {
+                const prompt = (qInput.value || '').trim();
+                if (!prompt) return;
+                // Create a console entry for streaming output
+                const streamEntry = document.createElement('div');
+                streamEntry.className = 'entry info stream-entry';
+                const ts = new Date().toLocaleTimeString();
+                streamEntry.textContent = `${ts} - `;
+                entries.appendChild(streamEntry);
+                consoleEl.style.display = 'block';
+                try { entries.scrollTop = entries.scrollHeight; } catch(e){}
+
+                logToConsole('LLM inline query: ' + prompt, 'info');
+
+                const payload = { prompt: prompt, system_prompt: 'You are a concise news analyst. Answer briefly and focus on recent relevant events.' };
+                const r = await fetch('http://127.0.0.1:5005/ask?stream=1', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+                  body: JSON.stringify(payload)
+                });
+                if (!r.ok) {
+                  const txt = await r.text();
+                  appendStreamText(streamEntry, 'Error: ' + r.status + ' ' + txt);
+                  return;
+                }
+                const reader = r.body.getReader();
+                const dec = new TextDecoder();
+                let buf = '';
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  buf += dec.decode(value, { stream: true });
+                  const parts = buf.split('\n\n');
+                  buf = parts.pop();
+                  for (const part of parts) {
+                    const lines = part.split('\n');
+                    const dataLines = lines.filter(l => l.startsWith('data:'));
+                    if (dataLines.length) {
+                      const data = dataLines.map(l => l.slice(6)).join('\n');
+                      if (data === '[DONE]') continue;
+                      appendStreamText(streamEntry, data);
+                    } else {
+                      appendStreamText(streamEntry, part);
+                    }
+                    try { entries.scrollTop = entries.scrollHeight; } catch(e){}
+                  }
+                }
+                if (buf && buf.trim()) appendStreamText(streamEntry, buf);
+              } catch (err) {
+                try { appendStreamText(streamEntry, 'Request failed: ' + String(err)); } catch(e){}
+              }
+            });
+          }
         }
       });
 

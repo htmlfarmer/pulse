@@ -137,172 +137,179 @@ def health():
 
 @app.get('/', response_class=HTMLResponse)
 def index():
-        # Simple test UI to submit prompts to /ask
-        html = '''
-        <!doctype html>
-        <html>
-        <head><meta charset="utf-8"><title>LLM Server</title></head>
-        <body style="font-family: Arial, Helvetica, sans-serif; margin:20px;">
-            <h2>LLM Server</h2>
-            <form id="frm">
-                <label>System prompt (optional)</label><br>
-                <input id="system" style="width:100%" placeholder="System prompt"><br><br>
-                <label>Prompt</label><br>
-                <textarea id="prompt" rows="6" style="width:100%" placeholder="Enter your prompt"></textarea><br>
-                <button type="submit">Ask</button>
-            </form>
-            <h3>Response</h3>
-            <pre id="resp" style="white-space:pre-wrap; background:#f6f6f6; padding:12px; border-radius:6px; max-width:800px;"></pre>
+    # Simple test UI to submit prompts to /ask
+    html = '''
+    <!doctype html>
+    <html>
+    <head><meta charset="utf-8"><title>LLM Server</title></head>
+    <body style="font-family: Arial, Helvetica, sans-serif; margin:20px;">
+        <h2>LLM Server</h2>
+        <form id="frm">
+            <label>System prompt (optional)</label><br>
+            <input id="system" style="width:100%" placeholder="System prompt"><br><br>
+            <label>Prompt</label><br>
+            <textarea id="prompt" rows="6" style="width:100%" placeholder="Enter your prompt"></textarea><br>
+            <button type="submit">Ask</button>
+        </form>
+        <h3>Response</h3>
+        <pre id="resp" style="white-space:pre-wrap; background:#f6f6f6; padding:12px; border-radius:6px; max-width:800px;"></pre>
 
-            <hr>
-            <h3>News Q&A</h3>
-            <p style="margin-top:0;"><small>Ask a concise question about recent news items — response streams below.</small></p>
-            <form id="news-qa">
-                <textarea id="qa_prompt" rows="3" style="width:100%" placeholder="Ask about the latest news in this area..."></textarea><br>
-                <button type="submit">Ask News</button>
-            </form>
-            <h4>Answer</h4>
-            <pre id="qa_resp" style="white-space:pre-wrap; background:#fff9e6; padding:12px; border-radius:6px; max-width:800px;"></pre>
+        <hr>
+        <h3>News Q&amp;A</h3>
+        <p style="margin-top:0;"><small>Ask a concise question about recent news items — response streams below.</small></p>
+        <form id="news-qa">
+            <textarea id="qa_prompt" rows="3" style="width:100%" placeholder="Ask about the latest news in this area..."></textarea><br>
+            <button type="submit">Ask News</button>
+        </form>
+        <h4>Answer</h4>
+        <pre id="qa_resp" style="white-space:pre-wrap; background:#fff9e6; padding:12px; border-radius:6px; max-width:800px;"></pre>
 
-            <script>
-                // Append a stream chunk but ensure words don't run together across chunk boundaries.
-                function appendChunk(el, chunk) {
-                  if (!chunk) return;
-                  try {
-                    // If existing text does not end with whitespace and chunk does not start with whitespace, add a space.
-                    if (el.textContent && !(/\s$/.test(el.textContent)) && !(/^\s/.test(chunk))) {
-                      el.textContent += ' ';
-                    }
-                  } catch (e) { /* ignore regex errors in exotic environments */ }
-                  el.textContent += chunk;
+        <script>
+            // Append a stream chunk but ensure words don't run together across chunk boundaries.
+            function appendChunk(el, chunk) {
+              if (!chunk) return;
+              try {
+                const existing = el.textContent || '';
+                // If existing ends with whitespace or chunk starts with whitespace, just concatenate.
+                if (existing && !(/\s$/.test(existing)) && !(/^\s/.test(chunk))) {
+                  // Only insert a space when the last char of existing and first char of chunk are both alphanumeric.
+                  const last = existing.slice(-1);
+                  const first = chunk.charAt(0);
+                  const isAlnum = ch => /[A-Za-z0-9]/.test(ch);
+                  if (isAlnum(last) && isAlnum(first)) {
+                    el.textContent += ' ';
+                  }
                 }
-                document.getElementById('frm').addEventListener('submit', async function(e){
-                     e.preventDefault();
-                     const prompt = document.getElementById('prompt').value;
-                     const system = document.getElementById('system').value || undefined;
-                     const payload = { prompt: prompt };
-                     if (system) payload.system_prompt = system;
+              } catch (e) { /* ignore */ }
+              el.textContent += chunk;
+            }
+            document.getElementById('frm').addEventListener('submit', async function(e){
+                 e.preventDefault();
+                 const prompt = document.getElementById('prompt').value;
+                 const system = document.getElementById('system').value || undefined;
+                 const payload = { prompt: prompt };
+                 if (system) payload.system_prompt = system;
  
-                     const respEl = document.getElementById('resp');
-                     respEl.textContent = '';
+                 const respEl = document.getElementById('resp');
+                 respEl.textContent = '';
  
-                     try {
-                         const r = await fetch('/ask?stream=1', {
-                             method: 'POST',
-                             headers: {
-                                 'Content-Type': 'application/json',
-                                 'Accept': 'text/event-stream'
-                             },
-                             body: JSON.stringify(payload)
-                         });
+                 try {
+                     const r = await fetch('/ask?stream=1', {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'Accept': 'text/event-stream'
+                         },
+                         body: JSON.stringify(payload)
+                     });
  
-                         const ct = (r.headers.get('content-type') || '').toLowerCase();
-                         if (!r.ok) {
-                             const txt = await r.text();
-                             respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
-                             return;
-                         }
- 
-                         // If server returned JSON (no streaming), show it and return
-                         if (ct.includes('application/json')) {
-                             const j = await r.json();
-                             respEl.textContent = JSON.stringify(j, null, 2);
-                             return;
-                         }
- 
-                         // Otherwise consume the body as a stream (SSE style framing expected)
-                         const reader = r.body.getReader();
-                         const dec = new TextDecoder();
-                         let buf = '';
- 
-                         while (true) {
-                             const { done, value } = await reader.read();
-                             if (done) break;
-                             buf += dec.decode(value, { stream: true });
-                             // SSE events are separated by double-newline
-                             const parts = buf.split('\\n\\n');
-                             buf = parts.pop();
-                             for (const part of parts) {
-                                 // each part may contain lines like "data: ..." or "event: done"
-                                 const lines = part.split('\\n');
-                                 let dataLines = lines.filter(l => l.startsWith('data:'));
-                                 if (dataLines.length) {
-                                     const data = dataLines.map(l => l.slice(6)).join('\\n');
-                                     if (data === '[DONE]') {
-                                         // done marker; optionally stop
-                                     } else {
-                                        appendChunk(respEl, data);
-                                     }
-                                 } else {
-                                     // fallback: append raw chunk
-                                    appendChunk(respEl, part);
-                                 }
-                                 // keep UI scrolled
-                                 respEl.scrollTop = respEl.scrollHeight;
-                             }
-                         }
- 
-                         // flush any remaining buffer
-                        if (buf && buf.trim()) {
-                            appendChunk(respEl, buf);
-                        }
-                     } catch (err) {
-                         respEl.textContent = 'Request failed: ' + String(err);
+                     const ct = (r.headers.get('content-type') || '').toLowerCase();
+                     if (!r.ok) {
+                         const txt = await r.text();
+                         respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
+                         return;
                      }
-                 });
  
-                // News Q&A handler: sends the prompt with a concise news-analyst system prompt and streams into qa_resp
-                document.getElementById('news-qa').addEventListener('submit', async function(e){
-                     e.preventDefault();
-                     const prompt = document.getElementById('qa_prompt').value;
-                     if (!prompt || !prompt.trim()) return;
-                     const payload = { prompt: prompt, system_prompt: 'You are a concise news analyst. Answer briefly and focus on recent relevant events.' };
- 
-                     const respEl = document.getElementById('qa_resp');
-                     respEl.textContent = '';
-                     try {
-                         const r = await fetch('/ask?stream=1', {
-                             method: 'POST',
-                             headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
-                             body: JSON.stringify(payload)
-                         });
-                         if (!r.ok) {
-                             const txt = await r.text();
-                             respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
-                             return;
-                         }
-                         const reader = r.body.getReader();
-                         const dec = new TextDecoder();
-                         let buf = '';
-                         while (true) {
-                             const { done, value } = await reader.read();
-                             if (done) break;
-                             buf += dec.decode(value, { stream: true });
-                             const parts = buf.split('\\n\\n');
-                             buf = parts.pop();
-                             for (const part of parts) {
-                                 const lines = part.split('\\n');
-                                 let dataLines = lines.filter(l => l.startsWith('data:'));
-                                 if (dataLines.length) {
-                                     const data = dataLines.map(l => l.slice(6)).join('\\n');
-                                     if (data === '[DONE]') continue;
-                                     appendChunk(respEl, data);
-                                 } else {
-                                     appendChunk(respEl, part);
-                                 }
-                                 respEl.scrollTop = respEl.scrollHeight;
-                             }
-                         }
-                         if (buf && buf.trim()) appendChunk(respEl, buf);
-                     } catch (err) {
-                         respEl.textContent = 'Request failed: ' + String(err);
+                     // If server returned JSON (no streaming), show it and return
+                     if (ct.includes('application/json')) {
+                         const j = await r.json();
+                         respEl.textContent = JSON.stringify(j, null, 2);
+                         return;
                      }
-                });
-              </script>
-         </body>
-         </html>
-         '''
-         return HTMLResponse(content=html)
+ 
+                     // Otherwise consume the body as a stream (SSE style framing expected)
+                     const reader = r.body.getReader();
+                     const dec = new TextDecoder();
+                     let buf = '';
+ 
+                     while (true) {
+                         const { done, value } = await reader.read();
+                         if (done) break;
+                         buf += dec.decode(value, { stream: true });
+                         // SSE events are separated by double-newline
+                         const parts = buf.split('\\n\\n');
+                         buf = parts.pop();
+                         for (const part of parts) {
+                             // each part may contain lines like "data: ..." or "event: done"
+                             const lines = part.split('\\n');
+                             let dataLines = lines.filter(l => l.startsWith('data:'));
+                             if (dataLines.length) {
+                                 const data = dataLines.map(l => l.slice(6)).join('\\n');
+                                 if (data === '[DONE]') {
+                                     // done marker; optionally stop
+                                 } else {
+                                    appendChunk(respEl, data);
+                                 }
+                             } else {
+                                 // fallback: append raw chunk
+                                appendChunk(respEl, part);
+                             }
+                             // keep UI scrolled
+                             respEl.scrollTop = respEl.scrollHeight;
+                         }
+                     }
+ 
+                     // flush any remaining buffer
+                    if (buf && buf.trim()) {
+                        appendChunk(respEl, buf);
+                    }
+                 } catch (err) {
+                     respEl.textContent = 'Request failed: ' + String(err);
+                 }
+             });
+ 
+            // News Q&A handler: sends the prompt with a concise news-analyst system prompt and streams into qa_resp
+            document.getElementById('news-qa').addEventListener('submit', async function(e){
+                 e.preventDefault();
+                 const prompt = document.getElementById('qa_prompt').value;
+                 if (!prompt || !prompt.trim()) return;
+                 const payload = { prompt: prompt, system_prompt: 'You are a concise news analyst. Answer briefly and focus on recent relevant events.' };
+ 
+                 const respEl = document.getElementById('qa_resp');
+                 respEl.textContent = '';
+                 try {
+                     const r = await fetch('/ask?stream=1', {
+                         method: 'POST',
+                         headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
+                         body: JSON.stringify(payload)
+                     });
+                     if (!r.ok) {
+                         const txt = await r.text();
+                         respEl.textContent = 'Error: ' + r.status + '\\n' + txt;
+                         return;
+                     }
+                     const reader = r.body.getReader();
+                     const dec = new TextDecoder();
+                     let buf = '';
+                     while (true) {
+                         const { done, value } = await reader.read();
+                         if (done) break;
+                         buf += dec.decode(value, { stream: true });
+                         const parts = buf.split('\\n\\n');
+                         buf = parts.pop();
+                         for (const part of parts) {
+                             const lines = part.split('\\n');
+                             let dataLines = lines.filter(l => l.startsWith('data:'));
+                             if (dataLines.length) {
+                                 const data = dataLines.map(l => l.slice(6)).join('\\n');
+                                 if (data === '[DONE]') continue;
+                                 appendChunk(respEl, data);
+                             } else {
+                                 appendChunk(respEl, part);
+                             }
+                             respEl.scrollTop = respEl.scrollHeight;
+                         }
+                     }
+                     if (buf && buf.trim()) appendChunk(respEl, buf);
+                 } catch (err) {
+                     respEl.textContent = 'Request failed: ' + String(err);
+                 }
+            });
+          </script>
+     </body>
+     </html>
+     '''
+    return HTMLResponse(content=html)
 
 @app.post('/ask')
 async def ask(request: Request, req: AskRequest):
@@ -340,49 +347,48 @@ async def ask(request: Request, req: AskRequest):
         async def event_stream():
             lock = getattr(app.state, 'llm_lock', None)
             if lock is None:
-                # if no lock available, create a temp one to avoid crashing (serializes regardless)
                 lock = asyncio.Lock()
             async with lock:
-                 try:
-                     # Try using llama_cpp streaming API if available
-                     for chunk in llm.create_chat_completion(messages=messages, stream=True, **gen):
-                         try:
-                             choice = (chunk.get('choices') or [{}])[0]
-                             # Only emit actual content pieces. Some models emit a 'role' token first
-                             # (e.g. "assistant") in the stream; ignore that and wait for 'content'.
-                             delta = choice.get('delta') or choice.get('message') or {}
-                             text_part = ''
-                             if isinstance(delta, dict):
-                                 # prefer 'content' — do not emit 'role'
-                                 text_part = delta.get('content') or ''
-                             else:
-                                 text_part = str(delta)
-                             # strip any leading "assistant" artifact and skip empty results
-                             if text_part:
-                                 text_part = re.sub(r'^\s*assistant[:\s]*', '', text_part, flags=re.I)
-                                 if text_part.strip():
-                                     yield f"data: {text_part}\n\n"
-                                     await asyncio.sleep(0)
-                         except Exception:
-                             # Non-fatal: continue streaming
-                             continue
-                 # Signal done
-                 yield "event: done\ndata: [DONE]\n\n"
-            except Exception:
-                # Streaming not supported or failed; fall back to non-streaming chunked emit
                 try:
-                    response = llm.create_chat_completion(messages=messages, **gen)
-                    content = response['choices'][0]['message'].get('content') if response and 'choices' in response else ''
-                    content = (content or '').strip();
-                    # Emit in small chunks so callers can process incrementally
-                    chunk_size = 200
-                    for i in range(0, len(content), chunk_size):
-                        yield f"data: {content[i:i+chunk_size]}\n\n"
-                        await asyncio.sleep(0)
+                    # Try using llama_cpp streaming API if available
+                    for chunk in llm.create_chat_completion(messages=messages, stream=True, **gen):
+                        try:
+                            choice = (chunk.get('choices') or [{}])[0]
+                            # Only emit actual content pieces. Some models emit a 'role' token first
+                            # (e.g. "assistant") in the stream; ignore that and wait for 'content'.
+                            delta = choice.get('delta') or choice.get('message') or {}
+                            text_part = ''
+                            if isinstance(delta, dict):
+                                # prefer 'content' — do not emit 'role'
+                                text_part = delta.get('content') or ''
+                            else:
+                                text_part = str(delta)
+                            # strip any leading "assistant" artifact and skip empty results
+                            if text_part:
+                                text_part = re.sub(r'^\s*assistant[:\s]*', '', text_part, flags=re.I)
+                                if text_part.strip():
+                                    yield f"data: {text_part}\n\n"
+                                    await asyncio.sleep(0)
+                        except Exception:
+                            # Non-fatal: continue streaming
+                            continue
+                    # Signal done for successful streaming path
                     yield "event: done\ndata: [DONE]\n\n"
-                except Exception as e:
-                    logging.exception('LLM generation error (stream fallback): %s', e)
-                    yield f"event: error\ndata: {str(e)}\n\n"
+                except Exception:
+                    # Streaming not supported or failed; fall back to non-streaming chunked emit
+                    try:
+                        response = llm.create_chat_completion(messages=messages, **gen)
+                        content = response['choices'][0]['message'].get('content') if response and 'choices' in response else ''
+                        content = (content or '').strip()
+                        # Emit in small chunks so callers can process incrementally
+                        chunk_size = 200
+                        for i in range(0, len(content), chunk_size):
+                            yield f"data: {content[i:i+chunk_size]}\n\n"
+                            await asyncio.sleep(0)
+                        yield "event: done\ndata: [DONE]\n\n"
+                    except Exception as e:
+                        logging.exception('LLM generation error (stream fallback): %s', e)
+                        yield f"event: error\ndata: {str(e)}\n\n"
 
         return StreamingResponse(event_stream(), media_type='text/event-stream')
 

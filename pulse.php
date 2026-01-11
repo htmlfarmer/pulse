@@ -612,9 +612,19 @@ function pulse_log($tag, $message = '') {
           if (/^\r?\n/.test(chunk)) { el.textContent += chunk; return; }
           const existing = el.textContent || '';
           if (existing && !(/\s$/.test(existing)) && !(/^\s/.test(chunk))) {
-            // Avoid adding space before closing punctuation or after opening punctuation
-            const last = existing.slice(-1);
-            if (!/^[\.,;:!?\)\]\}]/.test(chunk) && !/[([{\/"'`]/.test(last)) {
+            // Determine whether a space is needed between the existing text and the new chunk.
+            // Avoid inserting spaces before/after common punctuation and a variety of quote/apostrophe characters.
+            const noSpaceBefore = /^[\.,;:!?\)\]\}\u2019\u2018\u201C\u201D'"\u00B4\u02BC-]/;
+            const noSpaceAfter = /[\(\[\{\u2018\u2019\u201C\u201D\\/"'`\-]$/;
+            // Also avoid inserting a space when the existing text ends with a digit and the new
+            // chunk is a digit continuation (e.g. '2' + '0' -> '20') or a short ordinal suffix
+            // such as 'th', 'st', 'nd', 'rd'. This prevents "1 9 th" from appearing.
+            const endsWithDigit = /\d$/.test(existing);
+            const chunkStartsWithDigit = /^\d/.test(chunk);
+            const chunkIsShortAlpha = /^[A-Za-z]{1,3}$/.test(chunk);
+            if (endsWithDigit && (chunkStartsWithDigit || chunkIsShortAlpha)) {
+              // do not add space
+            } else if (!noSpaceBefore.test(chunk) && !noSpaceAfter.test(existing)) {
               el.textContent += ' ';
             }
           }
@@ -626,10 +636,23 @@ function pulse_log($tag, $message = '') {
       function appendWithSpace(existing, add) {
         if (!add) return existing || '';
         if (!existing) return add;
-        // if existing ends with whitespace or add starts with whitespace/punct, just concatenate
+        // if existing ends with whitespace or add starts with whitespace, just concatenate
         if (/\s$/.test(existing) || /^\s/.test(add)) return existing + add;
-        // don't insert space if add begins with closing punctuation or existing ends with opening punctuation
-        if (/^[\.,;:!?\)\]\}]/.test(add) || /[([{\/"'`]$/.test(existing)) return existing + add;
+        // Avoid inserting a space in cases like: word + 's  or word + , .  Treat many quote/apostrophe variants.
+        const noSpaceBefore = /^[\.,;:!?\)\]\}\u2019\u2018\u201C\u201D'"\u00B4\u02BC-]/;
+        const noSpaceAfter = /[\(\[\{\u2018\u2019\u201C\u201D\\/"'`\-]$/;
+        // Special handling to prevent inserting spaces into digit sequences or before short
+        // ordinal-like suffixes (e.g. 'th', 'st'). If existing ends with a digit and add starts
+        // with a digit or is a short alpha suffix, don't add a space.
+        const endsWithDigit = /\d$/.test(existing);
+        const addStartsWithDigit = /^\d/.test(add);
+        const addIsShortAlpha = /^[A-Za-z]{1,3}$/.test(add);
+        // Also avoid inserting a space when existing ends with an apostrophe-like character
+        // and the addition is a short alpha (e.g. "'s", "'re"). This prevents "here' s".
+        const endsWithApostrophe = /[\u2018\u2019'`\u00B4\u02BC]$/.test(existing);
+        if (noSpaceBefore.test(add) || noSpaceAfter.test(existing)) return existing + add;
+        if (endsWithDigit && (addStartsWithDigit || addIsShortAlpha)) return existing + add;
+        if (endsWithApostrophe && addIsShortAlpha) return existing + add;
         return existing + ' ' + add;
       }
 
@@ -989,16 +1012,7 @@ function pulse_log($tag, $message = '') {
 
       // --- City Info (Restored Logic) ---
       function showInfoPopup(data, latlng) {
-        // If the info panel already has the LLM summary element, and we only have an updated LLM text,
-        // update that element in-place so we don't re-render anchors (which breaks clicks).
-        if (data && data.llm) {
-          const existingSummary = document.getElementById('llm-summary-content');
-          if (existingSummary) {
-            // update textContent to preserve text and spacing without replacing surrounding DOM
-            existingSummary.textContent = data.llm;
-            return;
-          }
-        }
+        // (LLM summary removed from info panel)
         let html = 'No information found for this area.';
 
         // Format coordinates for display and include a Google Satellite link above the numbers
@@ -1058,15 +1072,7 @@ function pulse_log($tag, $message = '') {
             html += '</ul></div>';
           }
         }
-        // Show an LLM-produced summary if present. The inner content has an id so streaming updates
-        // can replace only this text (see early return above).
-        if (data.llm) {
-          if (html === 'No information found for this area.') html = '';
-          html += '<div id="llm-summary" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
-          html += '<b>AI Summary:</b>';
-          html += `<div id="llm-summary-content" style="white-space:pre-wrap;margin-top:6px;">${escapeHtml(data.llm)}</div>`;
-          html += '</div>';
-        }
+        // LLM summary intentionally omitted from the info panel.
         
         if (data.wikidata && data.wikidata.entities) {
           const qids = Object.keys(data.wikidata.entities);
@@ -1182,7 +1188,6 @@ function pulse_log($tag, $message = '') {
               if (combinedData.news && combinedData.news.length) {
                 prompt += 'Recent headlines (titles):\n' + combinedData.news.slice(0,6).map(a=> '- ' + (a.title || a)).join(' ') + ' ';
               }
-
               if (typeof llmEnabled === 'undefined' || llmEnabled) {
                 // Indicate the LLM started: show a temporary 'Thinking...' message in the popup
                 combinedData.llm = 'Thinking...';

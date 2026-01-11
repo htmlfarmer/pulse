@@ -105,6 +105,14 @@ def startup_event():
         logging.exception('Failed to load model: %s', e)
         app.state.llm = None
 
+    # Lock to serialize access to the single Llama instance so multiple remote clients (different IPs)
+    # can safely submit requests without corrupting the model state.
+    try:
+        app.state.llm_lock = asyncio.Lock()
+    except Exception:
+        # fallback: create a dummy lock if loop issues occur
+        app.state.llm_lock = None
+
     # write pid file for external control (pulse.php may still expect a pid file)
     try:
         pid = os.getpid()

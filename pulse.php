@@ -1354,36 +1354,7 @@ function pulse_log($tag, $message = '') {
       });
       new RefreshControl({ position: 'topleft' }).addTo(map);
 
-      // --- LLM Control (enable/disable and stop) ---
-      const LLMControl = L.Control.extend({
-        onAdd: function(map) {
-          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control llm-control');
-          const link = L.DomUtil.create('a', '', container);
-          link.href = '#';
-          link.title = 'Toggle LLM (On/Off)';
-          link.setAttribute('role', 'button');
-          link.setAttribute('aria-label', 'LLM Toggle');
-          link.textContent = llmEnabled ? 'LLM: On' : 'LLM: Off';
-
-          L.DomEvent.on(link, 'click', L.DomEvent.stop).on(link, 'click', function() {
-            llmEnabled = !llmEnabled;
-            link.textContent = llmEnabled ? 'LLM: On' : 'LLM: Off';
-            if (!llmEnabled) {
-              // Attempt to stop any running LLM process on the server
-              fetch('pulse.php?stop_llm=true').then(r=>r.json()).then(res=>{
-                logToConsole(`stop_llm: ${JSON.stringify(res)}`,'info');
-                alert('LLM disabled. Any running model process was requested to stop.');
-              }).catch(()=>{
-                logToConsole('stop_llm: request failed','error');
-                alert('LLM disabled. Could not contact server to stop any running process.');
-              });
-            }
-          });
-
-          return container;
-        }
-      });
-      new LLMControl({ position: 'topleft' }).addTo(map);
+      // LLM on/off control removed - LLM always enabled in UI
 
       // Wire up the console controls
       document.addEventListener('click', function initLLMConsoleHandlers(e){

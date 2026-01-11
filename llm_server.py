@@ -310,6 +310,10 @@ async def ask(request: Request, req: AskRequest):
     if not llm:
         raise HTTPException(status_code=500, detail='LLM not loaded')
 
+    # identify caller for logging (supports proxied requests via X-Forwarded-For)
+    client_ip = (request.headers.get('X-Forwarded-For') or (request.client.host if request.client else 'unknown')).split(',')[0].strip()
+    logging.info('Received /ask from %s', client_ip)
+
     # Ensure statelessness: only include the system and user messages from this request
     system_prompt = req.system_prompt or 'You are a helpful assistant. Keep answers concise.'
     messages = [
@@ -334,31 +338,36 @@ async def ask(request: Request, req: AskRequest):
 
     if stream_requested:
         async def event_stream():
-            try:
-                # Try using llama_cpp streaming API if available
-                for chunk in llm.create_chat_completion(messages=messages, stream=True, **gen):
-                    try:
-                        choice = (chunk.get('choices') or [{}])[0]
-                        # Only emit actual content pieces. Some models emit a 'role' token first
-                        # (e.g. "assistant") in the stream; ignore that and wait for 'content'.
-                        delta = choice.get('delta') or choice.get('message') or {}
-                        text_part = ''
-                        if isinstance(delta, dict):
-                            # prefer 'content' — do not emit 'role'
-                            text_part = delta.get('content') or ''
-                        else:
-                            text_part = str(delta)
-                        # strip any leading "assistant" artifact and skip empty results
-                        if text_part:
-                            text_part = re.sub(r'^\s*assistant[:\s]*', '', text_part, flags=re.I)
-                            if text_part.strip():
-                                yield f"data: {text_part}\n\n"
-                                await asyncio.sleep(0)
-                    except Exception:
-                        # Non-fatal: continue streaming
-                        continue
-                # Signal done
-                yield "event: done\ndata: [DONE]\n\n"
+            lock = getattr(app.state, 'llm_lock', None)
+            if lock is None:
+                # if no lock available, create a temp one to avoid crashing (serializes regardless)
+                lock = asyncio.Lock()
+            async with lock:
+                 try:
+                     # Try using llama_cpp streaming API if available
+                     for chunk in llm.create_chat_completion(messages=messages, stream=True, **gen):
+                         try:
+                             choice = (chunk.get('choices') or [{}])[0]
+                             # Only emit actual content pieces. Some models emit a 'role' token first
+                             # (e.g. "assistant") in the stream; ignore that and wait for 'content'.
+                             delta = choice.get('delta') or choice.get('message') or {}
+                             text_part = ''
+                             if isinstance(delta, dict):
+                                 # prefer 'content' — do not emit 'role'
+                                 text_part = delta.get('content') or ''
+                             else:
+                                 text_part = str(delta)
+                             # strip any leading "assistant" artifact and skip empty results
+                             if text_part:
+                                 text_part = re.sub(r'^\s*assistant[:\s]*', '', text_part, flags=re.I)
+                                 if text_part.strip():
+                                     yield f"data: {text_part}\n\n"
+                                     await asyncio.sleep(0)
+                         except Exception:
+                             # Non-fatal: continue streaming
+                             continue
+                 # Signal done
+                 yield "event: done\ndata: [DONE]\n\n"
             except Exception:
                 # Streaming not supported or failed; fall back to non-streaming chunked emit
                 try:
@@ -379,7 +388,13 @@ async def ask(request: Request, req: AskRequest):
 
     # Non-streaming (JSON) behaviour for backwards compatibility
     try:
-        response = llm.create_chat_completion(messages=messages, **gen)
+        lock = getattr(app.state, 'llm_lock', None)
+        if lock is None:
+            # no shared lock available; call directly
+            response = llm.create_chat_completion(messages=messages, **gen)
+        else:
+            async with lock:
+                response = llm.create_chat_completion(messages=messages, **gen)
         content = response['choices'][0]['message'].get('content')
         text = content.strip() if content else ''
         return {'response': text}

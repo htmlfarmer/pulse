@@ -274,6 +274,38 @@ function pulse_log($tag, $message = '') {
     exit;
   }
 
+  // Reddit search proxy: returns recent reddit posts matching the query
+  if (isset($_GET['reddit_search'])) {
+    header('Content-Type: application/json');
+    $q = $_GET['reddit_search'];
+    $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 20;
+    $qenc = urlencode($q);
+    $url = "https://www.reddit.com/search.json?q={$qenc}&sort=new&limit={$limit}";
+    $opts = [ "http" => [ "header" => "User-Agent: Pulse/1.0 (pulse.app; contact@example.com)\r\n", "timeout" => 5 ] ];
+    $context = stream_context_create($opts);
+    $json = @file_get_contents($url, false, $context);
+    if ($json === FALSE) {
+      echo json_encode([]);
+      exit;
+    }
+    $data = json_decode($json, true);
+    $items = [];
+    if (isset($data['data']['children']) && is_array($data['data']['children'])) {
+      foreach ($data['data']['children'] as $c) {
+        $p = $c['data'] ?? [];
+        $items[] = [
+          'title' => $p['title'] ?? '',
+          'subreddit' => $p['subreddit'] ?? '',
+          'url' => isset($p['permalink']) ? ('https://reddit.com' . $p['permalink']) : ($p['url'] ?? ''),
+          'created_utc' => isset($p['created_utc']) ? intval($p['created_utc']) : 0,
+          'score' => isset($p['score']) ? intval($p['score']) : 0
+        ];
+      }
+    }
+    echo json_encode($items);
+    exit;
+  }
+
   if (isset($_GET['lat']) && isset($_GET['lon']) && isset($_GET['radius'])) {
     header('Content-Type: application/json');
     $lat = floatval($_GET['lat']);
@@ -1071,6 +1103,20 @@ function pulse_log($tag, $message = '') {
             });
             html += '</ul></div>';
           }
+          // Reddit posts (if any)
+          if (data.reddit && Array.isArray(data.reddit) && data.reddit.length) {
+            html += '<div id="reddit-headlines" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+            html += '<b>Reddit posts:</b>';
+            html += '<ul class="news-list" style="margin-top:6px;">';
+            data.reddit.slice(0,8).forEach(r => {
+              const title = r && r.title ? r.title : 'Untitled';
+              const link = r && r.url ? r.url : '#';
+              const subreddit = r && r.subreddit ? r.subreddit : '';
+              const time = r && r.created_utc ? new Date(r.created_utc * 1000).toLocaleString() : '';
+              html += `<li style="margin-bottom:0.4em;"><a href="${escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a><br><small style="color:#666;">${escapeHtml(subreddit)} ${time ? '• ' + escapeHtml(time) : ''}</small></li>`;
+            });
+            html += '</ul></div>';
+          }
         }
         // LLM summary intentionally omitted from the info panel.
         
@@ -1170,10 +1216,12 @@ function pulse_log($tag, $message = '') {
             const nearest = combinedData.nearest_city;
             const search_query = nearest ? `${nearest.name}${nearest.state ? ', ' + nearest.state : ''}${nearest.country ? ', ' + nearest.country : ''}` : '';
             const newsPromise = nearest ? fetch(`pulse.php?news_for_city=${encodeURIComponent(search_query)}`).then(r=>r.json()).catch(()=>[]) : Promise.resolve([]);
+            const redditPromise = nearest ? fetch(`pulse.php?reddit_search=${encodeURIComponent(search_query)}&limit=12`).then(r=>r.json()).catch(()=>[]) : Promise.resolve([]);
 
-            newsPromise.then(news => {
+            Promise.all([newsPromise, redditPromise]).then(([news, reddit]) => {
               combinedData.news = news || [];
-              // Show initial popup immediately with available info (news may be present)
+              combinedData.reddit = reddit || [];
+              // Show initial popup immediately with available info (news and reddit may be present)
               showInfoPopup(combinedData, latlng);
 
               // Build a concise prompt for the LLM
@@ -1294,65 +1342,7 @@ function pulse_log($tag, $message = '') {
           }).catch(handleFailure);
       }
 
-      // --- On-Demand Data Refresh Control ---
-      const RefreshControl = L.Control.extend({
-        onAdd: function(map) {
-            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control refresh-control');
-            const link = L.DomUtil.create('a', '', container);
-            link.href = '#';
-            link.title = 'Refresh Data from Source';
-            link.setAttribute('role', 'button');
-            link.setAttribute('aria-label', 'Refresh Data');
-
-            L.DomEvent.on(link, 'click', L.DomEvent.stop).on(link, 'click', function() {
-                if (link.classList.contains('loading')) return;
-                
-                if (!confirm('This will run the data processing script on the server. It can take several minutes, especially if the LLM is running. Continue?')) return;
-
-                link.classList.add('loading');
-                link.title = 'Refreshing data... This may take a few minutes.';
-                
-                fetch('pulse.php?run_pulse_py=true')
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(err => { throw new Error(err.message || 'Server error') });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Script output:', data.output);
-                        alert('Data refresh complete! Reloading relevant layers...');
-                        
-                        // Invalidate and reload layers that have been loaded
-                        if (currentEventsLoaded) {
-                            currentEventsLoaded = false;
-                            currentEventsLayer.clearLayers();
-                            if(map.hasLayer(currentEventsLayer)) {
-                                loadCurrentEvents();
-                            }
-                        }
-                        // Live news will get updated on its own timer, but we can clear it
-                        // to show only the newest items from the regenerated file.
-                        liveNewsLayer.clearLayers();
-                        if (map.hasLayer(liveNewsLayer)) {
-                            lastNewsTimestamp = 0; // Force reload of all recent news
-                            fetchLiveNews();
-                        }
-                      })
-                    .catch(err => {
-                        console.error('Refresh script error:', err);
-                        alert('An error occurred while refreshing the data: ' + err.message);
-                    })
-                    .finally(() => {
-                        link.classList.remove('loading');
-                        link.title = 'Refresh Data from Source';
-                    });
-            });
-
-            return container;
-        },
-      });
-      new RefreshControl({ position: 'topleft' }).addTo(map);
+        // On-demand data refresh control removed from UI.
 
       // LLM on/off control removed - LLM always enabled in UI
 

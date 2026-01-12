@@ -1,0 +1,10 @@
+User-agent: *
+# Disallow internal data and control endpoints
+Disallow: /data/
+Disallow: /pulse.php?run_pulse_py
+Disallow: /pulse.php?stop_llm
+Disallow: /pulse.php?ask_llm
+# Allow everything else
+Allow: /
+# Optional: point crawlers to sitemap if you generate one
+Sitemap: /sitemap.xml

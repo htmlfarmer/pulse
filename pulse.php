@@ -1044,6 +1044,23 @@ function pulse_log($tag, $message = '') {
 
       // --- City Info (Restored Logic) ---
       function showInfoPopup(data, latlng) {
+        // Render static info panel content only once per click. Subsequent calls
+        // (e.g. LLM streaming updates) will only update the dedicated LLM element
+        // so links and other interactive elements are not destroyed while the
+        // LLM is streaming.
+        const panelContent = document.querySelector('.info-panel .info-panel-content');
+        // If panel already rendered for this selection and we only have an LLM update,
+        // update the LLM element and return early.
+        if (panelContent && panelContent.dataset.staticRendered === '1') {
+          if (data && (data.llm !== undefined && data.llm !== null)) {
+            const llmEl = panelContent.querySelector('#llm-summary');
+            if (llmEl) {
+              llmEl.textContent = String(data.llm || '');
+            }
+            return;
+          }
+        }
+
         // (LLM summary removed from info panel)
         let html = 'No information found for this area.';
 
@@ -1136,6 +1153,12 @@ function pulse_log($tag, $message = '') {
         }
 
         infoPanel.update(html);
+        // Mark that the static content has been rendered so streaming updates
+        // can update only the LLM element instead of replacing the whole panel.
+        try {
+          const pc = document.querySelector('.info-panel .info-panel-content');
+          if (pc) pc.dataset.staticRendered = '1';
+        } catch (e) {}
       }
 
       function fetchAndShowCityInfo(latlng) {
@@ -1153,8 +1176,13 @@ function pulse_log($tag, $message = '') {
           }
         } catch (e) { /* ignore */ }
 
-        // Update info panel immediately so user sees a response
-        try { infoPanel.update('<i>Updating details...</i>'); } catch(e) {}
+        // Update info panel immediately so user sees a response; clear any
+        // previous 'staticRendered' flag so the panel will be rebuilt for this click.
+        try {
+          infoPanel.update('<i>Updating details...</i>');
+          const pc = document.querySelector('.info-panel .info-panel-content');
+          if (pc) pc.dataset.staticRendered = '';
+        } catch(e) {}
 
         if (searchCircle) {
           map.removeLayer(searchCircle);

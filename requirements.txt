@@ -1,3 +1,4 @@
 requests
 beautifulsoup4
 llama-cpp-python
+matplotlib==3.10.8

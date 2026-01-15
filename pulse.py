@@ -23,8 +23,8 @@ import os
 try:
     from llama_cpp import Llama
 except ImportError:
-    print("FATAL: llama-cpp-python is not installed. Please run 'pip install llama-cpp-python'.", file=sys.stderr)
-    sys.exit(1)
+    Llama = None
+    logging.warning("llama-cpp-python not installed; LLM features will be disabled.")
 import requests
 from bs4 import BeautifulSoup
 
@@ -190,6 +190,10 @@ class AIModel:
         }
         self.default_system_prompt = "You are a helpful assistant. Keep your answers concise."
         logging.info("--> AI Core: Loading model for geolocation...")
+        if Llama is None:
+            logging.error("llama-cpp Llama class not available; skipping model load.")
+            self.llm = None
+            return
         try:
             with SuppressStderr():
                 self.llm = Llama(model_path=model_path, **self.config["llama_params"])
@@ -199,7 +203,7 @@ class AIModel:
                 logging.error("!!! FATAL: AI Model not loaded (llm is None).")
         except Exception as e:
             logging.error(f"!!! FATAL: Error loading model: {e}")
-            os.system('notify-send "AI Model Error" "Could not load the language model. Check terminal." -i error')
+            self.llm = None
 
     def ask(self, user_question: str, system_prompt: str = None) -> str:
         """Asks the AI a question and returns the cleaned string response. Allows custom system prompt."""
@@ -262,13 +266,14 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
     location, confirms with Wikidata, and saves the geolocated events as GeoJSON.
     """
     model_path = "/home/asher/.lmstudio/models/lmstudio-community/gemma-3-1b-it-GGUF/gemma-3-1b-it-Q4_K_M.gguf"
-    if not Path(model_path).exists():
-        logging.error(f"LLM model not found at {model_path}. Skipping current events processing.")
-        return
-    ai_model = AIModel(model_path)
-    if not ai_model.llm:
-        logging.error("Failed to load LLM. Skipping current events processing.")
-        return
+    ai_model = None
+    if Path(model_path).exists():
+        ai_model = AIModel(model_path)
+        if not getattr(ai_model, 'llm', None):
+            logging.error("Failed to load LLM. Continuing with fallback geolocation.")
+            ai_model = None
+    else:
+        logging.info(f"LLM model not found at {model_path}. Continuing with fallback geolocation.")
 
     logging.info("Fetching full Wikipedia Current Events page for LLM extraction...")
     url = "https://en.wikipedia.org/wiki/Portal:Current_events"
@@ -290,7 +295,8 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
     import re as _re
     # Find all date sections and extract news items from each, stopping at .current-events-more
     date_id_re = _re.compile(r'^\d{4}_[A-Z][a-z]+_\d{1,2}$')
-    news_items = []
+    # We'll collect structured news items with their text and any links
+    news_items = []  # list of dicts: { 'text': str, 'links': [url, ...] }
     more_link_found = False
     for div in soup.find_all('div', id=True):
         if 'current-events-more' in div.get('class', []):
@@ -305,23 +311,26 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
                         # If <p> contains only a category header (bold or matches known set), set as current_category
                         b = elem.find('b')
                         ptext = elem.get_text(' ', strip=True)
-                        # Heuristic: if <p> is just a category header (bold and short, or matches known set)
                         if b and len(ptext) < 40 and (b.get_text(strip=True) == ptext):
                             current_category = ptext
                         elif ptext:
-                            # Prepend category if available
-                            if current_category:
-                                news_items.append(f"{current_category}: {ptext}")
-                            else:
-                                news_items.append(ptext)
+                            text = f"{current_category}: {ptext}" if current_category else ptext
+                            news_items.append({'text': text, 'links': []})
                     elif getattr(elem, 'name', None) == 'ul':
                         for li in elem.find_all('li', recursive=False):
                             litext = li.get_text(' ', strip=True)
                             if litext:
-                                if current_category:
-                                    news_items.append(f"{current_category}: {litext}")
-                                else:
-                                    news_items.append(litext)
+                                # Collect links inside this list item
+                                links = []
+                                for a in li.find_all('a', href=True):
+                                    href = a['href']
+                                    if href.startswith('//'):
+                                        href = 'https:' + href
+                                    elif href.startswith('/'):
+                                        href = 'https://en.wikipedia.org' + href
+                                    links.append(href)
+                                text = f"{current_category}: {litext}" if current_category else litext
+                                news_items.append({'text': text, 'links': links})
     # If no .current-events-more found, just process all date sections found
 
 
@@ -330,83 +339,96 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text('', encoding="utf-8")
 
-    # Process each news item one at a time with the LLM
+    # Process each news item one at a time. If an LLM is available use it,
+    # otherwise attempt a lightweight geolocation fallback using linked Wikipedia pages or heuristics.
     features = []
     import json as _json
     if not news_items:
         logging.warning("No news items found for the current date section.")
     # --- Minimal direct LLM test ---
-    for idx, news_item in enumerate(news_items):
-        single_prompt = (
-            "You are a news geolocator. Given the following news item, extract a JSON object with: "
-            "'title', 'summary', 'place' (city, country), 'lat', 'lng' (for the city country and place), and 'event_text' (the full story text). "
-            "Be as detailed as possible in the summary and event_text fields. "
-            "If you do not know the latitude or longitude, estimate them based on the place. "
-            "Respond ONLY with a JSON object, no extra text. "
-            f"News Item: {news_item}"
-        )
-        system_prompt = (
-            "You are a helpful assistant that extracts a single news story as a JSON object with 'title', 'summary', 'place', 'lat', 'lng', and 'event_text'. "
-            "Be as detailed as possible in the summary and event_text fields. "
-            "If you do not know the latitude or longitude, estimate them based on the place. "
-            "Do not include any extra commentary or explanation."
-        )
-        ai_model.config["generation_params"]["max_tokens"] = 2048
-        llm_response = ai_model.ask(single_prompt, system_prompt=system_prompt)
-        # Remove code block markers and join lines if needed
-        cleaned = llm_response.strip()
-        # Extract only the content between ```json and the next code block end (```)
-        if '```json' in cleaned:
-            start = cleaned.find('```json') + 7
-            end = cleaned.find('```', start)
-            if end == -1:
-                json_str = cleaned[start:].strip()
-            else:
-                json_str = cleaned[start:end].strip()
-            cleaned = json_str
-        elif '```' in cleaned:
-            start = cleaned.find('```') + 3
-            end = cleaned.find('```', start)
-            if end == -1:
-                json_str = cleaned[start:].strip()
-            else:
-                json_str = cleaned[start:end].strip()
-            cleaned = json_str
-        # Otherwise, use the whole cleaned string
-        # Optionally, join lines if the output is split
-        try:
-            story = _json.loads(cleaned)
-            if not isinstance(story, dict):
-                raise ValueError("LLM did not return a dict")
-        except Exception as e:
-            logging.warning(f"LLM did not return valid JSON for item {idx}: {e}\nResponse: {llm_response[:300]}")
-            continue
-        title = story.get('title') or ''
-        summary = story.get('summary') or ''
+    for idx, item in enumerate(news_items):
+        news_item_text = item.get('text', '')
+        news_links = item.get('links', [])
 
+        title = ''
+        summary = ''
+        place_str = ''
+        lat = lng = None
+        event_text = news_item_text
+        llm_sentence = None
 
-        # Support both string and dict for 'place', and allow lat/lng inside place or at top level
-        place = story.get('place')
-        city = country = ''
-        if isinstance(place, dict):
-            city = place.get('city', '')
-            country = place.get('country', '')
-            place_str = f"{city}, {country}".strip(', ')
-            lat = place.get('lat', story.get('lat'))
-            lng = place.get('lng', story.get('lng'))
-        elif isinstance(place, str):
-            place_str = place
-            lat = story.get('lat')
-            lng = story.get('lng')
+        if ai_model and getattr(ai_model, 'llm', None):
+            single_prompt = (
+                "You are a news geolocator. Given the following news item, extract a JSON object with: "
+                "'title', 'summary', 'place' (city, country), 'lat', 'lng', and 'event_text'. Respond ONLY with a JSON object, no extra text. "
+                f"News Item: {news_item_text}"
+            )
+            system_prompt = (
+                "You are a helpful assistant that extracts a single news story as a JSON object with 'title', 'summary', 'place', 'lat', 'lng', and 'event_text'. "
+                "Do not include any extra commentary or explanation."
+            )
+            ai_model.config["generation_params"]["max_tokens"] = 1024
+            llm_response = ai_model.ask(single_prompt, system_prompt=system_prompt)
+            cleaned = llm_response.strip()
+            if '```json' in cleaned:
+                start = cleaned.find('```json') + 7
+                end = cleaned.find('```', start)
+                cleaned = cleaned[start:end].strip() if end != -1 else cleaned[start:].strip()
+            elif '```' in cleaned:
+                start = cleaned.find('```') + 3
+                end = cleaned.find('```', start)
+                cleaned = cleaned[start:end].strip() if end != -1 else cleaned[start:].strip()
+            try:
+                story = _json.loads(cleaned)
+                if isinstance(story, dict):
+                    title = story.get('title') or ''
+                    summary = story.get('summary') or ''
+                    place = story.get('place')
+                    if isinstance(place, dict):
+                        city = place.get('city', '')
+                        country = place.get('country', '')
+                        place_str = f"{city}, {country}".strip(', ')
+                        lat = place.get('lat', story.get('lat'))
+                        lng = place.get('lng', story.get('lng'))
+                    elif isinstance(place, str):
+                        place_str = place
+                        lat = story.get('lat')
+                        lng = story.get('lng')
+                    else:
+                        place_str = ''
+                        lat = story.get('lat')
+                        lng = story.get('lng')
+                    event_text = story.get('event_text') or event_text
+                    llm_sentence = story.get('place') if story.get('place') else None
+            except Exception as e:
+                logging.warning(f"LLM did not return valid JSON for item {idx}: {e}\nResponse: {llm_response[:300]}")
         else:
-            place_str = ''
-            lat = story.get('lat')
-            lng = story.get('lng')
-
-        event_text = story.get('event_text') or ''
+            # No LLM available: attempt lightweight fallback geolocation
+            # Prefer a linked Wikipedia article if present
+            if news_links:
+                first = news_links[0]
+                if first.startswith('https://en.wikipedia.org/wiki/'):
+                    # Derive title from URL and query Wikidata
+                    wiki_title = first.split('/wiki/')[-1].replace('_', ' ')
+                    coords = get_coords_from_wikidata(wiki_title, user_agent)
+                    if coords:
+                        lat, lng = coords[0], coords[1]
+                        place_str = wiki_title
+                        title = wiki_title
+                else:
+                    # Try to extract a capitalized Place phrase from the text as a heuristic
+                    import re
+                    m = re.search(r" in ([A-Z][a-zA-Z\-]+(?: [A-Z][a-zA-Z\-]+)*)", news_item_text)
+                    if m:
+                        candidate = m.group(1)
+                        coords = get_coords_from_wikidata(candidate, user_agent)
+                        if coords:
+                            lat, lng = coords[0], coords[1]
+                            place_str = candidate
+                            title = candidate
         try:
-            lat = float(lat)
-            lng = float(lng)
+            lat = float(lat) if lat is not None else None
+            lng = float(lng) if lng is not None else None
         except (TypeError, ValueError):
             lat = lng = None
 
@@ -440,14 +462,17 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
             feature = {
                 "type": "Feature",
                 "properties": {
-                    "title": title,
+                    "title": title or (news_item_text[:100] + '...'),
                     "summary": summary,
-                    "place": place,
+                    "place": place_str,
                     "lat": lat,
                     "lng": lng,
                     "event_text": event_text,
+                    "url": news_links[0] if news_links else None,
+                    "event_links": news_links,
+                    "llm_sentence": llm_sentence,
                     "source": "Wikipedia Current Events",
-                    "geolocation_source": "llm"
+                    "geolocation_source": "llm" if llm_sentence else "fallback"
                 },
                 "geometry": {"type": "Point", "coordinates": [lng, lat]}
             }

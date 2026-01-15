@@ -1,0 +1,1722 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Gold Price Reaches All-Time High",
+        "summary": "The price of gold has reached an all-time high of $4,644.56 per ounce, surpassing December’s previous peak of $4,383.76.",
+        "place": "Royal Mint",
+        "lat": 51.555,
+        "lng": -3.387,
+        "event_text": "The price of gold reaches an all-time high of US$4,644.56 per ounce, surpassing December’s previous peak of $4,383.76.",
+        "url": "https://en.wikipedia.org/wiki/Gold_as_an_investment",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Gold_as_an_investment",
+          "https://www.royalmint.com/gold-price/"
+        ],
+        "llm_sentence": "Royal Mint",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.387,
+          51.555
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Sikhio Train Disaster",
+        "summary": "At least 32 people are killed and 66 others are injured when a construction crane falls onto a passing train in Sikhio district, Nakhon Ratchasima province, Thailand.",
+        "place": "Sikhio district, Nakhon Ratchasima province, Thailand",
+        "lat": 34.5022,
+        "lng": -37.1689,
+        "event_text": "Disasters and accidents: 2026 Sikhio train disaster At least 32 people are killed and 66 others are injured when a construction crane falls onto a passing train in Sikhio district , Nakhon Ratchasima province , Thailand . (Sky News) (Reuters) (AP)",
+        "url": "https://en.wikipedia.org/wiki/2026_Sikhio_train_disaster",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Sikhio_train_disaster",
+          "https://en.wikipedia.org/wiki/Crane_(machine)",
+          "https://en.wikipedia.org/wiki/Sikhio_district",
+          "https://en.wikipedia.org/wiki/Nakhon_Ratchasima_province",
+          "https://en.wikipedia.org/wiki/Thailand",
+          "https://news.sky.com/story/thailand-latest-at-least-22-killed-after-crane-falls-on-train-13494030",
+          "https://www.reuters.com/world/asia-pacific/least-five-killed-after-crane-falls-train-thailands-northeast-2026-01-14/",
+          "https://apnews.com/article/thailand-train-construction-crane-accident-deaths-4103e4d6806fe007d4e35f5eb9133a97"
+        ],
+        "llm_sentence": "Sikhio district, Nakhon Ratchasima province, Thailand",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -37.1689,
+          34.5022
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "France Opens Consulate in Greenland",
+        "summary": "French foreign minister Jean-Noël Barrot announced that France will open a consulate in Greenland on February 6, claiming it is a 'political signal' rejecting US attempts to acquire the territory.",
+        "place": "Greenland",
+        "lat": -54.7132,
+        "lng": -0.1897,
+        "event_text": "International relations: Denmark–France relations French foreign minister Jean-Noël Barrot announces that France will open a consulate in Greenland on February 6, saying it is a \"political signal\" that France rejects attempts by the United States to acquire the territory . (AFP via Le Monde )",
+        "url": "https://en.wikipedia.org/wiki/Denmark%E2%80%93France_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Denmark%E2%80%93France_relations",
+          "https://en.wikipedia.org/wiki/Ministry_for_Europe_and_Foreign_Affairs_(France)",
+          "https://en.wikipedia.org/wiki/Jean-No%C3%ABl_Barrot",
+          "https://en.wikipedia.org/wiki/France",
+          "https://en.wikipedia.org/wiki/Greenland",
+          "https://en.wikipedia.org/wiki/Proposed_United_States_acquisition_of_Greenland",
+          "https://www.lemonde.fr/en/international/article/2026/01/14/france-will-inaugurate-greenland-consulate-in-february_6749409_4.html"
+        ],
+        "llm_sentence": "Greenland",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.1897,
+          -54.7132
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Travel Bans Under Trump Administration",
+        "summary": "The United States will suspend the processing of immigrant visas for 75 countries, including tourist and business visas.",
+        "place": "United States",
+        "lat": -98.0637,
+        "lng": -122.4197,
+        "event_text": "International relations: Travel bans under the Trump administrations The United States announces it will suspend the processing of immigrant visas for 75 countries. Tourist and business visas will not be affected. (AFP via Le Monde )",
+        "url": "https://en.wikipedia.org/wiki/Travel_bans_under_the_Trump_administrations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Travel_bans_under_the_Trump_administrations",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://en.wikipedia.org/wiki/Visa_policy_of_the_United_States",
+          "https://www.lemonde.fr/en/international/article/2026/01/14/us-suspends-immigrant-visa-procedures-for-nationals-of-75-countries_6749430_4.html"
+        ],
+        "llm_sentence": "United States",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -122.4197,
+          -98.0637
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Law and crime: Sexual deepfake and illegal content generation on X",
+        "summary": "The Garda Síochána of Ireland confirms that there are 200 active investigations into child sexual abuse material being generated by Grok.",
+        "place": "Ireland",
+        "lat": 53,
+        "lng": -8,
+        "event_text": "Grok",
+        "url": "https://en.wikipedia.org/wiki/Grok_(chatbot)#Sexual_deepfake_and_illegal_content_generation_on_X",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)#Sexual_deepfake_and_illegal_content_generation_on_X",
+          "https://en.wikipedia.org/wiki/Garda_S%C3%ADoch%C3%A1na",
+          "https://en.wikipedia.org/wiki/Republic_of_Ireland",
+          "https://en.wikipedia.org/wiki/Child_sexual_abuse",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://www.rte.ie/news/2026/0114/1552972-media-committee/"
+        ],
+        "llm_sentence": "Ireland",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8,
+          53
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Verizon Outage Disrupts Wireless Services",
+        "summary": "An outage at Verizon is affecting wireless customers across the United States.",
+        "place": "United States",
+        "lat": -97.08,
+        "lng": -123.05,
+        "event_text": "Science and technology: An outage at Verizon disrupts calling and data services for wireless customers across the United States (AP)",
+        "url": "https://en.wikipedia.org/wiki/Verizon",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Verizon",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://apnews.com/article/verizon-cellular-outage-85d658a4fb6a6175cae8981d91a809c9"
+        ],
+        "llm_sentence": "United States",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -123.05,
+          -97.08
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Iranian Protests: High Death Toll Reported",
+        "summary": "The HRAI reports that at least 2,000 people have been killed during nationwide protests in Iran.",
+        "place": "Iran",
+        "lat": 32.5505,
+        "lng": -96.1334,
+        "event_text": "The non-governmental US-based organization HRAI reports that at least 2,000 people have been killed during nationwide protests in Iran.",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+          "https://en.wikipedia.org/wiki/2026_Iran_massacres",
+          "https://en.wikipedia.org/wiki/Human_Rights_Activists_in_Iran",
+          "https://en.wikipedia.org/wiki/Iran",
+          "https://www.cbsnews.com/news/iran-protest-death-toll-over-12000-feared-higher-video-bodies-at-morgue/",
+          "https://apnews.com/article/iran-protests-us-israel-war-nuclear-economy-1b2368e0804676d33d6aa0696815a102"
+        ],
+        "llm_sentence": "Iran",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -96.1334,
+          32.5505
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Armed conflicts and attacks: Insurgency in Chad",
+        "summary": "At least six people are killed, including three soldiers and three attackers, in clashes between a rebel group and the Chadian National Army in Korbol , Moyen-Chari , Chad.",
+        "place": "Korbol, Moyen-Chari, Chad",
+        "lat": -26.0348,
+        "lng": 15.7779,
+        "event_text": "Armed conflicts and attacks: Insurgency in Chad At least six people are killed, including three soldiers and three attackers, and 12 others are injured, including two other attackers, in clashes between a rebel group and the Chadian National Army in Korbol , Moyen-Chari , Chad. (Africanews)",
+        "url": "https://en.wikipedia.org/wiki/Insurgency_in_Chad_(2016%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Insurgency_in_Chad_(2016%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Chadian_National_Army",
+          "https://en.wikipedia.org/wiki/Korbol",
+          "https://en.wikipedia.org/wiki/Moyen-Chari_(region)",
+          "https://www.msn.com/en-ca/news/world/chad-at-least-six-killed-in-fighting-between-rebel-group-and-armed-forces/ar-AA1UdQti?ocid=winp1taskbar&cvid=622b763577f34e6ec178c7436803012a&ei=40"
+        ],
+        "llm_sentence": "Korbol, Moyen-Chari, Chad",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.7779,
+          -26.0348
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Adelaide Writers' Week Boycott Following Author Withdrawal",
+        "summary": "Adelaide Writers' Week has cancelled its 2026 festival following director Louise Adler’s resignation and the withdrawal of over 180 writers protesting a decision to disinvite Palestinian author Randa Abdel-Fattah.",
+        "place": "Adelaide, Australia",
+        "lat": -34.5972,
+        "lng": -150.4097,
+        "event_text": "Arts and culture: Adelaide Writers' Week boycott Adelaide Writers' Week in Adelaide , Australia , cancels its 2026 festival after director Louise Adler resigned and more than 180 writers withdrew in protest over the board's decision to disinvite Palestinian Australian author Randa Abdel-Fattah . (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Adelaide_Writers%27_Week_boycott",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Adelaide_Writers%27_Week_boycott",
+          "https://en.wikipedia.org/wiki/Adelaide_Writers%27_Week",
+          "https://en.wikipedia.org/wiki/Adelaide",
+          "https://en.wikipedia.org/wiki/Australia",
+          "https://en.wikipedia.org/wiki/Louise_Adler",
+          "https://en.wikipedia.org/wiki/Palestinian_Australian",
+          "https://en.wikipedia.org/wiki/Randa_Abdel-Fattah",
+          "https://www.reuters.com/world/asia-pacific/australian-writers-festival-turmoil-over-decision-bar-palestinian-author-2026-01-13/"
+        ],
+        "llm_sentence": "Adelaide, Australia",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -150.4097,
+          -34.5972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Argentine Inflation Rate Drops to 31.5%",
+        "summary": "Argentina records a 31.5% annual inflation rate in December, the lowest end-year level since 2017.",
+        "place": "Buenos Aires, Argentina",
+        "lat": -54.1398,
+        "lng": -33.7607,
+        "event_text": "Business and economy: 2018–present Argentine monetary crisis Argentina records a 31.5% annual inflation rate in December, the lowest end-year level since 2017, while monthly prices rise 2.8%, driven mainly by transport , housing, and fuel . (AFP via Barron's )",
+        "url": "https://en.wikipedia.org/wiki/2018%E2%80%93present_Argentine_monetary_crisis",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2018%E2%80%93present_Argentine_monetary_crisis",
+          "https://en.wikipedia.org/wiki/Economy_of_Argentina",
+          "https://en.wikipedia.org/wiki/Inflation",
+          "https://en.wikipedia.org/wiki/Transport_in_Argentina",
+          "https://en.wikipedia.org/wiki/Electricity_sector_in_Argentina",
+          "https://www.barrons.com/news/2025-argentine-inflation-lowest-in-8-years-stats-agency-aea18db9"
+        ],
+        "llm_sentence": "Buenos Aires, Argentina",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -33.7607,
+          -54.1398
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Law and crime: Mexican drug war",
+        "summary": "Mexican police arrest six alleged Tren de Aragua members operating in Mexico City on charges of drug trafficking, extortion, and human trafficking.",
+        "place": "Mexico City",
+        "lat": -98.3721,
+        "lng": -69.6734,
+        "event_text": "Law and crime: Mexican drug war , Mexico–Venezuela relations Mexican police arrest six alleged Tren de Aragua members operating in Mexico City on charges of drug trafficking , extortion , and human trafficking . (AP)",
+        "url": "https://en.wikipedia.org/wiki/Mexican_drug_war",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Mexican_drug_war",
+          "https://en.wikipedia.org/wiki/Mexico%E2%80%93Venezuela_relations",
+          "https://en.wikipedia.org/wiki/Mexico",
+          "https://en.wikipedia.org/wiki/Federal_Police_(Mexico)",
+          "https://en.wikipedia.org/wiki/Tren_de_Aragua",
+          "https://en.wikipedia.org/wiki/Mexico_City",
+          "https://en.wikipedia.org/wiki/Drug_trafficking",
+          "https://en.wikipedia.org/wiki/Extortion",
+          "https://en.wikipedia.org/wiki/Human_trafficking",
+          "https://apnews.com/article/mexico-venezuela-tren-de-aragua-trump-19cb1262524c69f62aeb71799199b932"
+        ],
+        "llm_sentence": "Mexico City",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69.6734,
+          -98.3721
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Ugandan General Election: Internet Shutdown and Misinformation",
+        "summary": "Uganda has ordered a nationwide internet shutdown two days before its general election, citing concerns about misinformation and incitement. The communications regulator directs service providers to suspend access.",
+        "place": "Uganda",
+        "lat": 1.28,
+        "lng": 32.39,
+        "event_text": "AFP via Le Monde (Al Jazeera)",
+        "url": "https://en.wikipedia.org/wiki/2026_Ugandan_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Ugandan_general_election",
+          "https://en.wikipedia.org/wiki/Human_rights_in_Uganda",
+          "https://en.wikipedia.org/wiki/Uganda",
+          "https://en.wikipedia.org/wiki/Internet_shutdown",
+          "https://en.wikipedia.org/wiki/Uganda_Communications_Commission",
+          "https://en.wikipedia.org/wiki/Communications_in_Uganda",
+          "https://en.wikipedia.org/wiki/Incitement",
+          "https://www.lemonde.fr/en/international/article/2026/01/13/uganda-cuts-internet-access-ahead-of-elections_6749386_4.html",
+          "https://www.aljazeera.com/news/2026/1/13/uganda-cuts-internet-days-before-presidential-election"
+        ],
+        "llm_sentence": "Uganda",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.39,
+          1.28
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Venezuelan Social Network X Re-Opened After Year of Blockage",
+        "summary": "Venezuelans have regained access to the social network X after a year of blockage under de jure president Nicolás Maduro.",
+        "place": "Venezuela",
+        "lat": 8,
+        "lng": -67,
+        "event_text": "Censorship in Venezuela",
+        "url": "https://en.wikipedia.org/wiki/Censorship_in_Venezuela",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Censorship_in_Venezuela",
+          "https://en.wikipedia.org/wiki/Venezuela",
+          "https://en.wikipedia.org/wiki/Twitter",
+          "https://en.wikipedia.org/wiki/Censorship_of_Twitter",
+          "https://en.wikipedia.org/wiki/De_jure",
+          "https://en.wikipedia.org/wiki/President_of_Venezuela",
+          "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Maduro",
+          "https://www.cp24.com/news/world/2026/01/14/venezuelans-regain-access-to-social-network-x-ending-maduros-yearlong-block/"
+        ],
+        "llm_sentence": "Venezuela",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67,
+          8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Taoiseach Martin Meets with Attorney General on Deepfake Concerns",
+        "summary": "The Taoiseach Micheál Martin has announced a meeting with the Attorney General Rossa Fanning regarding the use of the Grok chatbot for generating sexually explicit images of women and minors.",
+        "place": "Ireland",
+        "lat": -53.7861,
+        "lng": 0.0,
+        "event_text": "Science and technology: Sexual deepfake and illegal content generation on X Taoiseach Micheál Martin announces that he will meet with the Attorney General of Ireland Rossa Fanning about the Grok chatbot being used to produce sexually explicit images of women and minors. (RTÉ)",
+        "url": "https://en.wikipedia.org/wiki/Grok_(chatbot)#Sexual_deepfake_and_illegal_content_generation_on_X",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)#Sexual_deepfake_and_illegal_content_generation_on_X",
+          "https://en.wikipedia.org/wiki/Taoiseach",
+          "https://en.wikipedia.org/wiki/Miche%C3%A1l_Martin",
+          "https://en.wikipedia.org/wiki/Attorney_General_of_Ireland",
+          "https://en.wikipedia.org/wiki/Rossa_Fanning",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://www.rte.ie/news/technology/2026/0113/1552824-grok-ai-tool/"
+        ],
+        "llm_sentence": "Ireland",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.0,
+          -53.7861
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Assassination of Hamas Leader in Gaza",
+        "summary": "Armed conflicts and attacks: Gaza war Palestinian internal political violence The Israeli -backed militant organization Counter-Terrorism Strike Force says it has assassinated Mahmoud Al-Astal, head of a Hamas -run police unit in Khan Yunis , Gaza Strip.",
+        "place": "Khan Yunis, Gaza Strip",
+        "lat": 31.984752,
+        "lng": -35.066833,
+        "event_text": "Armed conflicts and attacks: Gaza war Palestinian internal political violence The Israeli -backed militant organization Counter-Terrorism Strike Force says it has assassinated Mahmoud Al-Astal, head of a Hamas -run police unit in Khan Yunis , Gaza Strip . (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Gaza_war",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Gaza_war",
+          "https://en.wikipedia.org/wiki/Palestinian_internal_political_violence",
+          "https://en.wikipedia.org/wiki/Israel",
+          "https://en.wikipedia.org/wiki/Militant",
+          "https://en.wikipedia.org/wiki/Counter-Terrorism_Strike_Force",
+          "https://en.wikipedia.org/wiki/Hamas",
+          "https://en.wikipedia.org/wiki/Khan_Yunis",
+          "https://en.wikipedia.org/wiki/Gaza_Strip",
+          "https://www.reuters.com/world/middle-east/israeli-backed-group-kills-senior-hamas-police-officer-gaza-threatens-more-2026-01-12/"
+        ],
+        "llm_sentence": "Khan Yunis, Gaza Strip",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -35.066833,
+          31.984752
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Armed conflicts and attacks: Insurgency in Khyber Pakhtunkhwa",
+        "summary": "A roadside bomb targeting a police vehicle killing six officers near the Afghan border in northwestern Pakistan.",
+        "place": "Khyber Pakhtunkhwa, Pakistan",
+        "lat": 35.286667,
+        "lng": -94.701373,
+        "event_text": "Armed conflicts and attacks: Insurgency in Khyber Pakhtunkhwa A roadside bomb targeting a police vehicle kills six officers near the Afghan border in northwestern Pakistan . (AP)",
+        "url": "https://en.wikipedia.org/wiki/Insurgency_in_Khyber_Pakhtunkhwa",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Insurgency_in_Khyber_Pakhtunkhwa",
+          "https://en.wikipedia.org/wiki/Improvised_explosive_device",
+          "https://en.wikipedia.org/wiki/Law_enforcement_in_Pakistan",
+          "https://en.wikipedia.org/wiki/Afghanistan",
+          "https://en.wikipedia.org/wiki/Pakistan",
+          "https://apnews.com/article/pakistan-bomb-targeting-police-killed-officers-northwest-0001e7cf3e8b35f7143ce7177e56b210"
+        ],
+        "llm_sentence": "Khyber Pakhtunkhwa, Pakistan",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -94.701373,
+          35.286667
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Myanmar Civil War: Detentions of Arakan Rohingya Salvation Army Members",
+        "summary": "Armed conflicts and attacks: Myanmar civil war, Bangladesh–Myanmar relations. Bangladesh detains 53 Arakan Rohingya Salvation Army members that crossed into Bangladesh amid fighting with the Arakan Army in Rakhine State.",
+        "place": "Bangladesh, Myanmar",
+        "lat": 23.041678,
+        "lng": -90.739466,
+        "event_text": "Armed conflicts and attacks: Myanmar civil war , Bangladesh–Myanmar relations Bangladesh detains 53 Arakan Rohingya Salvation Army members that crossed into Bangladesh amid fighting with the Arakan Army in Rakhine State , Myanmar . (AFP via The Straits Times )",
+        "url": "https://en.wikipedia.org/wiki/Myanmar_civil_war_(2021%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Myanmar_civil_war_(2021%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Bangladesh%E2%80%93Myanmar_relations",
+          "https://en.wikipedia.org/wiki/Bangladesh",
+          "https://en.wikipedia.org/wiki/Arakan_Rohingya_Salvation_Army",
+          "https://en.wikipedia.org/wiki/Arakan_Army",
+          "https://en.wikipedia.org/wiki/Rakhine_State",
+          "https://en.wikipedia.org/wiki/Myanmar",
+          "https://www.straitstimes.com/asia/south-asia/bangladesh-detains-53-arsa-rebels-issues-myanmar-border-alert"
+        ],
+        "llm_sentence": "Bangladesh, Myanmar",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.739466,
+          23.041678
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Spanish Prime Minister Tightens Rent Regulations",
+        "summary": "Pedro Sánchez issued a decree that tightens rent regulations, limiting short-term rentals and offering tax refunds to landlords renewing contracts without increases.",
+        "place": "Madrid, Spain",
+        "lat": 40.4168,
+        "lng": -3.7038,
+        "event_text": "Business and economy: Spanish property bubble Spanish prime minister Pedro Sánchez issues a decree that tightens rent regulations by limiting short-term rentals and offering full tax refunds to landlords who renew contracts without rent increases, as the country faces a housing shortfall of about 500,000 homes and average rents that have doubled over the past decade. (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Spanish_property_bubble",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Spanish_property_bubble",
+          "https://en.wikipedia.org/wiki/Spain",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Spain",
+          "https://en.wikipedia.org/wiki/Pedro_S%C3%A1nchez",
+          "https://en.wikipedia.org/wiki/Rent_regulation",
+          "https://en.wikipedia.org/wiki/Short-term_rental",
+          "https://en.wikipedia.org/wiki/Tax_refund",
+          "https://www.reuters.com/world/spain-tighten-rental-rules-with-room-rent-caps-seasonal-lease-curbs-2026-01-12/"
+        ],
+        "llm_sentence": "Madrid, Spain",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.7038,
+          40.4168
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Meteotsunami Strikes Argentina Beaches",
+        "summary": "One person is killed and 35 others are injured in a meteotsunami at several beaches in Argentina.",
+        "place": "Argentina",
+        "lat": -34,
+        "lng": -64,
+        "event_text": "Disasters and accidents: One person is killed and 35 others are injured in a meteotsunami at several beaches in Argentina .",
+        "url": "https://en.wikipedia.org/wiki/Meteotsunami",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Meteotsunami",
+          "https://en.wikipedia.org/wiki/Argentina",
+          "https://people.com/1-dead-35-injured-meteotsunami-wipes-beaches-11884265"
+        ],
+        "llm_sentence": "Argentina",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64,
+          -34
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Climate Change Brings Relief to Morocco",
+        "summary": "A seven-year drought ends in Morocco after a 95 percent increase in winter rainfall.",
+        "place": "Morocco",
+        "lat": 32,
+        "lng": -6,
+        "event_text": "A seven-year drought ends in Morocco after a 95 percent increase in winter rainfall compared with 2025 was recorded.",
+        "url": "https://en.wikipedia.org/wiki/Climate_change_in_Morocco",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Climate_change_in_Morocco",
+          "https://en.wikipedia.org/wiki/Drought",
+          "https://en.wikipedia.org/wiki/Morocco",
+          "https://www.reuters.com/sustainability/land-use-biodiversity/morocco-declares-end-seven-year-drought-after-winter-rains-2026-01-12/"
+        ],
+        "llm_sentence": "Morocco",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6,
+          32
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Somali-UAE Relations Strain as Governments Dispute Port Access",
+        "summary": "International relations: Somalia–United Arab Emirates relations, focusing on a constitutional crisis and disputes over port access in Berbera, Bosaso, and Kismayo.",
+        "place": "Berbera, Somalia, United Arab Emirates, Somaliland, Bosaso, Kismayo",
+        "lat": -30.17892,
+        "lng": -35.06647,
+        "event_text": "International relations: Somalia–United Arab Emirates relations Constitutional crisis in Somalia Cabinets of the Federal Government of Somalia claim to repel the United Arab Emirates from operating in the ports of Berbera , Bosaso , and Kismayo for their support of Somaliland . The Somaliland, Puntland , and Jubaland governments subsequently dismiss the decision. (Middle East Eye) (Dawan Africa) (The New Arab)",
+        "url": "https://en.wikipedia.org/wiki/Somalia%E2%80%93United_Arab_Emirates_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Somalia%E2%80%93United_Arab_Emirates_relations",
+          "https://en.wikipedia.org/wiki/Constitutional_crisis_in_Somalia",
+          "https://en.wikipedia.org/wiki/Federal_Government_of_Somalia",
+          "https://en.wikipedia.org/wiki/United_Arab_Emirates",
+          "https://en.wikipedia.org/wiki/Port_of_Berbera",
+          "https://en.wikipedia.org/wiki/Port_of_Bosaso",
+          "https://en.wikipedia.org/wiki/Port_of_Kismayo",
+          "https://en.wikipedia.org/wiki/Somaliland",
+          "https://en.wikipedia.org/wiki/Puntland",
+          "https://en.wikipedia.org/wiki/Jubaland",
+          "https://www.middleeasteye.net/news/somalia-cancels-all-agreements-uae-including-major-ports",
+          "https://www.dawan.africa/news/somalias-puntland-state-reaffirms-uae-security-cooperation",
+          "https://www.newarab.com/news/somalia-cancels-uae-deals-amid-tensions-over-somaliland-yemen"
+        ],
+        "llm_sentence": "Berbera, Somalia, United Arab Emirates, Somaliland, Bosaso, Kismayo",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -35.06647,
+          -30.17892
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Corruption in Georgia",
+        "summary": "Former Georgian prime minister Irakli Garibashvili pleads guilty to large-scale money-laundering charges and receives a five-year prison sentence and a $1 million fine.",
+        "place": "Georgia",
+        "lat": 33,
+        "lng": -83.5,
+        "event_text": "investigators seize about $6.5 million in cash during raids on his residence.",
+        "url": "https://en.wikipedia.org/wiki/Corruption_in_Georgia",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Corruption_in_Georgia",
+          "https://en.wikipedia.org/wiki/Georgia_(country)",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Georgia",
+          "https://en.wikipedia.org/wiki/Irakli_Garibashvili",
+          "https://en.wikipedia.org/wiki/Money_laundering",
+          "https://en.wikipedia.org/wiki/Georgian_lari",
+          "https://www.reuters.com/world/georgian-ex-pm-garibashvili-serve-five-year-sentence-after-guilty-plea-2026-01-12/"
+        ],
+        "llm_sentence": "Georgia",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.5,
+          33
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Corruption in Poland: Ziobro Receives Political Asylum",
+        "summary": "Former Polish justice minister Zbigniew Ziobro receives political asylum in Hungary while Polish prosecutors investigate him on 26 counts related to alleged misuse of a crime victims fund and other abuses of office under the first Morawiecki cabinet.",
+        "place": "Hungary",
+        "lat": 48.6134,
+        "lng": 22.5707,
+        "event_text": "Law and crime: Corruption in Poland , Hungary–Poland relations Former Polish justice minister Zbigniew Ziobro receives political asylum in Hungary while Polish prosecutors investigate him on 26 counts related to alleged misuse of a crime victims fund and other abuses of office under the first Morawiecki cabinet . ( The Guardian )",
+        "url": "https://en.wikipedia.org/wiki/Corruption_in_Poland",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Corruption_in_Poland",
+          "https://en.wikipedia.org/wiki/Hungary%E2%80%93Poland_relations",
+          "https://en.wikipedia.org/wiki/Poland",
+          "https://en.wikipedia.org/wiki/Ministry_of_Justice_(Poland)",
+          "https://en.wikipedia.org/wiki/Zbigniew_Ziobro",
+          "https://en.wikipedia.org/wiki/Political_asylum",
+          "https://en.wikipedia.org/wiki/Hungary",
+          "https://en.wikipedia.org/wiki/Victims%27_rights#Poland",
+          "https://en.wikipedia.org/wiki/First_cabinet_of_Mateusz_Morawiecki",
+          "https://www.theguardian.com/world/2026/jan/12/hungary-grants-asylum-to-former-polish-minister-zbigniew-ziobro-abuse-of-power-investigation"
+        ],
+        "llm_sentence": "Hungary",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.5707,
+          48.6134
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Swedish Police Seize Record Amount of Cocaine",
+        "summary": "Swedish police seized three tonnes of cocaine from a shipping container at the Port of Helsingborg, making it the country's largest seizure of the illegal drug.",
+        "place": "Helsingborg, Sweden",
+        "lat": 56.7832,
+        "lng": 14.6918,
+        "event_text": "Law and crime: War on drugs Swedish police seize three tonnes of cocaine found in a shipping container from South America at the Port of Helsingborg , making it the country 's single-largest seizure of the illegal drug . (Reuters) Spanish police , in coordination with the UK National Crime Agency and the US DEA , seize 10 tonnes of cocaine hidden among a cargo of salt on a cargo ship off the Canary Islands . It is the country 's largest ever seizure of drugs at sea. Thirteen people on board the vessel are arrested. ( The Guardian )",
+        "url": "https://en.wikipedia.org/wiki/War_on_drugs",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/War_on_drugs",
+          "https://en.wikipedia.org/wiki/Swedish_Police_Authority",
+          "https://en.wikipedia.org/wiki/Cocaine",
+          "https://en.wikipedia.org/wiki/Shipping_container",
+          "https://en.wikipedia.org/wiki/South_America",
+          "https://en.wikipedia.org/wiki/Port_of_Helsingborg",
+          "https://en.wikipedia.org/wiki/Sweden",
+          "https://en.wikipedia.org/wiki/Illegal_drug_trade",
+          "https://www.reuters.com/world/americas/sweden-makes-record-three-ton-seizure-cocaine-south-america-2026-01-12/",
+          "https://en.wikipedia.org/wiki/Law_enforcement_in_Spain",
+          "https://en.wikipedia.org/wiki/National_Crime_Agency",
+          "https://en.wikipedia.org/wiki/Drug_Enforcement_Administration",
+          "https://en.wikipedia.org/wiki/Salt",
+          "https://en.wikipedia.org/wiki/Cargo_ship",
+          "https://en.wikipedia.org/wiki/Canary_Islands",
+          "https://en.wikipedia.org/wiki/Spain",
+          "https://www.theguardian.com/world/2026/jan/12/spain-police-seize-cocaine-ship-canary-islands"
+        ],
+        "llm_sentence": "Helsingborg, Sweden",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          14.6918,
+          56.7832
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Venezuela Releases Political Prisoners",
+        "summary": "Venezuela has released between 41 and 116 political prisoners who were detained due to acts associated with civil disobedience.",
+        "place": "Venezuela",
+        "lat": 8,
+        "lng": -67,
+        "event_text": "Law and crime: Venezuela releases between 41 and 116 political prisoners who were detained due to acts associated with civil disobedience the constitutional order.",
+        "url": "https://en.wikipedia.org/wiki/Venezuela",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Venezuela",
+          "https://en.wikipedia.org/wiki/Political_prisoners_in_Venezuela",
+          "https://en.wikipedia.org/wiki/Civil_disobedience",
+          "https://en.wikipedia.org/wiki/Constitution_of_Venezuela",
+          "https://www.aljazeera.com/news/2026/1/12/venezuela-says-over-100-political-prisoners-released-pope-meets-machado"
+        ],
+        "llm_sentence": "Venezuela",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67,
+          8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Criticism of Twitter",
+        "summary": "The United Kingdom’s Ofcom opens an investigation into X (Twitter) over complaints about deepfake sexualised images created by its chatbot Grok.",
+        "place": "United Kingdom",
+        "lat": 45.761932,
+        "lng": -0.169832,
+        "event_text": "Science and technology: Criticism of Twitter The United Kingdom 's Ofcom opens an investigation into X over complaints about the creation of deepfake sexualised images by its chatbot Grok . (RTÉ)",
+        "url": "https://en.wikipedia.org/wiki/Criticism_of_Twitter",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Criticism_of_Twitter",
+          "https://en.wikipedia.org/wiki/United_Kingdom",
+          "https://en.wikipedia.org/wiki/Ofcom",
+          "https://en.wikipedia.org/wiki/Twitter",
+          "https://en.wikipedia.org/wiki/Deepfake_pornography",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://www.rte.ie/news/2026/0112/1552661-grok-investigation-ofcom/"
+        ],
+        "llm_sentence": "United Kingdom",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.169832,
+          45.761932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Meta Shut Down 544,000 Accounts of Under-16 Users on Social Media Platforms",
+        "summary": "Meta has shut down over 544,000 accounts of users under the age of 16 on Facebook, Instagram, and Threads in response to Australian social media age restrictions.",
+        "place": "Australia",
+        "lat": -149.8972,
+        "lng": 34.6133,
+        "event_text": "Science and technology: Meta reports that it has shut down over 544,000 accounts of users under the age of 16 on Facebook , Instagram , and Threads in response to Australian social media age restrictions . (DW)",
+        "url": "https://en.wikipedia.org/wiki/Meta_Platforms",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Meta_Platforms",
+          "https://en.wikipedia.org/wiki/Facebook",
+          "https://en.wikipedia.org/wiki/Instagram",
+          "https://en.wikipedia.org/wiki/Instagram_Threads",
+          "https://en.wikipedia.org/wiki/Online_Safety_Amendment",
+          "https://www.dw.com/en/meta-shuts-over-544000-australian-accounts-after-ban/a-75469113"
+        ],
+        "llm_sentence": "Australia",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.6133,
+          -149.8972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Armed conflicts and attacks: Syrian conflict",
+        "summary": "SDF–Syrian transitional government clashes in Aleppo. The Syrian Democratic Forces withdraw from Aleppo following negotiations with the Syrian transitional government.",
+        "place": "Aleppo",
+        "lat": 30.5768,
+        "lng": -67.3833,
+        "event_text": "SDF–Syrian transitional government clashes",
+        "url": "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/SDF%E2%80%93Syrian_transitional_government_clashes_(2025%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/January_2026_Aleppo_clashes",
+          "https://en.wikipedia.org/wiki/Syrian_Democratic_Forces",
+          "https://en.wikipedia.org/wiki/Aleppo",
+          "https://en.wikipedia.org/wiki/Syrian_transitional_government",
+          "https://www.aljazeera.com/news/2026/1/11/kurdish-fighters-leave-syrias-aleppo-after-days-of-clashes"
+        ],
+        "llm_sentence": "Aleppo",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67.3833,
+          30.5768
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Russian Drone Attacks in Ukraine",
+        "summary": "Armed conflicts and attacks: Russo-Ukrainian war",
+        "place": "Voronezh, Russia",
+        "lat": 59.8342,
+        "lng": 30.2673,
+        "event_text": "Armed conflicts and attacks: Russo-Ukrainian war Attacks in Russia during the Russo-Ukrainian war A woman is killed and around a dozen residential buildings are damaged in an overnight Ukrainian drone attack on Voronezh , Russia . (Reuters) Russian attacks on civilians in the Russo-Ukrainian war At least four people are killed and 20 others are injured in overnight Russian drone attacks across Ukraine . (Euronews)",
+        "url": "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Attacks_in_Russia_during_the_Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Armed_Forces_of_Ukraine",
+          "https://en.wikipedia.org/wiki/Drone_warfare",
+          "https://en.wikipedia.org/wiki/Voronezh",
+          "https://en.wikipedia.org/wiki/Russia",
+          "https://www.reuters.com/world/ukrainian-drone-attack-injures-four-damages-buildings-russias-voronezh-governor-2026-01-10/",
+          "https://en.wikipedia.org/wiki/Russian_attacks_on_civilians_in_the_Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Russian_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Ukraine",
+          "https://www.msn.com/en-ca/news/world/four-killed-and-20-more-injured-in-overnight-russian-attacks-across-ukraine/ar-AA1TZxZs?ocid=winp1taskbar&cvid=6942c6c072484a1f95fd89657eb27866&ei=15"
+        ],
+        "llm_sentence": "Voronezh, Russia",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.2673,
+          59.8342
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Iranian Protests: Injuries Reported, Internet Blackout Occurs",
+        "summary": "Armed conflicts and attacks: 2025–2026 Iranian protests. Two people are injured in a suspected vehicle-ramming attack when a U-Haul truck strikes multiple people during an anti-Iranian government protest in Los Angeles , California , United States , after protesters strike the vehicle with hands and flags. No one is hospitalized after the incident.",
+        "place": "Los Angeles, California, United States",
+        "lat": -118.2437,
+        "lng": -339.5667,
+        "event_text": "Armed conflicts and attacks: 2025–2026 Iranian protests 2026 Los Angeles ramming attack Two people are injured in a suspected vehicle-ramming attack when a U-Haul truck strikes multiple people during an anti-Iranian government protest in Los Angeles , California , United States , after protesters strike the vehicle with hands and flags. No one is hospitalized after the incident. (BNO News) Non-governmental organization HRAI verifies the deaths of 483 protesters and 47 security personnel in Iran since the start of the protests. (Sky News) (Reuters) Amidst the ongoing internet blackout , the Iranian government successfully shuts down the Starlink internet for the first time. ( The Times of Israel )",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+          "https://en.wikipedia.org/wiki/2026_Los_Angeles_ramming_attack",
+          "https://en.wikipedia.org/wiki/Vehicle-ramming_attack",
+          "https://en.wikipedia.org/wiki/U-Haul",
+          "https://en.wikipedia.org/wiki/Reactions_to_the_2025%E2%80%932026_Iranian_protests#Iranian_diaspora",
+          "https://en.wikipedia.org/wiki/Los_Angeles",
+          "https://en.wikipedia.org/wiki/California",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://bnonews.com/index.php/2026/01/several-injured-after-truck-driver-strikes-multiple-protesters-in-los-angeles/",
+          "https://en.wikipedia.org/wiki/Human_Rights_Activists_in_Iran",
+          "https://en.wikipedia.org/w/index.php?title=Involvement_of_foreign_militias_in_the_suppression_of_protests_in_Iran&action=edit&redlink=1",
+          "https://en.wikipedia.org/wiki/Iran",
+          "https://news.sky.com/story/iran-latest-us-and-israel-discuss-iran-intervention-as-tehran-vows-retaliation-against-american-regional-bases-amid-ongoing-protests-13492391",
+          "https://www.reuters.com/business/media-telecom/confronting-protests-iran-vows-strike-back-if-us-attacks-2026-01-11/",
+          "https://en.wikipedia.org/wiki/2026_Internet_blackout_in_Iran",
+          "https://en.wikipedia.org/wiki/Government_of_Iran",
+          "https://en.wikipedia.org/wiki/Starlink",
+          "https://www.timesofisrael.com/iran-appears-to-jam-starlink-after-shutting-down-comms-networks/"
+        ],
+        "llm_sentence": "Los Angeles, California, United States",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -339.5667,
+          -118.2437
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Sudanese Civil War: Government Returns to Khartoum",
+        "summary": " Sudanese prime minister Kamil Idris announced the government's return to Khartoum following its operation from Port Sudan for much of the conflict.",
+        "place": "Khartoum, Sudan",
+        "lat": 30.1749,
+        "lng": -152.826,
+        "event_text": "Armed conflicts and attacks: Sudanese civil war Sudanese prime minister Kamil Idris announces that the government will return to the capital of Khartoum after previously operating out of Port Sudan for much of the conflict. (Al Jazeera)",
+        "url": "https://en.wikipedia.org/wiki/Sudanese_civil_war_(2023%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Sudanese_civil_war_(2023%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Sudan",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Sudan",
+          "https://en.wikipedia.org/wiki/Kamil_Idris",
+          "https://en.wikipedia.org/wiki/Transitional_Sovereignty_Council",
+          "https://en.wikipedia.org/wiki/Khartoum",
+          "https://en.wikipedia.org/wiki/Port_Sudan",
+          "https://www.aljazeera.com/news/2026/1/11/sudan-announces-governments-return-to-khartoum-from-wartime-capital"
+        ],
+        "llm_sentence": "Khartoum, Sudan",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -152.826,
+          30.1749
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Arts and culture: 83rd Golden Globe Awards",
+        "summary": "The 83rd Golden Globe Awards saw Hamnet and One Battle After Another win Best Dramatic and Best Comedic or Musical Film, respectively. The Pitt and The Studio won Best Drama and Best Comedy or Musical in television.",
+        "place": "Los Angeles Times",
+        "lat": -118.2437,
+        "lng": 33.566,
+        "event_text": "Arts and culture: 83rd Golden Globe Awards At this year's Golden Globe Awards , Hamnet and One Battle After Another win Best Dramatic and Best Comedic or Musical Film , respectively, while The Pitt and The Studio win Best Drama and Best Comedy or Musical in television, respectively. ( Los Angeles Times )",
+        "url": "https://en.wikipedia.org/wiki/83rd_Golden_Globe_Awards",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/83rd_Golden_Globe_Awards",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Awards",
+          "https://en.wikipedia.org/wiki/Hamnet_(film)",
+          "https://en.wikipedia.org/wiki/One_Battle_After_Another",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Motion_Picture_%E2%80%93_Drama",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Motion_Picture_%E2%80%93_Musical_or_Comedy",
+          "https://en.wikipedia.org/wiki/The_Pitt",
+          "https://en.wikipedia.org/wiki/The_Studio_(TV_series)",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Television_Series_%E2%80%93_Drama",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Television_Series_%E2%80%93_Musical_or_Comedy",
+          "https://www.latimes.com/entertainment-arts/story/2026-01-11/golden-globes-2026-winners-list"
+        ],
+        "llm_sentence": "Los Angeles Times",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.566,
+          -118.2437
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "China-Egypt Relations: Renewable Energy Agreements Worth $1.8 Billion",
+        "summary": "China and Norway have signed renewable energy agreements worth US$ 1.8 billion with China, marking a significant boost to global efforts towards sustainable energy.",
+        "place": "Egypt",
+        "lat": 27,
+        "lng": 29,
+        "event_text": "Renewable energy agreements",
+        "url": "https://en.wikipedia.org/wiki/China%E2%80%93Egypt_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/China%E2%80%93Egypt_relations",
+          "https://en.wikipedia.org/wiki/Foreign_relations_of_Norway",
+          "https://en.wikipedia.org/wiki/Egypt",
+          "https://en.wikipedia.org/wiki/Renewable_energy",
+          "https://en.wikipedia.org/wiki/US$",
+          "https://en.wikipedia.org/wiki/China",
+          "https://en.wikipedia.org/wiki/Norway",
+          "https://www.alarabiya.net/aswaq/oil-and-gas/2026/01/11/%D9%85%D8%B5%D8%B1-%D8%AA%D9%88%D9%82%D8%B9-%D8%A7%D8%AA%D9%81%D8%A7%D9%82%D9%8A%D8%A7%D8%AA-%D8%A8%D9%85%D8%AC%D8%A7%D9%84-%D8%A7%D9%84%D8%B7%D8%A7%D9%82%D8%A9-%D8%A7%D9%84%D9%85%D8%AA%D8%AC%D8%AF%D8%AF%D8%A9-%D8%A8%D9%82%D9%8A%D9%85%D8%A9-18-%D9%85%D9%84%D9%8A%D8%A7%D8%B1-%D8%AF%D9%88%D9%84%D8%A7%D8%B1"
+        ],
+        "llm_sentence": "Egypt",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29,
+          27
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Australian Bushfires Devastate Victoria and New South Wales",
+        "summary": "2025–26 Australian bushfire season, one person killed and at least 300 properties destroyed by wildfires across Victoria and New South Wales.",
+        "place": "Victoria, NSW, Australia",
+        "lat": -38.05,
+        "lng": -147.0,
+        "event_text": "Disasters and accidents: 2025–26 Australian bushfire season One person is killed and at least 300 properties are destroyed by wildfires across Victoria and New South Wales , Australia . A state of emergency is declared in Victoria with thousands of firefighters and more than 70 aircraft deployed to combat the fires. (BBC News)",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%9326_Australian_bushfire_season",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%9326_Australian_bushfire_season",
+          "https://en.wikipedia.org/wiki/Wildfire",
+          "https://en.wikipedia.org/wiki/Victoria_(state)",
+          "https://en.wikipedia.org/wiki/New_South_Wales",
+          "https://en.wikipedia.org/wiki/Australia",
+          "https://en.wikipedia.org/wiki/State_of_emergency",
+          "https://en.wikipedia.org/wiki/Firefighter",
+          "https://www.bbc.co.uk/news/articles/c75xdg2p36lo"
+        ],
+        "llm_sentence": "Victoria, NSW, Australia",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -147.0,
+          -38.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Disasters and accidents: Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad, Pakistan.",
+        "summary": "Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad, Pakistan.",
+        "place": "Islamabad, Pakistan",
+        "lat": 34.0522,
+        "lng": 77.6937,
+        "event_text": "Disasters and accidents: Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad , Pakistan . ( Dawn )",
+        "url": "https://en.wikipedia.org/wiki/Islamabad",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Islamabad",
+          "https://en.wikipedia.org/wiki/Pakistan",
+          "https://www.dawn.com/news/1966363"
+        ],
+        "llm_sentence": "Islamabad, Pakistan",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          77.6937,
+          34.0522
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Disasters and accidents: The death toll from avalanches in the French Alps over the weekend rises to six as three more skiers are killed.",
+        "summary": "Avalanches have caused six deaths in the French Alps over the weekend.",
+        "place": "French Alps",
+        "lat": 44.8,
+        "lng": 6.5,
+        "event_text": "The death toll from avalanches in the French Alps over the weekend rises to six as three more skiers are killed.",
+        "url": "https://en.wikipedia.org/wiki/Avalanche",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Avalanche",
+          "https://en.wikipedia.org/wiki/French_Alps",
+          "https://en.wikipedia.org/wiki/Skiing",
+          "https://www.scmp.com/news/world/europe/article/3339522/6-piste-skiers-killed-separate-french-alps-avalanches-over-weekend"
+        ],
+        "llm_sentence": "French Alps",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.5,
+          44.8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Disasters and accidents: Four people are killed and five others are injured after two cars collide head-on in Bolton , Greater Manchester , United Kingdom",
+        "summary": "Four people are killed and five others are injured after two cars collide head-on in Bolton, Greater Manchester, United Kingdom.",
+        "place": "Bolton , Greater Manchester , United Kingdom",
+        "lat": 31.24508,
+        "lng": -6.71894,
+        "event_text": "Disasters and accidents: Four people are killed and five others are injured after two cars collide head-on in Bolton , Greater Manchester , United Kingdom . (BBC News)",
+        "url": "https://en.wikipedia.org/wiki/Head-on_collision",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Head-on_collision",
+          "https://en.wikipedia.org/wiki/Bolton",
+          "https://en.wikipedia.org/wiki/Greater_Manchester",
+          "https://en.wikipedia.org/wiki/United_Kingdom",
+          "https://www.bbc.com/news/articles/c0r45k245pvo"
+        ],
+        "llm_sentence": "Bolton , Greater Manchester , United Kingdom",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.71894,
+          31.24508
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Three Inmates Killed and 14 Injured in Prison Fight",
+        "summary": "Three inmates are killed and 14 others are injured, including a corrections officer, in a prison fight at the Washington State Prison in Davisboro, Georgia, United States.",
+        "place": "Davisboro, Georgia",
+        "lat": 33.689412,
+        "lng": -83.075373,
+        "event_text": "Law and crime: Three inmates are killed and 14 others are injured, including a corrections officer, in a prison fight at the Washington State Prison in Davisboro, Georgia , United States. (AP)",
+        "url": "https://en.wikipedia.org/wiki/Prison_violence",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Prison_violence",
+          "https://en.wikipedia.org/wiki/Washington_State_Prison",
+          "https://en.wikipedia.org/wiki/Davisboro,_Georgia",
+          "https://apnews.com/article/georgia-prison-fights-inmates-dead-5fc77583ef6afd3284e747a1bb8ddc6b"
+        ],
+        "llm_sentence": {
+          "city": "Davisboro",
+          "country": "Georgia"
+        },
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.075373,
+          33.689412
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Myanmar General Election",
+        "summary": "Citizens of Myanmar vote in the second phase to elect the nation’s bicameral legislature. One more phase of voting is expected in late January.",
+        "place": "Myanmar",
+        "lat": 22,
+        "lng": 96,
+        "event_text": "Politics and elections: 2025–26 Myanmar general election",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%9326_Myanmar_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%9326_Myanmar_general_election",
+          "https://en.wikipedia.org/wiki/Myanmar",
+          "https://en.wikipedia.org/wiki/Pyidaungsu_Hluttaw",
+          "https://apnews.com/article/myanmar-election-military-party-second-phase-6661c927e1b6079d899ccc022f0a981d"
+        ],
+        "llm_sentence": "Myanmar",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96,
+          22
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Beninese Parliamentary Election",
+        "summary": "Citizens in Benin vote to elect the 109 members of the National Assembly more than one month after a thwarted coup attempt.",
+        "place": "Benin",
+        "lat": 8.8333333333333,
+        "lng": 2.1833333333333,
+        "event_text": "2026 Beninese parliamentary election",
+        "url": "https://en.wikipedia.org/wiki/2026_Beninese_parliamentary_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Beninese_parliamentary_election",
+          "https://en.wikipedia.org/wiki/Benin",
+          "https://en.wikipedia.org/wiki/National_Assembly_(Benin)",
+          "https://en.wikipedia.org/wiki/2025_Beninese_coup_attempt",
+          "https://www.rfi.fr/en/africa/20260110-benin-heads-to-polls-after-failed-coup-shakes-political-landscape"
+        ],
+        "llm_sentence": "Benin",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.1833333333333,
+          8.8333333333333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Sports: 2026 United Cup",
+        "summary": "Poland win their first United Cup title after defeating Switzerland 2–1 in the final at the Ken Rosewall Arena in Sydney, Australia.",
+        "place": "Sydney, Australia",
+        "lat": -33.867777777777775,
+        "lng": 151.21,
+        "event_text": "Poland win their first United Cup title after defeating Switzerland 2–1 in the final at the Ken Rosewall Arena in Sydney, Australia.",
+        "url": "https://en.wikipedia.org/wiki/2026_United_Cup",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_United_Cup",
+          "https://en.wikipedia.org/wiki/Tennis",
+          "https://en.wikipedia.org/wiki/Poland",
+          "https://en.wikipedia.org/wiki/United_Cup",
+          "https://en.wikipedia.org/wiki/Switzerland",
+          "https://en.wikipedia.org/wiki/Ken_Rosewall_Arena",
+          "https://en.wikipedia.org/wiki/Sydney",
+          "https://www.reuters.com/sports/tennis/third-time-lucky-poland-beat-switzerland-win-united-cup-2026-01-11/"
+        ],
+        "llm_sentence": {
+          "city": "Sydney",
+          "country": "Australia"
+        },
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          151.21,
+          -33.867777777777775
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Armed Conflicts and Attacks: Syrian Conflict",
+        "summary": "Assisted in clashes between armed forces and attacks on a governate building in Aleppo, Syria. Government officials were holding a conference inside.",
+        "place": "Aleppo, Syria",
+        "lat": 36.2,
+        "lng": 37.16,
+        "event_text": "Armed conflicts and attacks: Syrian conflict SDF–Syrian transitional government clashes January 2026 Aleppo clashes A kamikaze drone of unknown origin strikes a governate building in Aleppo , Syria , while government officials were holding a conference inside, a day after the government declared a ceasefire in the city. (Al Jazeera) Operation Hawkeye Strike The United States military launches airstrikes against Islamic State targets in Syria . (Sky News) (Fox News)",
+        "url": "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/SDF%E2%80%93Syrian_transitional_government_clashes_(2025%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/January_2026_Aleppo_clashes",
+          "https://en.wikipedia.org/wiki/Loitering_munition",
+          "https://en.wikipedia.org/wiki/Aleppo_Governorate",
+          "https://en.wikipedia.org/wiki/Aleppo",
+          "https://en.wikipedia.org/wiki/Syria",
+          "https://en.wikipedia.org/wiki/Government_of_Syria",
+          "https://www.aljazeera.com/news/2026/1/10/drone-hits-aleppo-governorate-building-after-syrian-army-declares-ceasefire",
+          "https://en.wikipedia.org/wiki/Operation_Hawkeye_Strike",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://en.wikipedia.org/wiki/United_States_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Airstrike",
+          "https://en.wikipedia.org/wiki/Islamic_State",
+          "https://en.wikipedia.org/wiki/Syria",
+          "https://news.sky.com/story/us-military-carries-out-large-scale-strikes-against-isis-across-syria-13491264",
+          "https://www.foxnews.com/us/us-military-launches-airstrikes-against-isis-targets-syria-officials-say"
+        ],
+        "llm_sentence": "Aleppo, Syria",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.16,
+          36.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Armed Conflicts and Attacks: Crisis in Venezuela",
+        "summary": "Arguably the most significant geopolitical tensions currently facing the United States, this news item details a growing crisis in Venezuela involving armed conflicts, attacks, and U.S. intervention.",
+        "place": "Venezuela",
+        "lat": 36.4692,
+        "lng": -98.6287,
+        "event_text": "The U.S. State Department urges Americans to leave Venezuela immediately, following reports that Colectivos were targeting them.",
+        "url": "https://en.wikipedia.org/wiki/Crisis_in_Venezuela",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Crisis_in_Venezuela",
+          "https://en.wikipedia.org/wiki/War_on_drugs",
+          "https://en.wikipedia.org/wiki/United_States%E2%80%93Venezuela_relations",
+          "https://en.wikipedia.org/wiki/2026_United_States_intervention_in_Venezuela",
+          "https://en.wikipedia.org/wiki/United_States_Department_of_State",
+          "https://en.wikipedia.org/wiki/Americans",
+          "https://en.wikipedia.org/wiki/Venezuela",
+          "https://en.wikipedia.org/wiki/Colectivo_(Venezuela)",
+          "https://www.theguardian.com/us-news/2026/jan/10/us-citizens-venezuela-paramilitaries"
+        ],
+        "llm_sentence": "Venezuela",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -98.6287,
+          36.4692
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Argentina-Brazil Relations",
+        "summary": "Argentina and Brazil are discussing relations following the expulsion of Argentine diplomats under the Nicolás Maduro administration. Brazil is taking responsibility for diplomatic representation and custody of the Argentine embassy in Venezuela.",
+        "place": "Venezuela",
+        "lat": -18.7936,
+        "lng": -50.4183,
+        "event_text": "International relations: Argentina–Brazil relations , Argentina–Venezuela relations , International reactions to the 2026 United States intervention in Venezuela Brazil returns responsibility to Argentina for its diplomatic representation and custody of the Argentine embassy in Venezuela after overseeing the mission in Caracas since 2024 following the expulsion of Argentine diplomats under the Nicolás Maduro administration . (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Argentina%E2%80%93Brazil_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Argentina%E2%80%93Brazil_relations",
+          "https://en.wikipedia.org/wiki/Argentina%E2%80%93Venezuela_relations",
+          "https://en.wikipedia.org/wiki/International_reactions_to_the_2026_United_States_intervention_in_Venezuela",
+          "https://en.wikipedia.org/wiki/Brazil",
+          "https://en.wikipedia.org/wiki/Argentina",
+          "https://en.wikipedia.org/wiki/List_of_diplomatic_missions_of_Argentina",
+          "https://en.wikipedia.org/wiki/Caracas",
+          "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Maduro",
+          "https://en.wikipedia.org/wiki/Presidency_of_Nicol%C3%A1s_Maduro",
+          "https://www.reuters.com/world/americas/brazil-hand-back-argentine-diplomatic-representation-venezuela-2026-01-11/"
+        ],
+        "llm_sentence": "Venezuela",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -50.4183,
+          -18.7936
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Egyptian Parliamentary Election Finalized",
+        "summary": "The National Elections Authority has finalized the remaining parliamentary seats, confirming that President Abdel Fattah el-Sisi's allies retain the two-thirds supermajority needed to amend the constitution. Opposition parties and independents hold approximately 158 of 568 elected seats.",
+        "place": "Egypt",
+        "lat": 30.047912,
+        "lng": -28.363895,
+        "event_text": "Politics and elections: 2025 Egyptian parliamentary election Egypt 's National Elections Authority finalizes the remaining 49 parliamentary seats, confirming that President Abdel Fattah el-Sisi 's allies retain the two-thirds supermajority needed to amend the constitution , while opposition parties and independents hold about 158 of 568 elected seats. (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/2025_Egyptian_parliamentary_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025_Egyptian_parliamentary_election",
+          "https://en.wikipedia.org/wiki/Egypt",
+          "https://en.wikipedia.org/wiki/National_Elections_Authority",
+          "https://en.wikipedia.org/wiki/Parliament_of_Egypt",
+          "https://en.wikipedia.org/wiki/President_of_Egypt",
+          "https://en.wikipedia.org/wiki/Abdel_Fattah_el-Sisi",
+          "https://en.wikipedia.org/wiki/Supermajority",
+          "https://en.wikipedia.org/wiki/Constitutional_amendment",
+          "https://en.wikipedia.org/wiki/Constitution_of_Egypt",
+          "https://en.wikipedia.org/wiki/List_of_political_parties_in_Egypt",
+          "https://en.wikipedia.org/wiki/Independent_politician",
+          "https://www.reuters.com/world/africa/egypt-announces-results-last-seats-parliament-vote-that-gave-sisi-strong-2026-01-10/"
+        ],
+        "llm_sentence": "Egypt",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -28.363895,
+          30.047912
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Nicaragua Releases Prisoners After US Demands Release of Political Prisoners",
+        "summary": "Nicaragua releases dozens of prisoners following a public demand from the United States to release more than 60 political prisoners.",
+        "place": "Nicaragua, United States",
+        "lat": -8.5347,
+        "lng": -84.6942,
+        "event_text": "Politics and elections: Nicaragua–United States relations Nicaragua releases dozens of prisoners after the United States publicly demanded the release of more than 60 political prisoners . (Al Jazeera)",
+        "url": "https://en.wikipedia.org/wiki/Nicaragua%E2%80%93United_States_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Nicaragua%E2%80%93United_States_relations",
+          "https://en.wikipedia.org/wiki/Nicaragua",
+          "https://en.wikipedia.org/wiki/Politics_of_Nicaragua",
+          "https://www.aljazeera.com/news/2026/1/10/nicaragua-frees-dozens-of-prisoners-amid-pressure-from-trump-administration"
+        ],
+        "llm_sentence": "Nicaragua, United States",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -84.6942,
+          -8.5347
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Honduran Election: Key Details Revealed",
+        "summary": "The Honduran general election is expected to be finalized with the confirmed results and transfer of power, despite President Xiomara Castro's decree for a recount.",
+        "place": "Honduras",
+        "lat": 82.3467,
+        "lng": -86.2091,
+        "event_text": "Politics and elections: 2025 Honduran general election The Chief of the Joint Chiefs of Staff of the Honduran Armed Forces Héctor Valerio informs that the already confirmed election results and the transfer of power would be guaranteed despite President Xiomara Castro 's decree demanding a recount of the results. ( Tiempo )",
+        "url": "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+          "https://en.wikipedia.org/wiki/Armed_Forces_of_Honduras",
+          "https://en.wikipedia.org/wiki/President_of_Honduras",
+          "https://en.wikipedia.org/wiki/Xiomara_Castro",
+          "https://tiempo.hn/honduras/2026/01/10/hector-valerio-al-pueblo-confien-en-las-ffaa-garantizaremos-la-alternancia-del-poder/"
+        ],
+        "llm_sentence": "Honduras",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.2091,
+          82.3467
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Indonesia Suspens Access to Chatbot Due to Pornography Concerns",
+        "summary": "The Science and technology agency in Indonesia has suspended access to the Grok chatbot after concerns about generating pornographic content. Representatives of xAI, the developer, have been summoned for investigation.",
+        "place": "Indonesia",
+        "lat": -2,
+        "lng": 118,
+        "event_text": "Suspension of access to the Grok chatbot due to concerns about pornography generation.",
+        "url": "https://en.wikipedia.org/wiki/Pornography_Act_(Indonesia)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Pornography_Act_(Indonesia)",
+          "https://en.wikipedia.org/wiki/Indonesia",
+          "https://en.wikipedia.org/wiki/Internet_censorship_in_Indonesia",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://en.wikipedia.org/wiki/Chatbot",
+          "https://en.wikipedia.org/wiki/Generative_AI_pornography",
+          "https://en.wikipedia.org/wiki/XAI_(company)",
+          "https://www.reuters.com/legal/litigation/indonesia-temporarily-blocks-access-grok-over-sexualised-images-2026-01-10/"
+        ],
+        "llm_sentence": "Indonesia",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          118,
+          -2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "US Military Seizes Timor-Leste Oil Tanker",
+        "summary": "Armed conflicts and attacks: Operation Southern Spear, United States oil blockade during Operation Southern Spear, Timor-Leste–United States relations The United States military seizes a Timor-Leste -flagged oil tanker in the Caribbean Sea , marking the fifth tanker seized as part of the blockade.",
+        "place": "Caribbean Sea",
+        "lat": 15,
+        "lng": -75,
+        "event_text": "The Guardian (The Patriot-News)",
+        "url": "https://en.wikipedia.org/wiki/Operation_Southern_Spear",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Operation_Southern_Spear",
+          "https://en.wikipedia.org/wiki/United_States_oil_blockade_during_Operation_Southern_Spear",
+          "https://en.wikipedia.org/wiki/Timor-Leste%E2%80%93United_States_relations",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://en.wikipedia.org/wiki/US_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Timor-Leste",
+          "https://en.wikipedia.org/wiki/Oil_tanker",
+          "https://en.wikipedia.org/wiki/Caribbean_Sea",
+          "https://www.theguardian.com/world/2026/jan/09/us-venezuela-oil-tanker-seizure",
+          "https://www.pennlive.com/nation-world/2026/01/trump-cancels-2nd-attack-on-venezuela-but-us-seizes-another-tanker.html"
+        ],
+        "llm_sentence": "Caribbean Sea",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75,
+          15
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Russian Strikes Target Lviv in Ukraine",
+        "summary": "Russia has conducted high-rise apartment building strikes on Kyiv, Kyiv, targeting four people and wounding 28 others after several missile and drone attacks. The Qatari embassy was also damaged.",
+        "place": "Kyiv, Ukraine",
+        "lat": 43.6892,
+        "lng": 30.7128,
+        "event_text": "Armed conflicts and attacks: Russo-Ukrainian war Kyiv strikes , Russian attacks on civilians in the Russo-Ukrainian war Russian drone and missile strikes on Kyiv , Ukraine , kill four people and wound 28 others after several high-rise apartment buildings are targeted. The Qatari embassy is also damaged in the strikes. (Euronews) Russia strikes Lviv in western Ukraine with its Oreshnik intermediate-range ballistic missile , reportedly targeting a critical infrastructure site. (BBC News)",
+        "url": "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Kyiv_strikes_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Russian_attacks_on_civilians_in_the_Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Russian_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Kyiv",
+          "https://en.wikipedia.org/wiki/Ukraine",
+          "https://en.wikipedia.org/wiki/Qatar",
+          "https://en.wikipedia.org/wiki/List_of_diplomatic_missions_of_Qatar",
+          "https://www.euronews.com/video/2026/01/09/russian-airstrike-on-multiple-residential-buildings-in-kyiv-leaves-4-dead-24-injured",
+          "https://en.wikipedia.org/wiki/Russia",
+          "https://en.wikipedia.org/wiki/Lviv",
+          "https://en.wikipedia.org/wiki/Western_Ukraine",
+          "https://en.wikipedia.org/wiki/Oreshnik_(missile)",
+          "https://en.wikipedia.org/wiki/Intermediate-range_ballistic_missile",
+          "https://en.wikipedia.org/wiki/Critical_infrastructure",
+          "https://www.bbc.co.uk/news/articles/cgqe9kv9xxvo"
+        ],
+        "llm_sentence": "Kyiv, Ukraine",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7128,
+          43.6892
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Armed Conflicts and Attacks: Yemeni Civil War 2025",
+        "summary": "A Southern Transitional Council (STC) delegation in Riyadh announces the dissolution of its group following territorial losses to the Saudi-backed Yemeni government. The STC rejects the announcement, claiming it was made under duress.",
+        "place": "Riyadh, Yemen",
+        "lat": -40.3782,
+        "lng": 16.9382,
+        "event_text": "Armed conflicts and attacks: Yemeni civil war 2025 Southern Yemen offensive , Saudi-led intervention in the Yemeni civil war A Southern Transitional Council (STC) delegation in Riyadh announces the group's dissolution following widespread territorial losses to the Saudi -backed Yemeni government . The STC rejects the announcement, saying the announcement was made under duress. ( The New Arab )",
+        "url": "https://en.wikipedia.org/wiki/Yemeni_civil_war_(2014%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Yemeni_civil_war_(2014%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/2025_Southern_Yemen_offensive",
+          "https://en.wikipedia.org/wiki/Saudi-led_intervention_in_the_Yemeni_civil_war",
+          "https://en.wikipedia.org/wiki/Southern_Transitional_Council",
+          "https://en.wikipedia.org/wiki/Riyadh",
+          "https://en.wikipedia.org/wiki/Saudi_Arabia",
+          "https://en.wikipedia.org/wiki/Yemen",
+          "https://en.wikipedia.org/wiki/Yemeni_government",
+          "https://www.newarab.com/news/south-yemen-separatists-call-foul-stc-announce-dissolution"
+        ],
+        "llm_sentence": "Riyadh, Yemen",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9382,
+          -40.3782
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "EU-Mercosur Trade Deal: Largest Free Trade Area",
+        "summary": "Twenty-one EU countries approve a trade deal with Mercosur, creating the world's largest free trade area after 25 years of negotiations. The deal is expected to be finalized in Paraguay.",
+        "place": "Paraguay",
+        "lat": -64.2783,
+        "lng": -60.8498,
+        "event_text": "Business and economy: EU–Mercosur Association Agreement Twenty-one of the 27 countries of the European Union approve a trade deal with Mercosur , which will create \"the world's largest free trade area \" after 25 years of talks. The deal is expected to be formally signed in Paraguay in the near future. ( Politico )",
+        "url": "https://en.wikipedia.org/wiki/EU%E2%80%93Mercosur_Association_Agreement",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/EU%E2%80%93Mercosur_Association_Agreement",
+          "https://en.wikipedia.org/wiki/European_Union",
+          "https://en.wikipedia.org/wiki/Trade_deal",
+          "https://en.wikipedia.org/wiki/Mercosur",
+          "https://en.wikipedia.org/wiki/Free_trade_area",
+          "https://en.wikipedia.org/wiki/Paraguay",
+          "https://www.politico.eu/article/eu-countries-approve-mercosur-trade-deal-for-signature/"
+        ],
+        "llm_sentence": "Paraguay",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60.8498,
+          -64.2783
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Law and crime: 2026 Cedarbluff shootings",
+        "summary": "At least six people are killed in a spree shootings at three locations across Cedarbluff, Mississippi, United States. A 24-year-old man is taken into custody and charged with murder.",
+        "place": "Cedarbluff, Mississippi, United States",
+        "lat": 38.7695,
+        "lng": -98.9697,
+        "event_text": "Law and crime: 2026 Cedarbluff shootings At least six people are killed in spree shootings at three locations across Cedarbluff , Mississippi , United States. A 24-year-old man is taken into custody and charged with murder . (AP via CTV News)",
+        "url": "https://en.wikipedia.org/wiki/2026_Cedarbluff_shootings",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Cedarbluff_shootings",
+          "https://en.wikipedia.org/wiki/Spree_killer",
+          "https://en.wikipedia.org/wiki/Cedarbluff,_Mississippi",
+          "https://en.wikipedia.org/wiki/Mississippi",
+          "https://en.wikipedia.org/wiki/Murder_in_United_States_law",
+          "https://www.ctvnews.ca/world/article/six-killed-in-mississippi-suspect-charged-with-murder/"
+        ],
+        "llm_sentence": "Cedarbluff, Mississippi, United States",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -98.9697,
+          38.7695
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "title": "Honduran Election Recount Approved",
+        "summary": "The Honduran National Congress approves a recount of the November 2025 election, with President Xiomara Castro's decree subsequently approved.",
+        "place": "Honduras",
+        "lat": 14.633333,
+        "lng": -86.816667,
+        "event_text": "Politics and elections: 2025 Honduran general election The National Congress of Honduras approves a recount of the votes cast in the November 2025 election, which is subsequently approved by President Xiomara Castro 's decree. (CNN in Spanish ) ( Bloomberg )",
+        "url": "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+          "https://en.wikipedia.org/wiki/National_Congress_of_Honduras",
+          "https://en.wikipedia.org/wiki/President_of_Honduras",
+          "https://en.wikipedia.org/wiki/Xiomara_Castro",
+          "https://cnnespanol.cnn.com/2026/01/10/latinoamerica/honduras-xiomara-castro-decreto-recuento-votos-orix",
+          "https://www.bloomberg.com/news/articles/2026-01-10/honduran-president-orders-vote-recount-requests-meeting-trump"
+        ],
+        "llm_sentence": "Honduras",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -86.816667,
+          14.633333
+        ]
+      }
+    }
+  ]
+}

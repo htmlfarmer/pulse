@@ -770,14 +770,12 @@ function pulse_log($tag, $message = '') {
       infoPanel.addTo(map);
 
       const citiesLayer = L.layerGroup();
-      const liveNewsLayer = L.layerGroup();
       const currentEventsLayer = L.layerGroup();
       let searchCircle = null; // Visual blue circle for news/search area
       let currentEventsGeoJsonLayer = null; // Track the actual GeoJSON layer
 
       const overlays = {
         'Current Events': currentEventsLayer,
-        'Live News': liveNewsLayer,
         'Cities': citiesLayer,
         'Weather': L.tileLayer(`pulse.php?proxy_gibs=true&date=${date}&z={z}&y={y}&x={x}`, {
           attribution: '&copy; NASA GIBS',
@@ -903,9 +901,6 @@ function pulse_log($tag, $message = '') {
           }
           loadCurrentEvents();
         }
-        if (e.name === 'Live News') {
-          startLiveNews();
-        }
       });
 
       const earthquakesLayer = L.geoJSON(null, {
@@ -958,89 +953,12 @@ function pulse_log($tag, $message = '') {
       // Add layer control (already created above)
       const layerControl = L.control.layers(baseLayers, overlays, { position: 'topright', collapsed: true }).addTo(map);
 
-      // Allow clicking the map to look up nearby info / live news
+      // Allow clicking the map to look up nearby info
       map.on('click', function(e) {
         fetchAndShowCityInfo(e.latlng);
       });
       
-      // --- Live News ---
-      let liveNewsTimer;
-      let lastNewsTimestamp = 0;
-
-      function startLiveNews() {
-        if (liveNewsTimer) return; // Already running
-        liveNewsTimer = setInterval(fetchLiveNews, 60000); // Update every minute
-        fetchLiveNews(); // Initial fetch
-      }
-
-      function fetchLiveNews() {
-        fetch('pulse.php?live_news=true&since=' + lastNewsTimestamp)
-          .then(response => response.json())
-          .then(data => {
-            if (!data || !data.features) return;
-            const newsIcon = L.AwesomeMarkers.icon({
-                icon: 'info',
-                markerColor: 'orange',
-                prefix: 'fa'
-            });
-
-            // Process items one-by-one so pins "drop" live and console is updated per story
-            let maxTs = lastNewsTimestamp;
-            data.features.forEach(item => {
-              const p = item.properties || {};
-              const ts = p.published_ts || 0;
-              if (ts <= lastNewsTimestamp) return; // skip already-seen
-
-              // compute latlng from GeoJSON geometry if available
-              let latlng = null;
-              try {
-                if (item.geometry && Array.isArray(item.geometry.coordinates)) {
-                  latlng = L.latLng(item.geometry.coordinates[1], item.geometry.coordinates[0]);
-                } else if (p.lat && p.lon) {
-                  latlng = L.latLng(p.lat, p.lon);
-                } else {
-                  latlng = map.getCenter();
-                }
-              } catch (e) { latlng = map.getCenter(); }
-
-              const marker = L.marker(latlng, { icon: newsIcon });
-              const title = p.title || 'Untitled';
-              const summary = p.summary || '';
-              const source = p.source || '';
-              const url = p.url || (p.link || '#');
-              const popupHtml = `<strong>${escapeHtml(title)}</strong><br><em>${escapeHtml(summary)}</em><br><small>Source: ${escapeHtml(source)}</small><br><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Read</a>`;
-
-              marker.bindPopup(popupHtml);
-
-              // clicking a live-news marker shows details in the Info Panel (and keeps popups)
-              marker.on('click', function(e) {
-                // Prepare a minimal combinedData expected by showInfoPopup
-                const combinedData = {
-                  nearest_city: null,
-                  other_cities: [],
-                  wiki_topics: [],
-                  news: [{ title: title, link: url, summary: summary, source: source }],
-                  wikidata: {}
-                };
-                showInfoPopup(combinedData, e.latlng || latlng);
-              });
-
-              // Add to layer (live drop)
-              liveNewsLayer.addLayer(marker);
-
-              // Update AI console with concise story entry
-              try { logToConsole(`${title} — ${source} (${new Date((p.published_ts||0)*1000).toLocaleString()})`, 'info'); } catch(e){}
-
-              if (ts > maxTs) maxTs = ts;
-            });
-
-            if (maxTs > lastNewsTimestamp) lastNewsTimestamp = maxTs;
-          })
-          .catch(e => {
-            console.error("Error fetching live news:", e);
-            try { logToConsole('Error fetching live news: ' + String(e), 'error'); } catch(e){}
-          });
-       }
+      // Live News UI removed: live news pins and polling disabled.
 
       // --- City Info (Restored Logic) ---
       function showInfoPopup(data, latlng) {

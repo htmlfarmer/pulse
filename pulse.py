@@ -291,58 +291,73 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
     for tag in soup(['script', 'style', 'header', 'footer', 'nav', 'aside']):
         tag.decompose()
 
-    # Find all h3 headers that are dates (e.g., 'January 5, 2026 (Monday)')
     import re as _re
-    # Find all date sections and extract news items from each, stopping at .current-events-more
     date_id_re = _re.compile(r'^\d{4}_[A-Z][a-z]+_\d{1,2}$')
-    # We'll collect structured news items with their text and any links
+    # Collect all date blocks across the page (multiple `.current-events` containers exist)
     news_items = []  # list of dicts: { 'text': str, 'links': [url, ...] }
-    more_link_found = False
-    for div in soup.find_all('div', id=True):
-        if 'current-events-more' in div.get('class', []):
-            more_link_found = True
+    more_link_found = bool(soup.find_all('div', class_='current-events-more'))
+
+    # First try to find explicit date blocks by class
+    date_blocks = soup.find_all('div', class_=lambda c: c and 'current-events-main' in c)
+    # Also collect from any portal container variants if none found yet
+    if not date_blocks:
+        containers = soup.find_all('div', class_='p-current-events-events') + soup.find_all('div', class_='current-events')
+        for container in containers:
+            date_blocks.extend(container.find_all('div', class_=lambda c: c and 'current-events-main' in c))
+    # Fallback: look for divs with date-like ids anywhere
+    if not date_blocks:
+        for div in soup.find_all('div', id=True):
+            if date_id_re.match(div['id']):
+                date_blocks.append(div)
+
+    for div in date_blocks:
+        # If we hit the 'more' block, stop collecting further days
+        if 'current-events-more' in (div.get('class') or []):
             break
-        if date_id_re.match(div['id']):
-            content_div = div.find('div', class_='current-events-content description')
-            if content_div:
-                current_category = None
-                for elem in content_div.children:
-                    if getattr(elem, 'name', None) == 'p':
-                        # If <p> contains only a category header (bold or matches known set), set as current_category
-                        b = elem.find('b')
-                        ptext = elem.get_text(' ', strip=True)
-                        if b and len(ptext) < 40 and (b.get_text(strip=True) == ptext):
-                            current_category = ptext
-                        elif ptext:
-                            text = f"{current_category}: {ptext}" if current_category else ptext
-                            news_items.append({'text': text, 'links': []})
-                    elif getattr(elem, 'name', None) == 'ul':
-                        for li in elem.find_all('li', recursive=False):
-                            litext = li.get_text(' ', strip=True)
-                            if litext:
-                                # Collect links inside this list item
-                                links = []
-                                for a in li.find_all('a', href=True):
-                                    href = a['href']
-                                    if href.startswith('//'):
-                                        href = 'https:' + href
-                                    elif href.startswith('/'):
-                                        href = 'https://en.wikipedia.org' + href
-                                    links.append(href)
-                                text = f"{current_category}: {litext}" if current_category else litext
-                                news_items.append({'text': text, 'links': links})
-    # If no .current-events-more found, just process all date sections found
+        content_div = div.find('div', class_='current-events-content') or div.find('div', class_='current-events-content description')
+        if not content_div:
+            continue
+        current_category = None
+        for elem in content_div.children:
+            if getattr(elem, 'name', None) == 'p':
+                b = elem.find('b')
+                ptext = elem.get_text(' ', strip=True)
+                if b and len(ptext) < 60 and (b.get_text(strip=True) == ptext):
+                    current_category = ptext
+                elif ptext:
+                    text = f"{current_category}: {ptext}" if current_category else ptext
+                    news_items.append({'text': text, 'links': []})
+            elif getattr(elem, 'name', None) == 'ul':
+                for li in elem.find_all('li', recursive=False):
+                    litext = li.get_text(' ', strip=True)
+                    if not litext:
+                        continue
+                    links = []
+                    for a in li.find_all('a', href=True):
+                        href = a['href']
+                        if href.startswith('//'):
+                            href = 'https:' + href
+                        elif href.startswith('/'):
+                            href = 'https://en.wikipedia.org' + href
+                        links.append(href)
+                    text = f"{current_category}: {litext}" if current_category else litext
+                    news_items.append({'text': text, 'links': links})
 
 
 
-    # Erase the output file at the start of each run
+    # Erase the output file at the start of each run and create a running flag
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text('', encoding="utf-8")
+    running_flag = out_path.parent / 'current_events.running'
+    try:
+        running_flag.write_text('1', encoding='utf-8')
+    except Exception:
+        pass
 
     # Process each news item one at a time. If an LLM is available use it,
     # otherwise attempt a lightweight geolocation fallback using linked Wikipedia pages or heuristics.
     features = []
     import json as _json
+    import hashlib
     if not news_items:
         logging.warning("No news items found for the current date section.")
     # --- Minimal direct LLM test ---
@@ -356,6 +371,7 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
         lat = lng = None
         event_text = news_item_text
         llm_sentence = None
+        llm_raw = None
 
         if ai_model and getattr(ai_model, 'llm', None):
             single_prompt = (
@@ -369,6 +385,12 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
             )
             ai_model.config["generation_params"]["max_tokens"] = 1024
             llm_response = ai_model.ask(single_prompt, system_prompt=system_prompt)
+            llm_raw = llm_response
+            # Print full LLM story extraction raw reply for immediate visibility
+            try:
+                print(f"LLM story raw for item {idx}: {llm_raw}", file=sys.stderr)
+            except Exception:
+                pass
             cleaned = llm_response.strip()
             if '```json' in cleaned:
                 start = cleaned.find('```json') + 7
@@ -402,6 +424,104 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
                     llm_sentence = story.get('place') if story.get('place') else None
             except Exception as e:
                 logging.warning(f"LLM did not return valid JSON for item {idx}: {e}\nResponse: {llm_response[:300]}")
+            # --- NEW: Ask LLM directly (only) to estimate lat/lng from the news item text ---
+            llm_only_geocode_raw = None
+            llm_only_geocode_parsed = None
+            if ai_model and getattr(ai_model, 'llm', None):
+                try:
+                    geocode_only_prompt = (
+                        "You are a geocoder. Read the news item below and estimate the most likely coordinates "
+                        "(latitude and longitude) of the main location associated with this story. "
+                        "Respond ONLY with a JSON object containing numeric 'lat' and 'lng' fields, or the single word 'Unknown'.\n\n"
+                        f"News Item: {news_item_text}"
+                    )
+                    llm_only_geocode_raw = ai_model.ask(geocode_only_prompt)
+                    # Print raw reply immediately for visibility
+                    try:
+                        print(f"LLM-only geocode raw for item {idx} ('{news_item_text[:60]}...'): {llm_only_geocode_raw}", file=sys.stderr)
+                    except Exception:
+                        pass
+                    # Tolerant parse: reuse the cleaning/parsing logic used below for llm_geocode_raw
+                    cleaned_geo2 = (llm_only_geocode_raw or '').strip()
+                    if '```json' in cleaned_geo2:
+                        start = cleaned_geo2.find('```json') + 7
+                        end = cleaned_geo2.find('```', start)
+                        cleaned_geo2 = cleaned_geo2[start:end].strip() if end != -1 else cleaned_geo2[start:].strip()
+                    elif '```' in cleaned_geo2:
+                        start = cleaned_geo2.find('```') + 3
+                        end = cleaned_geo2.find('```', start)
+                        cleaned_geo2 = cleaned_geo2[start:end].strip() if end != -1 else cleaned_geo2[start:].strip()
+                    parsed_ok2 = False
+                    try:
+                        geo_obj2 = _json.loads(cleaned_geo2)
+                        if isinstance(geo_obj2, dict) and 'lat' in geo_obj2 and 'lng' in geo_obj2:
+                            lat_geo2 = float(geo_obj2['lat'])
+                            lng_geo2 = float(geo_obj2['lng'])
+                            llm_only_geocode_parsed = {'lat': lat_geo2, 'lng': lng_geo2}
+                            parsed_ok2 = True
+                            try:
+                                print(f"LLM-only geocode parsed for item {idx}: {lat_geo2},{lng_geo2}", file=sys.stderr)
+                            except Exception:
+                                pass
+                    except Exception:
+                        parsed_ok2 = False
+                    if not parsed_ok2:
+                        # numeric extraction
+                        import re as __re2
+                        m = __re2.search(r'([-+]?[0-9]{1,3}\.?[0-9]*)\D+([-+]?[0-9]{1,3}\.?[0-9]*)', cleaned_geo2)
+                        if m:
+                            try:
+                                lat_geo2 = float(m.group(1))
+                                lng_geo2 = float(m.group(2))
+                                llm_only_geocode_parsed = {'lat': lat_geo2, 'lng': lng_geo2}
+                                parsed_ok2 = True
+                                try:
+                                    print(f"LLM-only geocode parsed (numeric) for item {idx}: {lat_geo2},{lng_geo2}", file=sys.stderr)
+                                except Exception:
+                                    pass
+                            except Exception:
+                                parsed_ok2 = False
+                        # lat/lng label patterns
+                        if not parsed_ok2:
+                            m2 = __re2.search(r'lat[^0-9-]*([-+]?[0-9]{1,3}\.?[0-9]*)[^0-9-]+lng[^0-9-]*([-+]?[0-9]{1,3}\.?[0-9]*)', cleaned_geo2, __re2.I)
+                            if m2:
+                                try:
+                                    lat_geo2 = float(m2.group(1))
+                                    lng_geo2 = float(m2.group(2))
+                                    llm_only_geocode_parsed = {'lat': lat_geo2, 'lng': lng_geo2}
+                                    parsed_ok2 = True
+                                    try:
+                                        print(f"LLM-only geocode parsed (pattern) for item {idx}: {lat_geo2},{lng_geo2}", file=sys.stderr)
+                                    except Exception:
+                                        pass
+                                except Exception:
+                                    parsed_ok2 = False
+                    # DMS parsing
+                    if not parsed_ok2 and ('°' in cleaned_geo2 or '′' in cleaned_geo2 or '"' in cleaned_geo2):
+                        dms_matches = __re2.findall(r"([0-9]{1,3})°\s*([0-9]{1,2})['′]\s*([0-9]{1,2}(?:\.[0-9]+)?)\"?\s*([NnSsEeWw])", cleaned_geo2)
+                        if len(dms_matches) >= 2:
+                            try:
+                                def _dms_to_decimal_local(d, m, s, hemi):
+                                    val = float(d) + (float(m) / 60.0) + (float(s) / 3600.0)
+                                    if hemi and hemi.upper() in ['S', 'W']:
+                                        return -abs(val)
+                                    return val
+                                lat_geo2 = _dms_to_decimal_local(*dms_matches[0])
+                                lng_geo2 = _dms_to_decimal_local(*dms_matches[1])
+                                if lat_geo2 is not None and lng_geo2 is not None:
+                                    llm_only_geocode_parsed = {'lat': lat_geo2, 'lng': lng_geo2}
+                                    parsed_ok2 = True
+                                    try:
+                                        print(f"LLM-only geocode parsed (DMS) for item {idx}: {lat_geo2},{lng_geo2}", file=sys.stderr)
+                                    except Exception:
+                                        pass
+                            except Exception:
+                                parsed_ok2 = False
+                except Exception as e:
+                    logging.error(f"Error during LLM-only geocode for item {idx}: {e}")
+            else:
+                llm_only_geocode_raw = None
+                llm_only_geocode_parsed = None
         else:
             # No LLM available: attempt lightweight fallback geolocation
             # Prefer a linked Wikipedia article if present
@@ -434,8 +554,150 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
 
         coords = get_coords_from_wikidata(place_str, user_agent) if place_str else None
         lat_wiki = lng_wiki = None
+        llm_geocode_raw = None
+        llm_geocode_parsed = None
         if coords:
             lat_wiki, lng_wiki = coords[0], coords[1]
+            logging.info(f"  -> Using Wikidata coords for '{place_str}': {lat_wiki},{lng_wiki}")
+        else:
+            logging.warning(f"  -> Wikidata: No search results for '{place_str}'. Will ask LLM for coords if available.")
+            # If Wikidata couldn't find coords, try asking the LLM specifically for lat/lng
+            if ai_model and getattr(ai_model, 'llm', None) and place_str:
+                try:
+                    geocode_prompt = (
+                        f"You are a geocoder. Given the place name or descriptor: '{place_str}'. "
+                        "Respond ONLY with a JSON object containing numeric fields 'lat' and 'lng', or the single word 'Unknown'. "
+                        "If you are unsure, respond with 'Unknown'."
+                    )
+                    llm_geocode_raw = ai_model.ask(geocode_prompt)
+                    logging.info(f"  -> LLM raw geocode reply for '{place_str}': {repr(llm_geocode_raw)[:1000]}")
+                    try:
+                        # Also print to stderr for immediate console visibility
+                        print(f"LLM geocode raw for '{place_str}': {llm_geocode_raw}", file=sys.stderr)
+                    except Exception:
+                        pass
+                    cleaned_geo = llm_geocode_raw.strip()
+                    if '```json' in cleaned_geo:
+                        start = cleaned_geo.find('```json') + 7
+                        end = cleaned_geo.find('```', start)
+                        cleaned_geo = cleaned_geo[start:end].strip() if end != -1 else cleaned_geo[start:].strip()
+                    elif '```' in cleaned_geo:
+                        start = cleaned_geo.find('```') + 3
+                        end = cleaned_geo.find('```', start)
+                        cleaned_geo = cleaned_geo[start:end].strip() if end != -1 else cleaned_geo[start:].strip()
+                    # Try to parse JSON
+                    parsed_ok = False
+                    # Helper: convert DMS to decimal
+                    def _dms_to_decimal(d, m, s, hemi):
+                        try:
+                            val = float(d) + (float(m) / 60.0) + (float(s) / 3600.0)
+                            if hemi and hemi.upper() in ['S', 'W']:
+                                return -abs(val)
+                            return val
+                        except Exception:
+                            return None
+                    try:
+                        geo_obj = _json.loads(cleaned_geo)
+                        if isinstance(geo_obj, dict) and 'lat' in geo_obj and 'lng' in geo_obj:
+                            try:
+                                lat_geo = float(geo_obj['lat'])
+                                lng_geo = float(geo_obj['lng'])
+                                lat_wiki, lng_wiki = lat_geo, lng_geo
+                                llm_geocode_parsed = {'lat': lat_geo, 'lng': lng_geo}
+                                logging.info(f"  -> LLM geocode provided coords for '{place_str}': {lat_wiki},{lng_wiki}")
+                                try:
+                                    print(f"LLM geocode parsed for '{place_str}': {lat_geo},{lng_geo}", file=sys.stderr)
+                                except Exception:
+                                    pass
+                                parsed_ok = True
+                            except Exception:
+                                parsed_ok = False
+                    except Exception:
+                        parsed_ok = False
+
+                    if not parsed_ok:
+                        # Not valid JSON — try tolerant parsing heuristics
+                        logging.warning(f"  -> LLM geocode parse failed for '{place_str}': {cleaned_geo[:1000]}")
+                        try:
+                            print(f"LLM geocode parse failed for '{place_str}': {cleaned_geo}", file=sys.stderr)
+                        except Exception:
+                            pass
+                        import re as __re
+                        # 0) Try to parse DMS pairs if present (e.g. 12°34'56" N, 45°67'89" E)
+                        if not parsed_ok and ('°' in cleaned_geo or '′' in cleaned_geo or '"' in cleaned_geo):
+                            dms_matches = __re.findall(r"([0-9]{1,3})°\s*([0-9]{1,2})['′]\s*([0-9]{1,2}(?:\.[0-9]+)?)\"?\s*([NnSsEeWw])", cleaned_geo)
+                            if len(dms_matches) >= 2:
+                                try:
+                                    lat_geo = _dms_to_decimal(*dms_matches[0])
+                                    lng_geo = _dms_to_decimal(*dms_matches[1])
+                                    if lat_geo is not None and lng_geo is not None:
+                                        lat_wiki, lng_wiki = lat_geo, lng_geo
+                                        llm_geocode_parsed = {'lat': lat_geo, 'lng': lng_geo}
+                                        logging.info(f"  -> Extracted DMS coords from LLM reply for '{place_str}': {lat_geo},{lng_geo}")
+                                        try:
+                                            print(f"LLM geocode parsed (DMS) for '{place_str}': {lat_geo},{lng_geo}", file=sys.stderr)
+                                        except Exception:
+                                            pass
+                                        parsed_ok = True
+                                except Exception:
+                                    parsed_ok = False
+
+                        # 1) Try to find two floats in the reply (lat, lng)
+                        m = __re.search(r'([-+]?[0-9]{1,3}\.?[0-9]*)\D+([-+]?[0-9]{1,3}\.?[0-9]*)', cleaned_geo)
+                        if m:
+                            try:
+                                lat_geo = float(m.group(1))
+                                lng_geo = float(m.group(2))
+                                lat_wiki, lng_wiki = lat_geo, lng_geo
+                                llm_geocode_parsed = {'lat': lat_geo, 'lng': lng_geo}
+                                logging.info(f"  -> Extracted numeric coords from LLM reply for '{place_str}': {lat_geo},{lng_geo}")
+                                try:
+                                    print(f"LLM geocode parsed (numeric) for '{place_str}': {lat_geo},{lng_geo}", file=sys.stderr)
+                                except Exception:
+                                    pass
+                                parsed_ok = True
+                            except Exception:
+                                parsed_ok = False
+
+                        # 2) Try patterns like 'lat: 12.3, lng: 45.6' or 'latitude=.. longitude=..'
+                        if not parsed_ok:
+                            m2 = __re.search(r'lat[^0-9-]*([-+]?[0-9]{1,3}\.?[0-9]*)[^0-9-]+lng[^0-9-]*([-+]?[0-9]{1,3}\.?[0-9]*)', cleaned_geo, __re.I)
+                            if m2:
+                                try:
+                                    lat_geo = float(m2.group(1))
+                                    lng_geo = float(m2.group(2))
+                                    lat_wiki, lng_wiki = lat_geo, lng_geo
+                                    llm_geocode_parsed = {'lat': lat_geo, 'lng': lng_geo}
+                                    logging.info(f"  -> Extracted lat/lng pattern from LLM reply for '{place_str}': {lat_geo},{lng_geo}")
+                                    try:
+                                        print(f"LLM geocode parsed (pattern) for '{place_str}': {lat_geo},{lng_geo}", file=sys.stderr)
+                                    except Exception:
+                                        pass
+                                    parsed_ok = True
+                                except Exception:
+                                    parsed_ok = False
+
+                        # 3) If the reply is 'City, Country' or similar, try to resolve that place via Wikidata
+                        if not parsed_ok:
+                            m3 = __re.match(r"^\s*([\w\-\.\'\s]{2,}),\s*([\w\-\.\'\s]{2,})\s*$", cleaned_geo)
+                            if m3:
+                                place_guess = f"{m3.group(1).strip()}, {m3.group(2).strip()}"
+                                logging.info(f"  -> LLM geocode looks like place string '{place_guess}', trying Wikidata lookup...")
+                                try:
+                                    coords2 = get_coords_from_wikidata(place_guess, user_agent)
+                                    if coords2:
+                                        lat_wiki, lng_wiki = coords2[0], coords2[1]
+                                        llm_geocode_parsed = {'lat': lat_wiki, 'lng': lng_wiki}
+                                        logging.info(f"  -> Resolved LLM place '{place_guess}' via Wikidata: {lat_wiki},{lng_wiki}")
+                                        try:
+                                            print(f"LLM geocode resolved via Wikidata for '{place_str}': {lat_wiki},{lng_wiki}", file=sys.stderr)
+                                        except Exception:
+                                            pass
+                                        parsed_ok = True
+                                except Exception:
+                                    parsed_ok = False
+                except Exception as e:
+                    logging.error(f"  -> Error asking LLM for geocode of '{place_str}': {e}")
 
         # If both LLM and Wikidata coords exist, compare them
         def is_close(a, b, tol=1.0):
@@ -459,9 +721,23 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
             use_llm = False
 
         if lat is not None and lng is not None:
+            # stable feature id so client can dedupe
+            fid_src = (title or '') + '|' + (place_str or '') + '|' + str(idx)
+            fid = hashlib.md5(fid_src.encode('utf-8')).hexdigest()
+            # Decide which source was used for final coordinates
+            decision = 'unknown'
+            if 'use_llm' in locals() and use_llm:
+                decision = 'llm'
+            elif lat_wiki is not None and lng_wiki is not None:
+                decision = 'wikidata'
+            else:
+                decision = 'llm' if llm_raw else 'fallback'
+
             feature = {
                 "type": "Feature",
+                "id": fid,
                 "properties": {
+                    "id": fid,
                     "title": title or (news_item_text[:100] + '...'),
                     "summary": summary,
                     "place": place_str,
@@ -471,12 +747,38 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
                     "url": news_links[0] if news_links else None,
                     "event_links": news_links,
                     "llm_sentence": llm_sentence,
+                    "llm_raw": (llm_raw[:1000] if isinstance(llm_raw, str) else None),
+                    "llm_geocode_raw": (llm_geocode_raw[:1000] if isinstance(llm_geocode_raw, str) else None),
+                    "llm_geocode_parsed": llm_geocode_parsed,
+                    "llm_only_geocode_raw": (llm_only_geocode_raw[:1000] if isinstance(llm_only_geocode_raw, str) else None),
+                    "llm_only_geocode_parsed": llm_only_geocode_parsed,
+                    "decision": decision,
                     "source": "Wikipedia Current Events",
                     "geolocation_source": "llm" if llm_sentence else "fallback"
                 },
                 "geometry": {"type": "Point", "coordinates": [lng, lat]}
             }
             features.append(feature)
+            # write incremental file atomically so client can pick up additions
+            try:
+                tmp = out_path.parent / (out_path.name + '.tmp')
+                tmp.write_text(_json.dumps(to_geojson(features), ensure_ascii=False, indent=2), encoding='utf-8')
+                os.replace(str(tmp), str(out_path))
+            except Exception as e:
+                logging.warning(f"Failed incremental write for current events: {e}")
+            # Append concise debug line to debug log
+            try:
+                dbg = out_path.parent / 'current_events_debug.log'
+                llm_geo_str = ''
+                if llm_geocode_parsed:
+                    llm_geo_str = f"{llm_geocode_parsed.get('lat')},{llm_geocode_parsed.get('lng')}"
+                elif llm_geocode_raw:
+                    llm_geo_str = llm_geocode_raw.replace('\n', ' ')[:200]
+                line = f"{int(time.time())}\t{fid}\t{decision}\t{place_str}\t{lat},{lng}\t{llm_geo_str}\t{title}\n"
+                with dbg.open('a', encoding='utf-8') as df:
+                    df.write(line)
+            except Exception:
+                pass
         else:
             logging.warning(f"Could not geolocate story: {title} / {place_str}")
         time.sleep(0.5)

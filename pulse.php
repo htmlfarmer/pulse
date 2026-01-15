@@ -191,10 +191,22 @@ function pulse_log($tag, $message = '') {
     header('Content-Type: application/json');
     $events_file = 'data/current_events.geojson';
     if (file_exists($events_file)) {
-        readfile($events_file);
-    } else {
+      $txt = @file_get_contents($events_file);
+      if ($txt === FALSE || !trim($txt)) {
         echo json_encode(['type' => 'FeatureCollection', 'features' => []]);
+      } else {
+        echo $txt;
+      }
+    } else {
+      echo json_encode(['type' => 'FeatureCollection', 'features' => []]);
     }
+    exit;
+  }
+
+  if (isset($_GET['current_events_status'])) {
+    header('Content-Type: application/json');
+    $running = file_exists(__DIR__ . '/data/current_events.running');
+    echo json_encode(['running' => $running]);
     exit;
   }
 
@@ -753,6 +765,10 @@ function pulse_log($tag, $message = '') {
             
             // Stop clicks from propagating to the map
             L.DomEvent.disableClickPropagation(this._div);
+            // Prevent mouse wheel / touchpad scrolls from zooming/panning the map when over the panel
+            if (L.DomEvent.disableScrollPropagation) {
+              L.DomEvent.disableScrollPropagation(this._div);
+            }
             return this._div;
         },
 
@@ -773,6 +789,8 @@ function pulse_log($tag, $message = '') {
       const currentEventsLayer = L.layerGroup();
       let searchCircle = null; // Visual blue circle for news/search area
       let currentEventsGeoJsonLayer = null; // Track the actual GeoJSON layer
+      let currentEventsPollTimer = null;
+      let currentEventsSeenIds = new Set();
 
       const overlays = {
         'Current Events': currentEventsLayer,
@@ -791,96 +809,124 @@ function pulse_log($tag, $message = '') {
       let currentEventsLoaded = false;
 
       function loadCurrentEvents() {
-        // Remove previous GeoJSON layer if it exists
-        if (currentEventsGeoJsonLayer) {
-          currentEventsLayer.removeLayer(currentEventsGeoJsonLayer);
-          currentEventsGeoJsonLayer = null;
+        // Start polling for incremental current events and add them as they arrive
+        const eventIcon = L.AwesomeMarkers.icon({ icon: 'globe', markerColor: 'cadetblue', prefix: 'fa' });
+        const options = {
+          pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties || {};
+              let llmSentence = p.llm_sentence ? escapeHtml(p.llm_sentence) : '';
+              let eventText = p.event_text ? escapeHtml(p.event_text) : '';
+              let llmOnlyParsed = p.llm_only_geocode_parsed ? (typeof p.llm_only_geocode_parsed === 'object' ? (p.llm_only_geocode_parsed.lat + ',' + p.llm_only_geocode_parsed.lng) : String(p.llm_only_geocode_parsed)) : '';
+              let llmOnlyRaw = p.llm_only_geocode_raw ? escapeHtml(p.llm_only_geocode_raw) : '';
+            let eventLinksHtml = '';
+            if (Array.isArray(p.event_links) && p.event_links.length > 0) {
+              eventLinksHtml = `
+                <div style="margin-top:6px;">
+                  <b>Related sources:</b>
+                  <ul style="margin:0;padding-left:18px;">
+                    ${p.event_links.map(link => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join('')}
+                  </ul>
+                </div>
+              `;
+            }
+            let popupHtml = `
+              <strong><a href="${p.url}" target="_blank">${p.title}</a></strong><br>
+              <div class="event-text">
+                <em>${eventText}</em>
+              </div>
+              ${eventLinksHtml}
+              <hr>
+              <div class="event-headlines">
+                <b>Top headlines:</b>
+                <ul class="news-list">
+                  ${Array.isArray(p.headlines_urls) ? p.headlines_urls.map(h => `<li><a href="${h.url}" target="_blank">${h.title}</a></li>`).join('') : ''}
+                </ul>
+              </div>
+              <hr>
+              <div style="font-size:90%;color:#888;">
+                <b>LLM evaluated sentence for geolocation:</b><br>
+                <span>${llmSentence}</span>
+              </div>
+              <div style="font-size:90%;color:#888;margin-top:6px;">
+                <b>LLM-only geocode (parsed):</b><br>
+                <span>${escapeHtml(llmOnlyParsed)}</span>
+                <br>
+                <b>LLM-only geocode (raw):</b><br>
+                <span style="white-space:pre-wrap;">${llmOnlyRaw}</span>
+              </div>
+            `;
+            layer.bindPopup(popupHtml);
+            layer.on('click', function(e) { layer.openPopup(); });
+          }
+        };
+
+        function ensureLayer() {
+          if (!currentEventsGeoJsonLayer) {
+            currentEventsGeoJsonLayer = L.geoJSON(null, options);
+            currentEventsGeoJsonLayer.addTo(currentEventsLayer);
+          }
         }
-        (async () => {
+
+        // use global poll timer and seen id set so overlayremove can stop polling
+        if (!currentEventsSeenIds) currentEventsSeenIds = new Set();
+
+        async function pollOnce() {
           try {
-            const r = await fetch('pulse.php?current_events=true');
-            if (!r.ok) {
-              try { logToConsole('Failed to fetch current events: HTTP ' + r.status, 'warn'); } catch(e){}
-              return;
-            }
+            const r = await fetch('pulse.php?current_events=true&ts=' + Date.now());
+            if (!r.ok) return;
             const txt = await r.text();
-            if (!txt || !txt.trim()) {
-              try { logToConsole('No current_events data found (empty file).', 'info'); } catch(e){}
-              return;
-            }
+            if (!txt || !txt.trim()) return;
             let data;
             try {
               data = JSON.parse(txt);
             } catch (err) {
-              // don't throw — just log and return so UI remains usable
-              const snippet = txt.slice(0, 500);
-              console.error('Invalid JSON from current_events:', err, snippet);
-              try { logToConsole('Invalid JSON in current_events.geojson (see console).', 'error'); } catch(e){}
+              // Partial or invalid JSON — skip this poll and try again
               return;
             }
-            if (!data || !Array.isArray(data.features)) {
-              try { logToConsole('current_events payload missing features array.', 'warn'); } catch(e){}
-              return;
-            }
-
-            const eventIcon = L.AwesomeMarkers.icon({
-                icon: 'globe',
-                markerColor: 'cadetblue',
-                prefix: 'fa'
-            });
-            currentEventsGeoJsonLayer = L.geoJSON(data, {
-              pointToLayer: (feature, latlng) => L.marker(latlng, { icon: eventIcon }),
-              onEachFeature: (feature, layer) => {
-                const p = feature.properties || {};
-                let llmSentence = p.llm_sentence ? escapeHtml(p.llm_sentence) : '';
-                let eventText = p.event_text ? escapeHtml(p.event_text) : '';
-                let eventLinksHtml = '';
-                if (Array.isArray(p.event_links) && p.event_links.length > 0) {
-                  eventLinksHtml = `
-                    <div style="margin-top:6px;">
-                      <b>Related sources:</b>
-                      <ul style="margin:0;padding-left:18px;">
-                        ${p.event_links.map(link => `<li><a href="${link}" target="_blank" rel="noopener noreferrer">${link}</a></li>`).join('')}
-                      </ul>
-                    </div>
-                  `;
+            if (!data || !Array.isArray(data.features)) return;
+            let added = 0;
+            data.features.forEach(f => {
+              const fid = f.id || (f.properties && f.properties.id);
+              if (fid) {
+                if (!currentEventsSeenIds.has(fid)) {
+                  currentEventsSeenIds.add(fid);
+                  ensureLayer();
+                  currentEventsGeoJsonLayer.addData(f);
+                  added++;
                 }
-                let popupHtml = `
-                  <strong><a href="${p.url}" target="_blank">${p.title}</a></strong><br>
-                  <div class="event-text">
-                    <em>${eventText}</em>
-                  </div>
-                  ${eventLinksHtml}
-                  <hr>
-                  <div class="event-headlines">
-                    <b>Top headlines:</b>
-                    <ul class="news-list">
-                      ${Array.isArray(p.headlines_urls) ? p.headlines_urls.map(h => `<li><a href="${h.url}" target="_blank">${h.title}</a></li>`).join('') : ''}
-                    </ul>
-                  </div>
-                  <hr>
-                  <div style="font-size:90%;color:#888;">
-                    <b>LLM evaluated sentence for geolocation:</b><br>
-                    <span>${llmSentence}</span>
-                  </div>
-                `;
-                layer.bindPopup(popupHtml);
-                layer.on('click', function(e) {
-                  layer.openPopup();
-                });
+              } else {
+                // no id: add anyway (may duplicate)
+                ensureLayer();
+                currentEventsGeoJsonLayer.addData(f);
+                added++;
               }
             });
-            currentEventsGeoJsonLayer.addTo(currentEventsLayer);
-            currentEventsLoaded = true;
-            try { logToConsole('Loaded current events (' + data.features.length + ' features)', 'info'); } catch(e){}
+            if (added > 0) {
+              try { logToConsole('Added ' + added + ' current event(s)', 'info'); } catch(e){}
+            }
+            // Stop polling when server reports processing complete
+            try {
+              const s = await fetch('pulse.php?current_events_status=true&ts=' + Date.now());
+              if (s.ok) {
+                const st = await s.json();
+                if (!st.running) {
+                  if (currentEventsPollTimer) {
+                    clearInterval(currentEventsPollTimer);
+                    currentEventsPollTimer = null;
+                  }
+                }
+              }
+            } catch (e) { /* ignore status errors */ }
           } catch (e) {
-            console.error("Error fetching current events:", e);
-            try { logToConsole('Error loading current events: ' + String(e), 'error'); } catch(ex){}
-            // optional: show a non-blocking notice
-            // alert("Failed to load current events data.");
+            console.error('Error polling current events:', e);
           }
-        })();
-       }
+        }
+
+        // Start immediate poll and then poll every 3s
+        pollOnce();
+        if (!currentEventsPollTimer) currentEventsPollTimer = setInterval(pollOnce, 3000);
+      }
 
       // Remove pins when overlay is removed
       map.on('overlayremove', function(e) {
@@ -888,6 +934,14 @@ function pulse_log($tag, $message = '') {
           currentEventsLayer.removeLayer(currentEventsGeoJsonLayer);
           currentEventsGeoJsonLayer = null;
           currentEventsLoaded = false;
+        }
+        // Stop polling and reset seen ids when the overlay is removed
+        if (e.name === 'Current Events') {
+          if (currentEventsPollTimer) {
+            clearInterval(currentEventsPollTimer);
+            currentEventsPollTimer = null;
+          }
+          currentEventsSeenIds = new Set();
         }
       });
 
@@ -1009,6 +1063,18 @@ function pulse_log($tag, $message = '') {
             
             // News headlines removed from popup (background news still fetched for LLM)
           }
+          // Recent headlines section (re-added to main popup) - moved above other cities
+          if (data.news && Array.isArray(data.news) && data.news.length) {
+            html += '<div id="recent-headlines" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+            html += '<b>Recent headlines:</b>';
+            html += '<ul class="news-list" style="margin-top:6px;">';
+            data.news.slice(0,6).forEach(a => {
+              const title = a && a.title ? a.title : (typeof a === 'string' ? a : 'Untitled');
+              const link = a && a.link ? a.link : '#';
+              html += `<li style="margin-bottom:0.4em;"><a href="${link}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a></li>`;
+            });
+            html += '</ul></div>';
+          }
           if (hasOtherCities) {
             html += '<div id="other-cities" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
             html += '<b>Other cities in area:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
@@ -1023,18 +1089,6 @@ function pulse_log($tag, $message = '') {
             html += '<b>Wikipedia Related Area Topics:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
             data.wiki_topics.forEach(topic => {
               html += `<li style="margin-bottom: 0.5em;"><a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(topic)}" target="_blank" rel="noopener noreferrer">${escapeHtml(topic)}</a></li>`;
-            });
-            html += '</ul></div>';
-          }
-          // Recent headlines section (re-added to main popup)
-          if (data.news && Array.isArray(data.news) && data.news.length) {
-            html += '<div id="recent-headlines" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
-            html += '<b>Recent headlines:</b>';
-            html += '<ul class="news-list" style="margin-top:6px;">';
-            data.news.slice(0,6).forEach(a => {
-              const title = a && a.title ? a.title : (typeof a === 'string' ? a : 'Untitled');
-              const link = a && a.link ? a.link : '#';
-              html += `<li style="margin-bottom:0.4em;"><a href="${link}" target="_blank" rel="noopener noreferrer">${escapeHtml(title)}</a></li>`;
             });
             html += '</ul></div>';
           }

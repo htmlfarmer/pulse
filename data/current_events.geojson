@@ -361,6 +361,2738 @@
           -29
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "id": "e5baca678d632b5ea2e98485b648ac38",
+      "properties": {
+        "id": "e5baca678d632b5ea2e98485b648ac38",
+        "title": "Denmark–France Relations",
+        "summary": "French President Emmanuel Macron announced the deployment of additional military forces to Greenland following a Defense Council meeting.",
+        "place": "Greenland",
+        "lat": 65.2048,
+        "lng": -67.6931,
+        "event_text": "International relations: Denmark–France relations French president Emmanuel Macron announces the deployment of additional military forces to Greenland after a Defense Council meeting. (France 24)",
+        "url": "https://en.wikipedia.org/wiki/Denmark%E2%80%93France_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Denmark%E2%80%93France_relations",
+          "https://en.wikipedia.org/wiki/France",
+          "https://en.wikipedia.org/wiki/President_of_France",
+          "https://en.wikipedia.org/wiki/Emmanuel_Macron",
+          "https://en.wikipedia.org/wiki/French_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Greenland",
+          "https://en.wikipedia.org/wiki/Secretariat-General_for_National_Defence_and_Security_(France)",
+          "https://www.france24.com/fr/europe/20260115-groenland-en-direct-macron-conseil-d%C3%A9fense-menaces-trump-danemark"
+        ],
+        "llm_sentence": "Greenland",
+        "llm_raw": "```json\n{\n  \"title\": \"Denmark–France Relations\",\n  \"summary\": \"French President Emmanuel Macron announced the deployment of additional military forces to Greenland following a Defense Council meeting.\",\n  \"place\": \"Greenland\",\n  \"lat\": 65.2048,\n  \"lng\": -67.6931\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nGreenland, Denmark",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67.6931,
+          65.2048
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1d0b1dbd88ba571a9dbbc1abd35e762b",
+      "properties": {
+        "id": "1d0b1dbd88ba571a9dbbc1abd35e762b",
+        "title": "Japan-Philippines Defense Pact",
+        "summary": "Japan and the Philippines sign a defense pact allowing tax-free provision of ammunition, fuel, food, and other aid.",
+        "place": "Philippines",
+        "lat": 12,
+        "lng": 123,
+        "event_text": "International relations",
+        "url": "https://en.wikipedia.org/wiki/Japan%E2%80%93Philippines_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Japan%E2%80%93Philippines_relations",
+          "https://en.wikipedia.org/wiki/Territorial_disputes_in_the_South_China_Sea",
+          "https://en.wikipedia.org/wiki/Japan",
+          "https://en.wikipedia.org/wiki/Philippines",
+          "https://en.wikipedia.org/wiki/Defense_pact",
+          "https://en.wikipedia.org/wiki/Ammunition",
+          "https://apnews.com/article/philippines-japan-defense-pact-china-7835402a0a3b9b108cd4e1edf0051bcf"
+        ],
+        "llm_sentence": "Philippines",
+        "llm_raw": "```json\n{\n  \"title\": \"Japan-Philippines Defense Pact\",\n  \"summary\": \"Japan and the Philippines sign a defense pact allowing tax-free provision of ammunition, fuel, food, and other aid.\",\n  \"place\": \"Philippines\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"International relations\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -120.5687,\n  \"lng\": 134.8994\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -120.5687,
+          "lng": 134.8994
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          123,
+          12
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "78de1296d098b94d004d1ccf6149056d",
+      "properties": {
+        "id": "78de1296d098b94d004d1ccf6149056d",
+        "title": "Faraj Al-Bahsani dismissed from Yemen's Presidential Leadership Council",
+        "summary": "International relations: United Arab Emirates–Yemen relations",
+        "place": "Yemen",
+        "lat": 15.5,
+        "lng": 48,
+        "event_text": "Faraj Al-Bahsani is dismissed from Yemen's Presidential Leadership Council , becoming the last United Arab Emirates -backed member to leave the body.",
+        "url": "https://en.wikipedia.org/wiki/United_Arab_Emirates%E2%80%93Yemen_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/United_Arab_Emirates%E2%80%93Yemen_relations",
+          "https://en.wikipedia.org/wiki/Faraj_Al-Bahsani",
+          "https://en.wikipedia.org/wiki/Yemen",
+          "https://en.wikipedia.org/wiki/Presidential_Leadership_Council",
+          "https://en.wikipedia.org/wiki/United_Arab_Emirates",
+          "https://www.newarab.com/news/yemen-presidential-body-sacks-last-uae-backed-member"
+        ],
+        "llm_sentence": "Yemen",
+        "llm_raw": "```json\n{\n  \"title\": \"Faraj Al-Bahsani dismissed from Yemen's Presidential Leadership Council\",\n  \"summary\": \"International relations: United Arab Emirates–Yemen relations\",\n  \"place\": \"Yemen\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Faraj Al-Bahsani is dismissed from Yemen's Presidential Leadership Council , becoming the last United Arab Emirates -backed member to leave the body.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nYemen, United Arab Emirates",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48,
+          15.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "f6d4fffe19ead998ea1f0681e242349e",
+      "properties": {
+        "id": "f6d4fffe19ead998ea1f0681e242349e",
+        "title": "Ugandan General Election 2026",
+        "summary": "Ugandans vote to elect the President of Uganda and 529 members of Parliament.",
+        "place": "Uganda",
+        "lat": 1.28,
+        "lng": 32.39,
+        "event_text": "2026 Ugandan general election",
+        "url": "https://en.wikipedia.org/wiki/2026_Ugandan_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Ugandan_general_election",
+          "https://en.wikipedia.org/wiki/Ugandans",
+          "https://en.wikipedia.org/wiki/President_of_Uganda",
+          "https://en.wikipedia.org/wiki/Uganda",
+          "https://en.wikipedia.org/wiki/Parliament_of_Uganda",
+          "https://apnews.com/article/uganda-election-museveni-kyagulanyi-bobi-wine-8231b6ec57cf93cc67bcfd0ea4a46136"
+        ],
+        "llm_sentence": "Uganda",
+        "llm_raw": "```json\n{\n  \"title\": \"Ugandan General Election 2026\",\n  \"summary\": \"Ugandans vote to elect the President of Uganda and 529 members of Parliament.\",\n  \"place\": \"Uganda\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"2026 Ugandan general election\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 32.4697,\n  \"lng\": -48.5108\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 32.4697,
+          "lng": -48.5108
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.39,
+          1.28
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "5bcc52d4dca9eab2bd7508054361e237",
+      "properties": {
+        "id": "5bcc52d4dca9eab2bd7508054361e237",
+        "title": "Singaporean Prime Minister Rescinds Opposition Leader's Position",
+        "summary": "Singaporean prime minister Lawrence Wong rescinds the position of Workers’ Party MP Pritam Singh as the de jure Leader of the Opposition.",
+        "place": "Singapore",
+        "lat": 1.3,
+        "lng": 103.8,
+        "event_text": "Workers' Party MP Pritam Singh 's position is rescinded.",
+        "url": "https://en.wikipedia.org/wiki/Singapore",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Singapore",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Singapore",
+          "https://en.wikipedia.org/wiki/Lawrence_Wong",
+          "https://en.wikipedia.org/wiki/Workers%27_Party_(Singapore)",
+          "https://en.wikipedia.org/wiki/Pritam_Singh",
+          "https://en.wikipedia.org/wiki/De_jure",
+          "https://en.wikipedia.org/wiki/Leader_of_the_Opposition_(Singapore)",
+          "https://www.channelnewsasia.com/singapore/wp-chief-pritam-singh-removed-leader-opposition-5858676"
+        ],
+        "llm_sentence": "Singapore",
+        "llm_raw": "```json\n{\n  \"title\": \"Singaporean Prime Minister Rescinds Opposition Leader's Position\",\n  \"summary\": \"Singaporean prime minister Lawrence Wong rescinds the position of Workers’ Party MP Pritam Singh as the de jure Leader of the Opposition.\",\n  \"place\": \"Singapore\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Workers' Party MP Pritam Singh 's position is rescinded.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Singapore, Country",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.8,
+          1.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "9b404d463bdb54def04409130d0a8c68",
+      "properties": {
+        "id": "9b404d463bdb54def04409130d0a8c68",
+        "title": "Armed Conflicts and Attacks: Comando Vermelho Gang Members Killed in Rio de Janeiro",
+        "summary": "Armed conflicts and attacks have occurred in Rio de Janeiro, Brazil, resulting in the deaths of four Comando Vermelho gang members. Police raided favelas and seized weapons, ammunition, drugs, camouflage clothing, and radios.",
+        "place": "Rio de Janeiro, Brazil",
+        "lat": -22.9534,
+        "lng": -43.0834,
+        "event_text": "Armed conflicts and attacks: Armed conflict for control of the favelas Brazilian police kill four Comando Vermelho gang members in a raid in Rio de Janeiro , and seize weapons, ammunition, drugs, camouflage clothing, and radios. A police helicopter is shot at and damaged, injuring one crew member. (AP)",
+        "url": "https://en.wikipedia.org/wiki/Armed_conflict_for_control_of_the_favelas",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Armed_conflict_for_control_of_the_favelas",
+          "https://en.wikipedia.org/wiki/Federal_Police_of_Brazil",
+          "https://en.wikipedia.org/wiki/Comando_Vermelho",
+          "https://en.wikipedia.org/wiki/Rio_de_Janeiro",
+          "https://en.wikipedia.org/wiki/Police_aviation",
+          "https://apnews.com/article/brazil-favela-police-gangs-5df16f5ba67eca32a280f7a2f4968a98"
+        ],
+        "llm_sentence": "Rio de Janeiro, Brazil",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed Conflicts and Attacks: Comando Vermelho Gang Members Killed in Rio de Janeiro\",\n  \"summary\": \"Armed conflicts and attacks have occurred in Rio de Janeiro, Brazil, resulting in the deaths of four Comando Vermelho gang members. Police raided favelas and seized weapons, ammunition, drugs, camouflage clothing, and radios.\",\n  \"place\": \"Rio de Janeiro, Brazil\",\n  \"lat\": -22.9534,\n  \"lng\": -43.0834\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Rio de Janeiro, Brazil",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.0834,
+          -22.9534
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "c961e7845382b9f3ba97cff1384d7472",
+      "properties": {
+        "id": "c961e7845382b9f3ba97cff1384d7472",
+        "title": "Armed Conflicts and Attacks: Iranian Protests",
+        "summary": "Assisted by Reuters and Fox News, this report details alleged infiltration of Iraqi Kurdish fighters by Iranian border security forces. They have engaged in clashes with IRGC-led security forces.",
+        "place": "Iran",
+        "lat": 32.5467,
+        "lng": -95.5522,
+        "event_text": "Assisted by Reuters and Fox News",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+          "https://en.wikipedia.org/wiki/Kurdistan_Workers%27_Party",
+          "https://en.wikipedia.org/wiki/Islamic_Revolutionary_Guard_Corps",
+          "https://www.reuters.com/world/middle-east/armed-kurdish-groups-sought-cross-into-iran-iraq-sources-say-2026-01-14/",
+          "https://www.foxnews.com/world/kurdish-fighters-try-exploit-iran-chaos-regional-threat-grows-amid-nationwide-protests"
+        ],
+        "llm_sentence": "Iran",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed Conflicts and Attacks: Iranian Protests\",\n  \"summary\": \"Assisted by Reuters and Fox News, this report details alleged infiltration of Iraqi Kurdish fighters by Iranian border security forces. They have engaged in clashes with IRGC-led security forces.\",\n  \"place\": \"Iran\",\n  \"lat\": \"32.5467\",\n  \"lng\": \"-95.5522\",\n  \"event_text\": \"Assisted by Reuters and Fox News\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 34.0522,\n  \"lng\": 46.9716\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 34.0522,
+          "lng": 46.9716
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -95.5522,
+          32.5467
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "a1bba4e7b8a2ac8d3994afe9043ebf9c",
+      "properties": {
+        "id": "a1bba4e7b8a2ac8d3994afe9043ebf9c",
+        "title": "Gold Price Reaches All-Time High",
+        "summary": "The price of gold has reached an all-time high of $4,644.56 per ounce, surpassing December’s previous peak of $4,383.76.",
+        "place": "Royal Mint",
+        "lat": 51.555,
+        "lng": -3.387,
+        "event_text": "The price of gold reaches an all-time high of US$4,644.56 per ounce, surpassing December’s previous peak of $4,383.76.",
+        "url": "https://en.wikipedia.org/wiki/Gold_as_an_investment",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Gold_as_an_investment",
+          "https://www.royalmint.com/gold-price/"
+        ],
+        "llm_sentence": "Royal Mint",
+        "llm_raw": "```json\n{\n  \"title\": \"Gold Price Reaches All-Time High\",\n  \"summary\": \"The price of gold has reached an all-time high of $4,644.56 per ounce, surpassing December’s previous peak of $4,383.76.\",\n  \"place\": \"Royal Mint\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"The price of gold reaches an all-time high of US$4,644.56 per ounce, surpassing December’s previous peak of $4,383.76.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -118.24,\n  \"lng\": 30.71\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -118.24,
+          "lng": 30.71
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.387,
+          51.555
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "46e42478a1703aa23d1d00a31d53b6e5",
+      "properties": {
+        "id": "46e42478a1703aa23d1d00a31d53b6e5",
+        "title": "Crans-Montana Bar Fire",
+        "summary": "The Swiss cantons of Valais and Geneva ban fireworks in indoor venues following a fire at a nightclub.",
+        "place": "Crans-Montana, Switzerland",
+        "lat": 46.8379,
+        "lng": 4.5702,
+        "event_text": "Disasters and accidents: 2026 Crans-Montana bar fire The Swiss cantons of Valais and Geneva ban fireworks in indoor venues in the aftermath of the fire at a Crans-Montana nightclub, which killed 40 people. (BBC)",
+        "url": "https://en.wikipedia.org/wiki/2026_Crans-Montana_bar_fire",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Crans-Montana_bar_fire",
+          "https://en.wikipedia.org/wiki/Switzerland",
+          "https://en.wikipedia.org/wiki/Cantons_of_Switzerland",
+          "https://en.wikipedia.org/wiki/Valais",
+          "https://en.wikipedia.org/wiki/Canton_of_Geneva",
+          "https://en.wikipedia.org/wiki/Crans-Montana",
+          "https://www.bbc.com/news/articles/cgezqvwr54no"
+        ],
+        "llm_sentence": "Crans-Montana, Switzerland",
+        "llm_raw": "```json\n{\n  \"title\": \"Crans-Montana Bar Fire\",\n  \"summary\": \"The Swiss cantons of Valais and Geneva ban fireworks in indoor venues following a fire at a nightclub.\",\n  \"place\": \"Crans-Montana, Switzerland\",\n  \"lat\": 46.8379,\n  \"lng\": 4.5702\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 45.68,\n  \"lng\": 6.83\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 45.68,
+          "lng": 6.83
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.5702,
+          46.8379
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "7ec1332d8da1166875cbfed9ed29a9e3",
+      "properties": {
+        "id": "7ec1332d8da1166875cbfed9ed29a9e3",
+        "title": "Sikhio Train Disaster",
+        "summary": "At least 32 people are killed and 66 others are injured when a construction crane falls onto a passing train in Sikhio district, Nakhon Ratchasima province , Thailand.",
+        "place": "Sikhio district, Nakhon Ratchasima province, Thailand",
+        "lat": 34.5892017,
+        "lng": -37.3663333,
+        "event_text": "Disasters and accidents: 2026 Sikhio train disaster At least 32 people are killed and 66 others are injured when a construction crane falls onto a passing train in Sikhio district , Nakhon Ratchasima province , Thailand . (Sky News) (Reuters) (AP)",
+        "url": "https://en.wikipedia.org/wiki/2026_Sikhio_train_disaster",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Sikhio_train_disaster",
+          "https://en.wikipedia.org/wiki/Crane_(machine)",
+          "https://en.wikipedia.org/wiki/Sikhio_district",
+          "https://en.wikipedia.org/wiki/Nakhon_Ratchasima_province",
+          "https://en.wikipedia.org/wiki/Thailand",
+          "https://news.sky.com/story/thailand-latest-at-least-22-killed-after-crane-falls-on-train-13494030",
+          "https://www.reuters.com/world/asia-pacific/least-five-killed-after-crane-falls-train-thailands-northeast-2026-01-14/",
+          "https://apnews.com/article/thailand-train-construction-crane-accident-deaths-4103e4d6806fe007d4e35f5eb9133a97"
+        ],
+        "llm_sentence": "Sikhio district, Nakhon Ratchasima province, Thailand",
+        "llm_raw": "```json\n{\n  \"title\": \"Sikhio Train Disaster\",\n  \"summary\": \"At least 32 people are killed and 66 others are injured when a construction crane falls onto a passing train in Sikhio district, Nakhon Ratchasima province , Thailand.\",\n  \"place\": \"Sikhio district, Nakhon Ratchasima province, Thailand\",\n  \"lat\": \"34.5892017\",\n  \"lng\": -37.3663333\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 30.1467,\n  \"lng\": 129.9858\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 30.1467,
+          "lng": 129.9858
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -37.3663333,
+          34.5892017
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "72a8cfd46ce8624a963e5ff279f38b79",
+      "properties": {
+        "id": "72a8cfd46ce8624a963e5ff279f38b79",
+        "title": "Copernus Climate Change Service Reports 2025 as Third-Warmest Year",
+        "summary": "The Copernicus Climate Change Service reports that 2025 will be the third-warmest year on record, with average global temperatures at least 1.5°C above pre-industrial levels.",
+        "place": "Paris, France",
+        "lat": 48.89,
+        "lng": 2.36,
+        "event_text": "Health and environment: The Copernicus Climate Change Service reports that 2025 ranks as the third-warmest year on record and completes the first three-year period with average global temperatures at least 1.5 °C above pre-industrial levels . (AFP via ABS-CBN News)",
+        "url": "https://en.wikipedia.org/wiki/Copernicus_Climate_Change_Service",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Copernicus_Climate_Change_Service",
+          "https://en.wikipedia.org/wiki/Hottest_year_on_record",
+          "https://en.wikipedia.org/wiki/Pre-industrial_society",
+          "https://www.abs-cbn.com/news/weather-traffic/2026/1/14/2025-was-third-hottest-year-on-record-eu-us-experts-1312"
+        ],
+        "llm_sentence": "Paris, France",
+        "llm_raw": "```json\n{\n  \"title\": \"Copernus Climate Change Service Reports 2025 as Third-Warmest Year\",\n  \"summary\": \"The Copernicus Climate Change Service reports that 2025 will be the third-warmest year on record, with average global temperatures at least 1.5°C above pre-industrial levels.\",\n  \"place\": \"Paris, France\",\n  \"lat\": 48.89,\n  \"lng\": 2.36\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nUnknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.36,
+          48.89
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "8797442c71efee1b59218fb023a60832",
+      "properties": {
+        "id": "8797442c71efee1b59218fb023a60832",
+        "title": "Armenia Releases Prisoners in Nagorno-Karabakh Talks",
+        "summary": "Azerbaijan releases four Armenian prisoners as part of normalization efforts following the Nagorno-Karabakh conflict.",
+        "place": "Nagorno-Karabakh, Azerbaijan & Armenia",
+        "lat": 41.389,
+        "lng": 27.165,
+        "event_text": "International relations: Armenia–Azerbaijan relations Nagorno-Karabakh conflict Azerbaijan releases four Armenian prisoners convicted of offenses linked to the Nagorno-Karabakh conflict as part of ongoing post-war normalization efforts between the two states. (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Armenia%E2%80%93Azerbaijan_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Armenia%E2%80%93Azerbaijan_relations",
+          "https://en.wikipedia.org/wiki/Nagorno-Karabakh_conflict",
+          "https://en.wikipedia.org/wiki/Azerbaijan",
+          "https://en.wikipedia.org/wiki/Armenia",
+          "https://en.wikipedia.org/wiki/Nagorno-Karabakh",
+          "https://en.wikipedia.org/wiki/Armenia%E2%80%93Azerbaijan_peace_agreement",
+          "https://www.reuters.com/world/azerbaijan-releases-four-armenian-prisoners-sign-deepening-peace-2026-01-14/"
+        ],
+        "llm_sentence": "Nagorno-Karabakh, Azerbaijan & Armenia",
+        "llm_raw": "```json\n{\n  \"title\": \"Armenia Releases Prisoners in Nagorno-Karabakh Talks\",\n  \"summary\": \"Azerbaijan releases four Armenian prisoners as part of normalization efforts following the Nagorno-Karabakh conflict.\",\n  \"place\": \"Nagorno-Karabakh, Azerbaijan & Armenia\",\n  \"lat\": \"34.5678, 41.2345\",\n  \"lng\": \"-41.2345, 34.5678\"\n}\n```",
+        "llm_geocode_raw": "JSON: { \"lat\": 41.389, \"lng\": 27.165 }",
+        "llm_geocode_parsed": {
+          "lat": 41.389,
+          "lng": 27.165
+        },
+        "llm_only_geocode_raw": "City, Country\nUnknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          27.165,
+          41.389
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1f6fcf79eab82ba12d41b4ea020712e2",
+      "properties": {
+        "id": "1f6fcf79eab82ba12d41b4ea020712e2",
+        "title": "France Opens Consulate in Greenland",
+        "summary": "French foreign minister Jean-Noël Barrot announced that France will open a consulate in Greenland in February, rejecting attempts by the United States to acquire the territory.",
+        "place": "Greenland",
+        "lat": 67.8345,
+        "lng": -6.9102,
+        "event_text": "International relations: Denmark–France relations French foreign minister Jean-Noël Barrot announces that France will open a consulate in Greenland in February, signaling its rejection of attempts by the United States to acquire the territory . (AFP via Le Monde )",
+        "url": "https://en.wikipedia.org/wiki/Denmark%E2%80%93France_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Denmark%E2%80%93France_relations",
+          "https://en.wikipedia.org/wiki/Ministry_for_Europe_and_Foreign_Affairs_(France)",
+          "https://en.wikipedia.org/wiki/Jean-No%C3%ABl_Barrot",
+          "https://en.wikipedia.org/wiki/France",
+          "https://en.wikipedia.org/wiki/Greenland",
+          "https://en.wikipedia.org/wiki/Proposed_annexation_of_Greenland_by_the_second_Trump_administration",
+          "https://www.lemonde.fr/en/international/article/2026/01/14/france-will-inaugurate-greenland-consulate-in-february_6749409_4.html"
+        ],
+        "llm_sentence": "Greenland",
+        "llm_raw": "```json\n{\n  \"title\": \"France Opens Consulate in Greenland\",\n  \"summary\": \"French foreign minister Jean-Noël Barrot announced that France will open a consulate in Greenland in February, rejecting attempts by the United States to acquire the territory.\",\n  \"place\": \"Greenland\",\n  \"lat\": 67.8345,\n  \"lng\": -6.9102\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nGreenland, Denmark",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6.9102,
+          67.8345
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "92cf8243fc1913df04239eada3f12428",
+      "properties": {
+        "id": "92cf8243fc1913df04239eada3f12428",
+        "title": "Trump Administration Suspends Visa Processing for 75 Countries",
+        "summary": "The Trump administration will suspend the processing of immigrant visas for 75 countries, including tourist and business visas. The announcement was made by AFP via Le Monde.",
+        "place": "United States",
+        "lat": -98.1623,
+        "lng": 96.4545,
+        "event_text": "International relations: Travel bans under the Trump administrations The Trump administration of the United States announces that it will suspend the processing of immigrant visas for 75 countries. Tourist and business visas will not be affected. (AFP via Le Monde )",
+        "url": "https://en.wikipedia.org/wiki/Travel_bans_under_the_Trump_administrations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Travel_bans_under_the_Trump_administrations",
+          "https://en.wikipedia.org/wiki/Second_presidency_of_Donald_Trump",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://en.wikipedia.org/wiki/Visa_policy_of_the_United_States",
+          "https://www.lemonde.fr/en/international/article/2026/01/14/us-suspends-immigrant-visa-procedures-for-nationals-of-75-countries_6749430_4.html"
+        ],
+        "llm_sentence": "United States",
+        "llm_raw": "```json\n{\n  \"title\": \"Trump Administration Suspends Visa Processing for 75 Countries\",\n  \"summary\": \"The Trump administration will suspend the processing of immigrant visas for 75 countries, including tourist and business visas. The announcement was made by AFP via Le Monde.\",\n  \"place\": \"United States\",\n  \"lat\": -98.1623,\n  \"lng\": 96.4545\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nUnknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96.4545,
+          -98.1623
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "18460a4a9f76bc8258bbba7484ea3f8a",
+      "properties": {
+        "id": "18460a4a9f76bc8258bbba7484ea3f8a",
+        "title": "Law and crime: Sexual deepfake and illegal content generation on X",
+        "summary": "The Garda Síochána of Ireland confirms that there are 200 active investigations into child sexual abuse material being generated by Grok.",
+        "place": "Ireland",
+        "lat": 53,
+        "lng": -8,
+        "event_text": "Grok",
+        "url": "https://en.wikipedia.org/wiki/Grok_(chatbot)#Sexual_deepfake_and_illegal_content_generation_on_X",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)#Sexual_deepfake_and_illegal_content_generation_on_X",
+          "https://en.wikipedia.org/wiki/Garda_S%C3%ADoch%C3%A1na",
+          "https://en.wikipedia.org/wiki/Republic_of_Ireland",
+          "https://en.wikipedia.org/wiki/Child_sexual_abuse",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://www.rte.ie/news/2026/0114/1552972-media-committee/"
+        ],
+        "llm_sentence": "Ireland",
+        "llm_raw": "```json\n{\n  \"title\": \"Law and crime: Sexual deepfake and illegal content generation on X\",\n  \"summary\": \"The Garda Síochána of Ireland confirms that there are 200 active investigations into child sexual abuse material being generated by Grok.\",\n  \"place\": \"Ireland\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Grok\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -57.9831,\n  \"lng\": 92.0674\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -57.9831,
+          "lng": 92.0674
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -8,
+          53
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "05c804fb0176bf0768378d568db5ea5a",
+      "properties": {
+        "id": "05c804fb0176bf0768378d568db5ea5a",
+        "title": "Shootings by U.S. immigration agents in Minneapolis",
+        "summary": "A person is shot and injured by a United States Immigration and Customs Enforcement officer in Minneapolis, Minnesota, United States.",
+        "place": "Minneapolis, United States",
+        "lat": 43.6532,
+        "lng": -97.1074,
+        "event_text": "Law and crime: Shootings by U.S. immigration agents in the second Trump administration , Operation Metro Surge A person is shot and injured by a United States Immigration and Customs Enforcement officer in Minneapolis , Minnesota , United States. (ABC News)",
+        "url": "https://en.wikipedia.org/wiki/List_of_shootings_by_U.S._immigration_agents_in_the_second_Trump_administration",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/List_of_shootings_by_U.S._immigration_agents_in_the_second_Trump_administration",
+          "https://en.wikipedia.org/wiki/Operation_Metro_Surge",
+          "https://en.wikipedia.org/wiki/United_States_Immigration_and_Customs_Enforcement",
+          "https://en.wikipedia.org/wiki/Minneapolis",
+          "https://en.wikipedia.org/wiki/Minnesota",
+          "https://abcnews.go.com/US/live-updates/minneapolis-ice-shooting-live-updates?id=129124338&entryId=129206582&userab=abcn_du_cat_topic_feature_holdout-474*variant_b_redesign-1939%2Cotv_web_content_rec-445*variant_c_trending-1851"
+        ],
+        "llm_sentence": {
+          "city": "Minneapolis",
+          "country": "United States"
+        },
+        "llm_raw": "```json\n{\n  \"title\": \"Shootings by U.S. immigration agents in Minneapolis\",\n  \"summary\": \"A person is shot and injured by a United States Immigration and Customs Enforcement officer in Minneapolis, Minnesota, United States.\",\n  \"place\": {\n    \"city\": \"Minneapolis\",\n    \"country\": \"United States\"\n  },\n  \"lat\": 43.6532,\n  \"lng\": -97.1074\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Minneapolis, United States, 55.1936748, -93.0759278",
+        "llm_only_geocode_parsed": {
+          "lat": 55.1936748,
+          "lng": 93.0759278
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -97.1074,
+          43.6532
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "e38aff011f9217bdf2d2c98a790c5eac",
+      "properties": {
+        "id": "e38aff011f9217bdf2d2c98a790c5eac",
+        "title": "Singapore Parliament Votes to Remove Workers' Party Leader",
+        "summary": "Singapore’s parliament voted to remove Pritam Singh as the leader of the Workers' Party following a conviction for providing false testimony.",
+        "place": "Singapore",
+        "lat": 1.3,
+        "lng": 103.8,
+        "event_text": "Workers' Party leader Pritam Singh is no longer the Leader of the Opposition.",
+        "url": "https://en.wikipedia.org/wiki/Singapore",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Singapore",
+          "https://en.wikipedia.org/wiki/Parliament_of_Singapore",
+          "https://en.wikipedia.org/wiki/Workers%27_Party_(Singapore)",
+          "https://en.wikipedia.org/wiki/Pritam_Singh",
+          "https://en.wikipedia.org/wiki/Leader_of_the_Opposition_(Singapore)",
+          "https://en.wikipedia.org/wiki/Perjury",
+          "https://www.reuters.com/world/asia-pacific/singapore-parliament-debate-removing-leader-opposition-after-lying-conviction-2026-01-14/"
+        ],
+        "llm_sentence": "Singapore",
+        "llm_raw": "```json\n{\n  \"title\": \"Singapore Parliament Votes to Remove Workers' Party Leader\",\n  \"summary\": \"Singapore’s parliament voted to remove Pritam Singh as the leader of the Workers' Party following a conviction for providing false testimony.\",\n  \"place\": \"Singapore\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Workers' Party leader Pritam Singh is no longer the Leader of the Opposition.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Singapore, Malaysia",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.8,
+          1.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1e7b29c8dce35e822c0907709d9b3b49",
+      "properties": {
+        "id": "1e7b29c8dce35e822c0907709d9b3b49",
+        "title": "Iranian Protests: High Death Toll Reported",
+        "summary": "The U.S.-based non-governmental organization HRAI reports that at least 2,000 people have been killed during nationwide protests in Iran.",
+        "place": "Iran",
+        "lat": 32,
+        "lng": 53,
+        "event_text": "Independent activist sources contend that the nationwide crackdown has resulted in at least 12,000 to 20,000 people killed.",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+          "https://en.wikipedia.org/wiki/2026_Iran_massacres",
+          "https://en.wikipedia.org/wiki/Human_Rights_Activists_in_Iran",
+          "https://en.wikipedia.org/wiki/Iran",
+          "https://www.cbsnews.com/news/iran-protest-death-toll-over-12000-feared-higher-video-bodies-at-morgue/",
+          "https://apnews.com/article/iran-protests-us-israel-war-nuclear-economy-1b2368e0804676d33d6aa0696815a102"
+        ],
+        "llm_sentence": "Iran",
+        "llm_raw": "```json\n{\n  \"title\": \"Iranian Protests: High Death Toll Reported\",\n  \"summary\": \"The U.S.-based non-governmental organization HRAI reports that at least 2,000 people have been killed during nationwide protests in Iran.\",\n  \"place\": \"Iran\",\n  \"lat\": \"32.7449° N\",\n  \"lng\": \"-96.8595° E\",\n  \"event_text\": \"Independent activist sources contend that the nationwide crackdown has resulted in at least 12,000 to 20,000 people killed.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 32.7326,\n  \"lng\": 59.5857\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 32.7326,
+          "lng": 59.5857
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          53,
+          32
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "c7cf35dc7d4c9d62c72a09a54f109945",
+      "properties": {
+        "id": "c7cf35dc7d4c9d62c72a09a54f109945",
+        "title": "Armed conflicts and attacks: Insurgency in Chad",
+        "summary": "At least six people are killed, including three soldiers and three attackers, in clashes between a rebel group and the Chadian National Army in Korbol , Moyen-Chari , Chad.",
+        "place": "Korbol, Moyen-Chari, Chad",
+        "lat": -26.0348,
+        "lng": 19.4937,
+        "event_text": "Armed conflicts and attacks: Insurgency in Chad At least six people are killed, including three soldiers and three attackers, and 12 others are injured, including two other attackers, in clashes between a rebel group and the Chadian National Army in Korbol , Moyen-Chari , Chad. (Africanews)",
+        "url": "https://en.wikipedia.org/wiki/Insurgency_in_Chad_(2016%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Insurgency_in_Chad_(2016%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Chadian_National_Army",
+          "https://en.wikipedia.org/wiki/Korbol",
+          "https://en.wikipedia.org/wiki/Moyen-Chari_(region)",
+          "https://www.msn.com/en-ca/news/world/chad-at-least-six-killed-in-fighting-between-rebel-group-and-armed-forces/ar-AA1UdQti?ocid=winp1taskbar&cvid=622b763577f34e6ec178c7436803012a&ei=40"
+        ],
+        "llm_sentence": "Korbol, Moyen-Chari, Chad",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed conflicts and attacks: Insurgency in Chad\",\n  \"summary\": \"At least six people are killed, including three soldiers and three attackers, in clashes between a rebel group and the Chadian National Army in Korbol , Moyen-Chari , Chad.\",\n  \"place\": \"Korbol, Moyen-Chari, Chad\",\n  \"lat\": -26.0348,\n  \"lng\": 19.4937\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Chad, Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          19.4937,
+          -26.0348
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "776644cb12bd2dd02978ed1d338c3bfa",
+      "properties": {
+        "id": "776644cb12bd2dd02978ed1d338c3bfa",
+        "title": "Adelaide Writers' Week Boycott Following Author Withdrawal",
+        "summary": "Adelaide Writers' Week has cancelled its 2026 festival following the resignation of director Louise Adler and withdrawal of over 180 writers due to a decision to disinvite Palestinian author Randa Abdel-Fattah.",
+        "place": "Adelaide, Australia",
+        "lat": -34.0522,
+        "lng": -150.5972,
+        "event_text": "Arts and culture: Adelaide Writers' Week boycott Adelaide Writers' Week in Adelaide , Australia , cancels its 2026 festival after director Louise Adler resigned and more than 180 writers withdrew in protest over the board's decision to disinvite Palestinian Australian author Randa Abdel-Fattah . (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Adelaide_Writers%27_Week_boycott",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Adelaide_Writers%27_Week_boycott",
+          "https://en.wikipedia.org/wiki/Adelaide_Writers%27_Week",
+          "https://en.wikipedia.org/wiki/Adelaide",
+          "https://en.wikipedia.org/wiki/Australia",
+          "https://en.wikipedia.org/wiki/Louise_Adler",
+          "https://en.wikipedia.org/wiki/Palestinian_Australian",
+          "https://en.wikipedia.org/wiki/Randa_Abdel-Fattah",
+          "https://www.reuters.com/world/asia-pacific/australian-writers-festival-turmoil-over-decision-bar-palestinian-author-2026-01-13/"
+        ],
+        "llm_sentence": "Adelaide, Australia",
+        "llm_raw": "```json\n{\n  \"title\": \"Adelaide Writers' Week Boycott Following Author Withdrawal\",\n  \"summary\": \"Adelaide Writers' Week has cancelled its 2026 festival following the resignation of director Louise Adler and withdrawal of over 180 writers due to a decision to disinvite Palestinian author Randa Abdel-Fattah.\",\n  \"place\": \"Adelaide, Australia\",\n  \"lat\": -34.0522,\n  \"lng\": -150.5972\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -34.5687,\n  \"lng\": -32.3971\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -34.5687,
+          "lng": -32.3971
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -150.5972,
+          -34.0522
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "82d42a0d26e02b74c5cb347c56295d52",
+      "properties": {
+        "id": "82d42a0d26e02b74c5cb347c56295d52",
+        "title": "Argentine Inflation Rate Drops to 31.5%",
+        "summary": "Argentina records a 31.5% annual inflation rate in December, the lowest end-year level since 2017.",
+        "place": "Buenos Aires, Argentina",
+        "lat": -24.8966,
+        "lng": -49.8944,
+        "event_text": "Business and economy: 2018–present Argentine monetary crisis Argentina records a 31.5% annual inflation rate in December, the lowest end-year level since 2017, while monthly prices rise 2.8%, driven mainly by transport , housing, and fuel . (AFP via Barron's )",
+        "url": "https://en.wikipedia.org/wiki/2018%E2%80%93present_Argentine_monetary_crisis",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2018%E2%80%93present_Argentine_monetary_crisis",
+          "https://en.wikipedia.org/wiki/Economy_of_Argentina",
+          "https://en.wikipedia.org/wiki/Inflation",
+          "https://en.wikipedia.org/wiki/Transport_in_Argentina",
+          "https://en.wikipedia.org/wiki/Electricity_sector_in_Argentina",
+          "https://www.barrons.com/news/2025-argentine-inflation-lowest-in-8-years-stats-agency-aea18db9"
+        ],
+        "llm_sentence": "Buenos Aires, Argentina",
+        "llm_raw": "```json\n{\n  \"title\": \"Argentine Inflation Rate Drops to 31.5%\",\n  \"summary\": \"Argentina records a 31.5% annual inflation rate in December, the lowest end-year level since 2017.\",\n  \"place\": \"Buenos Aires, Argentina\",\n  \"lat\": -24.8966,\n  \"lng\": -49.8944\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 34.0522,\n  \"lng\": -76.4989\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 34.0522,
+          "lng": -76.4989
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -49.8944,
+          -24.8966
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "2f0521df832ed960601349704f3e169d",
+      "properties": {
+        "id": "2f0521df832ed960601349704f3e169d",
+        "title": "Philippines–United Arab Emirates Relations",
+        "summary": "The Philippines and the United Arab Emirates sign a free trade agreement.",
+        "place": "Philippines, United Arab Emirates",
+        "lat": 40.5297,
+        "lng": 153.634,
+        "event_text": "International relations: Philippines–United Arab Emirates relations The Philippines and the United Arab Emirates sign a free trade agreement . ( The Star )",
+        "url": "https://en.wikipedia.org/wiki/Philippines%E2%80%93United_Arab_Emirates_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Philippines%E2%80%93United_Arab_Emirates_relations",
+          "https://en.wikipedia.org/wiki/Philippines",
+          "https://en.wikipedia.org/wiki/United_Arab_Emirates",
+          "https://en.wikipedia.org/wiki/Free_trade_agreement",
+          "https://www.thestar.com.my/aseanplus/aseanplus-news/2026/01/14/philippine-uae-free-trade-deal-hailed-as-first-in-manilas-middle-east-ties"
+        ],
+        "llm_sentence": "Philippines, United Arab Emirates",
+        "llm_raw": "```json\n{\n  \"title\": \"Philippines–United Arab Emirates Relations\",\n  \"summary\": \"The Philippines and the United Arab Emirates sign a free trade agreement.\",\n  \"place\": \"Philippines, United Arab Emirates\",\n  \"lat\": 40.5297,\n  \"lng\": 153.634\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 13.2856,\n  \"lng\": 150.9274\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 13.2856,
+          "lng": 150.9274
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          153.634,
+          40.5297
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "161a6d71d8b4912db98fe0a2ca49af01",
+      "properties": {
+        "id": "161a6d71d8b4912db98fe0a2ca49af01",
+        "title": "Law and crime: Mexican drug war",
+        "summary": "Mexican police arrest six alleged Tren de Aragua members operating in Mexico City on charges of drug trafficking, extortion, and human trafficking.",
+        "place": "Mexico City",
+        "lat": -98.0761,
+        "lng": -83.3975,
+        "event_text": "Law and crime: Mexican drug war , Mexico–Venezuela relations Mexican police arrest six alleged Tren de Aragua members operating in Mexico City on charges of drug trafficking , extortion , and human trafficking . (AP)",
+        "url": "https://en.wikipedia.org/wiki/Mexican_drug_war",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Mexican_drug_war",
+          "https://en.wikipedia.org/wiki/Mexico%E2%80%93Venezuela_relations",
+          "https://en.wikipedia.org/wiki/Mexico",
+          "https://en.wikipedia.org/wiki/Federal_Police_(Mexico)",
+          "https://en.wikipedia.org/wiki/Tren_de_Aragua",
+          "https://en.wikipedia.org/wiki/Mexico_City",
+          "https://en.wikipedia.org/wiki/Drug_trafficking",
+          "https://en.wikipedia.org/wiki/Extortion",
+          "https://en.wikipedia.org/wiki/Human_trafficking",
+          "https://apnews.com/article/mexico-venezuela-tren-de-aragua-trump-19cb1262524c69f62aeb71799199b932"
+        ],
+        "llm_sentence": "Mexico City",
+        "llm_raw": "```json\n{\n  \"title\": \"Law and crime: Mexican drug war\",\n  \"summary\": \"Mexican police arrest six alleged Tren de Aragua members operating in Mexico City on charges of drug trafficking, extortion, and human trafficking.\",\n  \"place\": \"Mexico City\",\n  \"lat\": -98.0761,\n  \"lng\": -83.3975\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -98.076,\n  \"lng\": 19.25\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -98.076,
+          "lng": 19.25
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.3975,
+          -98.0761
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "0855e1912f88fb018ad309f4c7374f67",
+      "properties": {
+        "id": "0855e1912f88fb018ad309f4c7374f67",
+        "title": "Ugandan General Election: Internet Shutdown and Misinformation",
+        "summary": "Uganda has ordered a nationwide internet shutdown two days before its general election, citing concerns about misinformation and incitement. The communications regulator is directing service providers to suspend access.",
+        "place": "Uganda",
+        "lat": 1.28,
+        "lng": 32.39,
+        "event_text": "Ugandan general election, human rights, internet shutdown, misinformation",
+        "url": "https://en.wikipedia.org/wiki/2026_Ugandan_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Ugandan_general_election",
+          "https://en.wikipedia.org/wiki/Human_rights_in_Uganda",
+          "https://en.wikipedia.org/wiki/Uganda",
+          "https://en.wikipedia.org/wiki/Internet_shutdown",
+          "https://en.wikipedia.org/wiki/Uganda_Communications_Commission",
+          "https://en.wikipedia.org/wiki/Communications_in_Uganda",
+          "https://en.wikipedia.org/wiki/Incitement",
+          "https://www.lemonde.fr/en/international/article/2026/01/13/uganda-cuts-internet-access-ahead-of-elections_6749386_4.html",
+          "https://www.aljazeera.com/news/2026/1/13/uganda-cuts-internet-days-before-presidential-election"
+        ],
+        "llm_sentence": "Uganda",
+        "llm_raw": "```json\n{\n  \"title\": \"Ugandan General Election: Internet Shutdown and Misinformation\",\n  \"summary\": \"Uganda has ordered a nationwide internet shutdown two days before its general election, citing concerns about misinformation and incitement. The communications regulator is directing service providers to suspend access.\",\n  \"place\": \"Uganda\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Ugandan general election, human rights, internet shutdown, misinformation\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Uganda, Uganda",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          32.39,
+          1.28
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "00aaf417258cbc35acf839f60cf0cf12",
+      "properties": {
+        "id": "00aaf417258cbc35acf839f60cf0cf12",
+        "title": "Venezuelan Social Network X Re-Opened After Year of Blockage",
+        "summary": "Venezuelans have regained access to the social network X after more than a year of blockage under de jure president Nicolás Maduro.",
+        "place": "Venezuela",
+        "lat": 8,
+        "lng": -67,
+        "event_text": "Censorship in Venezuela.",
+        "url": "https://en.wikipedia.org/wiki/Censorship_in_Venezuela",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Censorship_in_Venezuela",
+          "https://en.wikipedia.org/wiki/Venezuela",
+          "https://en.wikipedia.org/wiki/Twitter",
+          "https://en.wikipedia.org/wiki/Censorship_of_Twitter",
+          "https://en.wikipedia.org/wiki/De_jure",
+          "https://en.wikipedia.org/wiki/President_of_Venezuela",
+          "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Maduro",
+          "https://www.cp24.com/news/world/2026/01/14/venezuelans-regain-access-to-social-network-x-ending-maduros-yearlong-block/"
+        ],
+        "llm_sentence": "Venezuela",
+        "llm_raw": "```json\n{\n  \"title\": \"Venezuelan Social Network X Re-Opened After Year of Blockage\",\n  \"summary\": \"Venezuelans have regained access to the social network X after more than a year of blockage under de jure president Nicolás Maduro.\",\n  \"place\": \"Venezuela\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Censorship in Venezuela.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 10.42,\n  \"lng\": -67.79\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 10.42,
+          "lng": -67.79
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67,
+          8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "4e5293cc5c760a1a09f99e7e425568e8",
+      "properties": {
+        "id": "4e5293cc5c760a1a09f99e7e425568e8",
+        "title": "Assassination of Hamas Leader Mahmoud Al-Astal in Gaza",
+        "summary": "Armed conflicts and attacks: Gaza war Palestinian internal political violence The Israeli -backed militant organization Counter-Terrorism Strike Force says it has assassinated Mahmoud Al-Astal, head of a Hamas -run police unit in Khan Yunis , Gaza Strip.",
+        "place": "Khan Yunis, Gaza Strip",
+        "lat": 31.985742,
+        "lng": -35.066767,
+        "event_text": "Armed conflicts and attacks: Gaza war Palestinian internal political violence The Israeli -backed militant organization Counter-Terrorism Strike Force says it has assassinated Mahmoud Al-Astal, head of a Hamas -run police unit in Khan Yunis , Gaza Strip . (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Gaza_war",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Gaza_war",
+          "https://en.wikipedia.org/wiki/Palestinian_internal_political_violence",
+          "https://en.wikipedia.org/wiki/Israel",
+          "https://en.wikipedia.org/wiki/Militant",
+          "https://en.wikipedia.org/wiki/Counter-Terrorism_Strike_Force",
+          "https://en.wikipedia.org/wiki/Hamas",
+          "https://en.wikipedia.org/wiki/Khan_Yunis",
+          "https://en.wikipedia.org/wiki/Gaza_Strip",
+          "https://www.reuters.com/world/middle-east/israeli-backed-group-kills-senior-hamas-police-officer-gaza-threatens-more-2026-01-12/"
+        ],
+        "llm_sentence": "Khan Yunis, Gaza Strip",
+        "llm_raw": "```json\n{\n  \"title\": \"Assassination of Hamas Leader Mahmoud Al-Astal in Gaza\",\n  \"summary\": \"Armed conflicts and attacks: Gaza war Palestinian internal political violence The Israeli -backed militant organization Counter-Terrorism Strike Force says it has assassinated Mahmoud Al-Astal, head of a Hamas -run police unit in Khan Yunis , Gaza Strip.\",\n  \"place\": \"Khan Yunis, Gaza Strip\",\n  \"lat\": \"31.985742\",\n  \"lng\": \"-35.066767\"\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nKhan Yunis, Gaza",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -35.066767,
+          31.985742
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "d92b866448bf9b65c0e00f64b5ebac03",
+      "properties": {
+        "id": "d92b866448bf9b65c0e00f64b5ebac03",
+        "title": "Spanish Prime Minister Tightens Rent Regulations",
+        "summary": "Pedro Sánchez issued a decree that tightens rent regulations, limiting short-term rentals and offering tax refunds to landlords renewing contracts without increases.",
+        "place": "Madrid, Spain",
+        "lat": 40.4168,
+        "lng": -3.7038,
+        "event_text": "Business and economy: Spanish property bubble Spanish prime minister Pedro Sánchez issues a decree that tightens rent regulations by limiting short-term rentals and offering full tax refunds to landlords who renew contracts without rent increases, as the country faces a housing shortfall of about 500,000 homes and average rents that have doubled over the past decade. (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Spanish_property_bubble",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Spanish_property_bubble",
+          "https://en.wikipedia.org/wiki/Spain",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Spain",
+          "https://en.wikipedia.org/wiki/Pedro_S%C3%A1nchez",
+          "https://en.wikipedia.org/wiki/Rent_regulation",
+          "https://en.wikipedia.org/wiki/Short-term_rental",
+          "https://en.wikipedia.org/wiki/Tax_refund",
+          "https://www.reuters.com/world/spain-tighten-rental-rules-with-room-rent-caps-seasonal-lease-curbs-2026-01-12/"
+        ],
+        "llm_sentence": "Madrid, Spain",
+        "llm_raw": "```json\n{\n  \"title\": \"Spanish Prime Minister Tightens Rent Regulations\",\n  \"summary\": \"Pedro Sánchez issued a decree that tightens rent regulations, limiting short-term rentals and offering tax refunds to landlords renewing contracts without increases.\",\n  \"place\": \"Madrid, Spain\",\n  \"lat\": 40.4168,\n  \"lng\": -3.7038\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nMadrid, Spain",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -3.7038,
+          40.4168
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "66a525d32f817af47b66eeb53a5b95ac",
+      "properties": {
+        "id": "66a525d32f817af47b66eeb53a5b95ac",
+        "title": "Meteotsunami Strikes Argentina Beaches",
+        "summary": "One person is killed and 35 others are injured in a meteotsunami at several beaches in Argentina.",
+        "place": "Argentina",
+        "lat": -34,
+        "lng": -64,
+        "event_text": "Disasters and accidents: One person is killed and 35 others are injured in a meteotsunami at several beaches in Argentina .",
+        "url": "https://en.wikipedia.org/wiki/Meteotsunami",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Meteotsunami",
+          "https://en.wikipedia.org/wiki/Argentina",
+          "https://people.com/1-dead-35-injured-meteotsunami-wipes-beaches-11884265"
+        ],
+        "llm_sentence": "Argentina",
+        "llm_raw": "```json\n{\n  \"title\": \"Meteotsunami Strikes Argentina Beaches\",\n  \"summary\": \"One person is killed and 35 others are injured in a meteotsunami at several beaches in Argentina.\",\n  \"place\": \"Argentina\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Disasters and accidents: One person is killed and 35 others are injured in a meteotsunami at several beaches in Argentina .\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -64,
+          -34
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "02ea53b99b90428a0a05e7c27513bb98",
+      "properties": {
+        "id": "02ea53b99b90428a0a05e7c27513bb98",
+        "title": "Climate Change Brings Rain to Morocco",
+        "summary": "A seven-year drought ends in Morocco after a 95 percent increase in winter rainfall.",
+        "place": "Morocco",
+        "lat": 32,
+        "lng": -6,
+        "event_text": "Climate change in Morocco",
+        "url": "https://en.wikipedia.org/wiki/Climate_change_in_Morocco",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Climate_change_in_Morocco",
+          "https://en.wikipedia.org/wiki/Drought",
+          "https://en.wikipedia.org/wiki/Morocco",
+          "https://www.reuters.com/sustainability/land-use-biodiversity/morocco-declares-end-seven-year-drought-after-winter-rains-2026-01-12/"
+        ],
+        "llm_sentence": "Morocco",
+        "llm_raw": "```json\n{\n  \"title\": \"Climate Change Brings Rain to Morocco\",\n  \"summary\": \"A seven-year drought ends in Morocco after a 95 percent increase in winter rainfall.\",\n  \"place\": \"Morocco\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Climate change in Morocco\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nMorocco",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -6,
+          32
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "2bc0d97a844be010b4e61033dfcb6f5a",
+      "properties": {
+        "id": "2bc0d97a844be010b4e61033dfcb6f5a",
+        "title": "Somali-UAE Relations Strain as Regional Governments Dispute Support",
+        "summary": "International relations: Somalia–United Arab Emirates relations, with Cabinets of the Federal Government of Somalia claiming to repel UAE support for Somaliland, leading to a constitutional crisis and government disputes in Berbera, Bosaso, and Kismayo.",
+        "place": "Somalia",
+        "lat": 6,
+        "lng": 47,
+        "event_text": "Somali-UAE relations strain as regional governments dispute support for Somaliland.",
+        "url": "https://en.wikipedia.org/wiki/Somalia%E2%80%93United_Arab_Emirates_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Somalia%E2%80%93United_Arab_Emirates_relations",
+          "https://en.wikipedia.org/wiki/Constitutional_crisis_in_Somalia",
+          "https://en.wikipedia.org/wiki/Federal_Government_of_Somalia",
+          "https://en.wikipedia.org/wiki/United_Arab_Emirates",
+          "https://en.wikipedia.org/wiki/Port_of_Berbera",
+          "https://en.wikipedia.org/wiki/Port_of_Bosaso",
+          "https://en.wikipedia.org/wiki/Port_of_Kismayo",
+          "https://en.wikipedia.org/wiki/Somaliland",
+          "https://en.wikipedia.org/wiki/Puntland",
+          "https://en.wikipedia.org/wiki/Jubaland",
+          "https://www.middleeasteye.net/news/somalia-cancels-all-agreements-uae-including-major-ports",
+          "https://www.dawan.africa/news/somalias-puntland-state-reaffirms-uae-security-cooperation",
+          "https://www.newarab.com/news/somalia-cancels-uae-deals-amid-tensions-over-somaliland-yemen"
+        ],
+        "llm_sentence": "Somalia",
+        "llm_raw": "```json\n{\n  \"title\": \"Somali-UAE Relations Strain as Regional Governments Dispute Support\",\n  \"summary\": \"International relations: Somalia–United Arab Emirates relations, with Cabinets of the Federal Government of Somalia claiming to repel UAE support for Somaliland, leading to a constitutional crisis and government disputes in Berbera, Bosaso, and Kismayo.\",\n  \"place\": \"Somalia\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Somali-UAE relations strain as regional governments dispute support for Somaliland.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 30.4692,\n  \"lng\": 35.4718\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 30.4692,
+          "lng": 35.4718
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47,
+          6
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "eccf2c2cb04df20bd20d2122dfe1364e",
+      "properties": {
+        "id": "eccf2c2cb04df20bd20d2122dfe1364e",
+        "title": "Law and crime: Cambodia–South Korea relations",
+        "summary": "Cambodian and South Korean police arrest 26 suspects accused of impersonation scams and sexual exploitation, defrauding 165 South Korean victims of approximately ₩26.7 billion (US$18.25 million).",
+        "place": "Cambodia, South Korea",
+        "lat": -9.4344,
+        "lng": 104.9368,
+        "event_text": "Law and crime: Cambodia–South Korea relations , Scam centers in Cambodia Cambodian and South Korean police arrest 26 suspects accused of impersonation scams and sexual exploitation that allegedly defrauded 165 South Korean victims of about ₩26.7 billion (US$18.25 million), with authorities set to extradite the suspects to South Korea . (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Cambodia%E2%80%93South_Korea_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Cambodia%E2%80%93South_Korea_relations",
+          "https://en.wikipedia.org/wiki/Scam_centers_in_Cambodia",
+          "https://en.wikipedia.org/wiki/Law_enforcement_in_Cambodia",
+          "https://en.wikipedia.org/wiki/National_Police_Agency_(South_Korea)",
+          "https://en.wikipedia.org/wiki/Criminal_impersonation",
+          "https://en.wikipedia.org/wiki/Sex_trafficking_in_Cambodia",
+          "https://en.wikipedia.org/wiki/South_Koreans",
+          "https://en.wikipedia.org/wiki/Extradition",
+          "https://en.wikipedia.org/wiki/South_Korea",
+          "https://www.reuters.com/world/asia-pacific/cambodian-south-korean-police-arrest-26-alleged-scams-sex-crimes-blue-house-says-2026-01-12/"
+        ],
+        "llm_sentence": "Cambodia, South Korea",
+        "llm_raw": "```json\n{\n  \"title\": \"Law and crime: Cambodia–South Korea relations\",\n  \"summary\": \"Cambodian and South Korean police arrest 26 suspects accused of impersonation scams and sexual exploitation, defrauding 165 South Korean victims of approximately ₩26.7 billion (US$18.25 million).\",\n  \"place\": \"Cambodia, South Korea\",\n  \"lat\": -9.4344,\n  \"lng\": 104.9368\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nCambodia, South Korea",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.9368,
+          -9.4344
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "915416dd361234fb5a3e846755b23e94",
+      "properties": {
+        "id": "915416dd361234fb5a3e846755b23e94",
+        "title": "Corruption in Georgia",
+        "summary": "Former Georgian prime minister Irakli Garibashvili pleads guilty to large-scale money-laundering charges and receives a five-year prison sentence and a $1 million fine.",
+        "place": "Georgia",
+        "lat": 33,
+        "lng": -83.5,
+        "event_text": "investigators seized about $6.5 million in cash during raids on his residence.",
+        "url": "https://en.wikipedia.org/wiki/Corruption_in_Georgia",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Corruption_in_Georgia",
+          "https://en.wikipedia.org/wiki/Georgia_(country)",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Georgia",
+          "https://en.wikipedia.org/wiki/Irakli_Garibashvili",
+          "https://en.wikipedia.org/wiki/Money_laundering",
+          "https://en.wikipedia.org/wiki/Georgian_lari",
+          "https://www.reuters.com/world/georgian-ex-pm-garibashvili-serve-five-year-sentence-after-guilty-plea-2026-01-12/"
+        ],
+        "llm_sentence": "Georgia",
+        "llm_raw": "```json\n{\n  \"title\": \"Corruption in Georgia\",\n  \"summary\": \"Former Georgian prime minister Irakli Garibashvili pleads guilty to large-scale money-laundering charges and receives a five-year prison sentence and a $1 million fine.\",\n  \"place\": \"Georgia\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"investigators seized about $6.5 million in cash during raids on his residence.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Georgia, Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -83.5,
+          33
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "d6f3c89f5e4f68651918927895f71268",
+      "properties": {
+        "id": "d6f3c89f5e4f68651918927895f71268",
+        "title": "Corruption in Poland: Ziobro Receives Political Asylum",
+        "summary": "Former Polish justice minister Zbigniew Ziobro receives political asylum in Hungary while Polish prosecutors investigate him on 26 counts related to alleged misuse of a crime victims fund and other abuses of office under the first Morawiecki cabinet.",
+        "place": "Hungary",
+        "lat": 48.1375,
+        "lng": 22.3393,
+        "event_text": "Law and crime: Corruption in Poland , Hungary–Poland relations Former Polish justice minister Zbigniew Ziobro receives political asylum in Hungary while Polish prosecutors investigate him on 26 counts related to alleged misuse of a crime victims fund and other abuses of office under the first Morawiecki cabinet . ( The Guardian )",
+        "url": "https://en.wikipedia.org/wiki/Corruption_in_Poland",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Corruption_in_Poland",
+          "https://en.wikipedia.org/wiki/Hungary%E2%80%93Poland_relations",
+          "https://en.wikipedia.org/wiki/Poland",
+          "https://en.wikipedia.org/wiki/Ministry_of_Justice_(Poland)",
+          "https://en.wikipedia.org/wiki/Zbigniew_Ziobro",
+          "https://en.wikipedia.org/wiki/Political_asylum",
+          "https://en.wikipedia.org/wiki/Hungary",
+          "https://en.wikipedia.org/wiki/Victims%27_rights#Poland",
+          "https://en.wikipedia.org/wiki/First_cabinet_of_Mateusz_Morawiecki",
+          "https://www.theguardian.com/world/2026/jan/12/hungary-grants-asylum-to-former-polish-minister-zbigniew-ziobro-abuse-of-power-investigation"
+        ],
+        "llm_sentence": "Hungary",
+        "llm_raw": "```json\n{\n  \"title\": \"Corruption in Poland: Ziobro Receives Political Asylum\",\n  \"summary\": \"Former Polish justice minister Zbigniew Ziobro receives political asylum in Hungary while Polish prosecutors investigate him on 26 counts related to alleged misuse of a crime victims fund and other abuses of office under the first Morawiecki cabinet.\",\n  \"place\": \"Hungary\",\n  \"lat\": 48.1375,\n  \"lng\": 22.3393\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country: Budapest, Hungary",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          22.3393,
+          48.1375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "36b8d57d517cbe654b13de12c98c6ebd",
+      "properties": {
+        "id": "36b8d57d517cbe654b13de12c98c6ebd",
+        "title": "Swedish Police Seize Largest Ever Cocaine Shipment",
+        "summary": "Swedish police seized three tonnes of cocaine from a shipping container at the Port of Helsingborg, making it the country's single-largest seizure of the illegal drug. Spanish and UK authorities also seized 10 tonnes of cocaine hidden among cargo on a ship off the Canary Islands.",
+        "place": "Helsingborg, Sweden",
+        "lat": 56.8739,
+        "lng": 9.6925,
+        "event_text": "Law and crime: War on drugs Swedish police seize three tonnes of cocaine found in a shipping container from South America at the Port of Helsingborg , making it the country 's single-largest seizure of the illegal drug . (Reuters) Spanish police , in coordination with the UK National Crime Agency and the US DEA , seize 10 tonnes of cocaine hidden among a cargo of salt on a cargo ship off the Canary Islands . It is the country 's largest ever seizure of drugs at sea. Thirteen people on board the vessel are arrested. ( The Guardian )",
+        "url": "https://en.wikipedia.org/wiki/War_on_drugs",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/War_on_drugs",
+          "https://en.wikipedia.org/wiki/Swedish_Police_Authority",
+          "https://en.wikipedia.org/wiki/Cocaine",
+          "https://en.wikipedia.org/wiki/Shipping_container",
+          "https://en.wikipedia.org/wiki/South_America",
+          "https://en.wikipedia.org/wiki/Port_of_Helsingborg",
+          "https://en.wikipedia.org/wiki/Sweden",
+          "https://en.wikipedia.org/wiki/Illegal_drug_trade",
+          "https://www.reuters.com/world/americas/sweden-makes-record-three-ton-seizure-cocaine-south-america-2026-01-12/",
+          "https://en.wikipedia.org/wiki/Law_enforcement_in_Spain",
+          "https://en.wikipedia.org/wiki/National_Crime_Agency",
+          "https://en.wikipedia.org/wiki/Drug_Enforcement_Administration",
+          "https://en.wikipedia.org/wiki/Salt",
+          "https://en.wikipedia.org/wiki/Cargo_ship",
+          "https://en.wikipedia.org/wiki/Canary_Islands",
+          "https://en.wikipedia.org/wiki/Spain",
+          "https://www.theguardian.com/world/2026/jan/12/spain-police-seize-cocaine-ship-canary-islands"
+        ],
+        "llm_sentence": "Helsingborg, Sweden",
+        "llm_raw": "```json\n{\n  \"title\": \"Swedish Police Seize Largest Ever Cocaine Shipment\",\n  \"summary\": \"Swedish police seized three tonnes of cocaine from a shipping container at the Port of Helsingborg, making it the country's single-largest seizure of the illegal drug. Spanish and UK authorities also seized 10 tonnes of cocaine hidden among cargo on a ship off the Canary Islands.\",\n  \"place\": \"Helsingborg, Sweden\",\n  \"lat\": 56.8739,\n  \"lng\": 9.6925\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nHelsingborg, Sweden",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          9.6925,
+          56.8739
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "df308ab975649e98d939a715c0eb2c12",
+      "properties": {
+        "id": "df308ab975649e98d939a715c0eb2c12",
+        "title": "Venezuela Releases Political Prisoners",
+        "summary": "Venezuela has released between 41 and 116 political prisoners who were detained due to acts associated with civil disobedience.",
+        "place": "Venezuela",
+        "lat": 8,
+        "lng": -67,
+        "event_text": "Law and crime: Venezuela releases between 41 and 116 political prisoners who were detained due to acts associated with civil disobedience the constitutional order.",
+        "url": "https://en.wikipedia.org/wiki/Venezuela",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Venezuela",
+          "https://en.wikipedia.org/wiki/Political_prisoners_in_Venezuela",
+          "https://en.wikipedia.org/wiki/Civil_disobedience",
+          "https://en.wikipedia.org/wiki/Constitution_of_Venezuela",
+          "https://www.aljazeera.com/news/2026/1/12/venezuela-says-over-100-political-prisoners-released-pope-meets-machado"
+        ],
+        "llm_sentence": "Venezuela",
+        "llm_raw": "```json\n{\n  \"title\": \"Venezuela Releases Political Prisoners\",\n  \"summary\": \"Venezuela has released between 41 and 116 political prisoners who were detained due to acts associated with civil disobedience.\",\n  \"place\": \"Venezuela\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Law and crime: Venezuela releases between 41 and 116 political prisoners who were detained due to acts associated with civil disobedience the constitutional order.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 27.6803,\n  \"lng\": -59.3416\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 27.6803,
+          "lng": -59.3416
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67,
+          8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "21f99ce700fc01806e4ed5e4184b4ac9",
+      "properties": {
+        "id": "21f99ce700fc01806e4ed5e4184b4ac9",
+        "title": "Criticism of Twitter",
+        "summary": "The United Kingdom’s Ofcom opens an investigation into X (Twitter) regarding complaints about deepfake sexualized images created by its chatbot Grok.",
+        "place": "United Kingdom",
+        "lat": 45.761932,
+        "lng": -0.129836,
+        "event_text": "Science and technology: Criticism of Twitter The United Kingdom 's Ofcom opens an investigation into X over complaints about the creation of deepfake sexualised images by its chatbot Grok . (RTÉ)",
+        "url": "https://en.wikipedia.org/wiki/Criticism_of_Twitter",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Criticism_of_Twitter",
+          "https://en.wikipedia.org/wiki/United_Kingdom",
+          "https://en.wikipedia.org/wiki/Ofcom",
+          "https://en.wikipedia.org/wiki/Twitter",
+          "https://en.wikipedia.org/wiki/Deepfake_pornography",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://www.rte.ie/news/2026/0112/1552661-grok-investigation-ofcom/"
+        ],
+        "llm_sentence": "United Kingdom",
+        "llm_raw": "```json\n{\n  \"title\": \"Criticism of Twitter\",\n  \"summary\": \"The United Kingdom’s Ofcom opens an investigation into X (Twitter) regarding complaints about deepfake sexualized images created by its chatbot Grok.\",\n  \"place\": \"United Kingdom\",\n  \"lat\": \"45.761932\",\n  \"lng\": \"-0.129836\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 51.5074,\n  \"lng\": -0.1278\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 51.5074,
+          "lng": -0.1278
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -0.129836,
+          45.761932
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "aea6a6ec0f2835c3606b88ae546253f6",
+      "properties": {
+        "id": "aea6a6ec0f2835c3606b88ae546253f6",
+        "title": "Meta Shut Down 544,000 Facebook Accounts Targeting Under-16s",
+        "summary": "Meta has shut down over 544,000 accounts of users under the age of 16 on Facebook, Instagram, and Threads in response to Australian social media age restrictions.",
+        "place": "Australia",
+        "lat": -25,
+        "lng": 133,
+        "event_text": "Meta reports that it has shut down over 544,000 accounts of users under the age of 16 on Facebook, Instagram , and Threads in response to Australian social media age restrictions.",
+        "url": "https://en.wikipedia.org/wiki/Meta_Platforms",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Meta_Platforms",
+          "https://en.wikipedia.org/wiki/Facebook",
+          "https://en.wikipedia.org/wiki/Instagram",
+          "https://en.wikipedia.org/wiki/Instagram_Threads",
+          "https://en.wikipedia.org/wiki/Online_Safety_Amendment",
+          "https://www.dw.com/en/meta-shuts-over-544000-australian-accounts-after-ban/a-75469113"
+        ],
+        "llm_sentence": "Australia",
+        "llm_raw": "```json\n{\n  \"title\": \"Meta Shut Down 544,000 Facebook Accounts Targeting Under-16s\",\n  \"summary\": \"Meta has shut down over 544,000 accounts of users under the age of 16 on Facebook, Instagram, and Threads in response to Australian social media age restrictions.\",\n  \"place\": \"Australia\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Meta reports that it has shut down over 544,000 accounts of users under the age of 16 on Facebook, Instagram , and Threads in response to Australian social media age restrictions.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nUnknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          133,
+          -25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "d140bbb41581abb9d177847bef0bb04a",
+      "properties": {
+        "id": "d140bbb41581abb9d177847bef0bb04a",
+        "title": "Armed conflicts and attacks: Syrian conflict",
+        "summary": "SDF–Syrian transitional government clashes in Aleppo. The Syrian Democratic Forces withdraw from Aleppo following negotiations with the Syrian transitional government.",
+        "place": "Aleppo",
+        "lat": 36.2,
+        "lng": 37.16,
+        "event_text": "Armed conflicts and attacks: Syrian conflict SDF–Syrian transitional government clashes January 2026 Aleppo clashes The Syrian Democratic Forces withdraw from Aleppo following negotiations with the Syrian transitional government . (Al Jazeera)",
+        "url": "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/SDF%E2%80%93Syrian_transitional_government_clashes_(2025%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/January_2026_Aleppo_clashes",
+          "https://en.wikipedia.org/wiki/Syrian_Democratic_Forces",
+          "https://en.wikipedia.org/wiki/Aleppo",
+          "https://en.wikipedia.org/wiki/Syrian_transitional_government",
+          "https://www.aljazeera.com/news/2026/1/11/kurdish-fighters-leave-syrias-aleppo-after-days-of-clashes"
+        ],
+        "llm_sentence": "Aleppo",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed conflicts and attacks: Syrian conflict\",\n  \"summary\": \"SDF–Syrian transitional government clashes in Aleppo. The Syrian Democratic Forces withdraw from Aleppo following negotiations with the Syrian transitional government.\",\n  \"place\": \"Aleppo\",\n  \"lat\": \"31° 42' 58.6'' N, 36° 27' 49.0'' E\",\n  \"lng\": \"-61° 27' 49.0'' N, -30° 36' 58.6'' E\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Aleppo, Syria",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.16,
+          36.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "50cc7983e8471f0b0f048cdf1b71cd78",
+      "properties": {
+        "id": "50cc7983e8471f0b0f048cdf1b71cd78",
+        "title": "Russian Drone Attacks in Ukraine",
+        "summary": "Armed conflicts and attacks: Russo-Ukrainian war",
+        "place": "Voronezh, Russia",
+        "lat": 59.8347,
+        "lng": 30.2613,
+        "event_text": "Armed conflicts and attacks: Russo-Ukrainian war Attacks in Russia during the Russo-Ukrainian war A woman is killed and around a dozen residential buildings are damaged in an overnight Ukrainian drone attack on Voronezh , Russia . (Reuters) Russian attacks on civilians in the Russo-Ukrainian war At least four people are killed and 20 others are injured in overnight Russian drone attacks across Ukraine . (Euronews)",
+        "url": "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Attacks_in_Russia_during_the_Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Armed_Forces_of_Ukraine",
+          "https://en.wikipedia.org/wiki/Drone_warfare",
+          "https://en.wikipedia.org/wiki/Voronezh",
+          "https://en.wikipedia.org/wiki/Russia",
+          "https://www.reuters.com/world/ukrainian-drone-attack-injures-four-damages-buildings-russias-voronezh-governor-2026-01-10/",
+          "https://en.wikipedia.org/wiki/Russian_attacks_on_civilians_in_the_Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Russian_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Ukraine",
+          "https://www.msn.com/en-ca/news/world/four-killed-and-20-more-injured-in-overnight-russian-attacks-across-ukraine/ar-AA1TZxZs?ocid=winp1taskbar&cvid=6942c6c072484a1f95fd89657eb27866&ei=15"
+        ],
+        "llm_sentence": "Voronezh, Russia",
+        "llm_raw": "```json\n{\n  \"title\": \"Russian Drone Attacks in Ukraine\",\n  \"summary\": \"Armed conflicts and attacks: Russo-Ukrainian war\",\n  \"place\": \"Voronezh, Russia\",\n  \"lat\": 59.8347,\n  \"lng\": 30.2613\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.2613,
+          59.8347
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "9ba1f8d8b2d9517f22388618e0b9c8b6",
+      "properties": {
+        "id": "9ba1f8d8b2d9517f22388618e0b9c8b6",
+        "title": "Iranian Protests: Injuries Reported, Internet Blackout Occurs",
+        "summary": "Armed conflicts and attacks: 2025–2026 Iranian protests. Two people are injured in a suspected vehicle-ramming attack when a U-Haul truck strikes multiple people during an anti-Iranian government protest in Los Angeles , California , United States , after protesters strike the vehicle with hands and flags. No one is hospitalized after the incident.",
+        "place": "Los Angeles, California, United States",
+        "lat": -118.2437,
+        "lng": -339.7972,
+        "event_text": "Armed conflicts and attacks: 2025–2026 Iranian protests 2026 Los Angeles ramming attack Two people are injured in a suspected vehicle-ramming attack when a U-Haul truck strikes multiple people during an anti-Iranian government protest in Los Angeles , California , United States , after protesters strike the vehicle with hands and flags. No one is hospitalized after the incident. (BNO News) Non-governmental organization HRAI verifies the deaths of 483 protesters and 47 security personnel in Iran since the start of the protests. (Sky News) (Reuters) Amidst the ongoing internet blackout , the Iranian government successfully shuts down the Starlink internet for the first time. ( The Times of Israel )",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+          "https://en.wikipedia.org/wiki/2026_Los_Angeles_ramming_attack",
+          "https://en.wikipedia.org/wiki/Vehicle-ramming_attack",
+          "https://en.wikipedia.org/wiki/U-Haul",
+          "https://en.wikipedia.org/wiki/Reactions_to_the_2025%E2%80%932026_Iranian_protests#Iranian_diaspora",
+          "https://en.wikipedia.org/wiki/Los_Angeles",
+          "https://en.wikipedia.org/wiki/California",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://bnonews.com/index.php/2026/01/several-injured-after-truck-driver-strikes-multiple-protesters-in-los-angeles/",
+          "https://en.wikipedia.org/wiki/Human_Rights_Activists_in_Iran",
+          "https://en.wikipedia.org/w/index.php?title=Involvement_of_foreign_militias_in_the_suppression_of_protests_in_Iran&action=edit&redlink=1",
+          "https://en.wikipedia.org/wiki/Iran",
+          "https://news.sky.com/story/iran-latest-us-and-israel-discuss-iran-intervention-as-tehran-vows-retaliation-against-american-regional-bases-amid-ongoing-protests-13492391",
+          "https://www.reuters.com/business/media-telecom/confronting-protests-iran-vows-strike-back-if-us-attacks-2026-01-11/",
+          "https://en.wikipedia.org/wiki/2026_Internet_blackout_in_Iran",
+          "https://en.wikipedia.org/wiki/Government_of_Iran",
+          "https://en.wikipedia.org/wiki/Starlink",
+          "https://www.timesofisrael.com/iran-appears-to-jam-starlink-after-shutting-down-comms-networks/"
+        ],
+        "llm_sentence": "Los Angeles, California, United States",
+        "llm_raw": "```json\n{\n  \"title\": \"Iranian Protests: Injuries Reported, Internet Blackout Occurs\",\n  \"summary\": \"Armed conflicts and attacks: 2025–2026 Iranian protests. Two people are injured in a suspected vehicle-ramming attack when a U-Haul truck strikes multiple people during an anti-Iranian government protest in Los Angeles , California , United States , after protesters strike the vehicle with hands and flags. No one is hospitalized after the incident.\",\n  \"place\": \"Los Angeles, California, United States\",\n  \"lat\": -118.2437,\n  \"lng\": -339.7972\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Los Angeles, United States",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -339.7972,
+          -118.2437
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b7dd99022bc5f4b76b8cbc3e3795c494",
+      "properties": {
+        "id": "b7dd99022bc5f4b76b8cbc3e3795c494",
+        "title": "Sudanese Prime Minister Announces Return to Khartoum",
+        "summary": " Sudanese prime minister Kamil Idris announced the government's return to Khartoum after operating out of Port Sudan for much of the conflict.",
+        "place": "Khartoum, Sudan",
+        "lat": 30.1749,
+        "lng": -152.8199,
+        "event_text": "Armed conflicts and attacks: Sudanese civil war Sudanese prime minister Kamil Idris announces that the government will return to the capital of Khartoum after previously operating out of Port Sudan for much of the conflict. (Al Jazeera)",
+        "url": "https://en.wikipedia.org/wiki/Sudanese_civil_war_(2023%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Sudanese_civil_war_(2023%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Sudan",
+          "https://en.wikipedia.org/wiki/Prime_Minister_of_Sudan",
+          "https://en.wikipedia.org/wiki/Kamil_Idris",
+          "https://en.wikipedia.org/wiki/Transitional_Sovereignty_Council",
+          "https://en.wikipedia.org/wiki/Khartoum",
+          "https://en.wikipedia.org/wiki/Port_Sudan",
+          "https://www.aljazeera.com/news/2026/1/11/sudan-announces-governments-return-to-khartoum-from-wartime-capital"
+        ],
+        "llm_sentence": "Khartoum, Sudan",
+        "llm_raw": "```json\n{\n  \"title\": \"Sudanese Prime Minister Announces Return to Khartoum\",\n  \"summary\": \" Sudanese prime minister Kamil Idris announced the government's return to Khartoum after operating out of Port Sudan for much of the conflict.\",\n  \"place\": \"Khartoum, Sudan\",\n  \"lat\": \"30.1749\",\n  \"lng\": \"-152.8199\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 27.8245,\n  \"lng\": 40.3761\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 27.8245,
+          "lng": 40.3761
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -152.8199,
+          30.1749
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b406a5e180e19987dcc647437f1861dc",
+      "properties": {
+        "id": "b406a5e180e19987dcc647437f1861dc",
+        "title": "Arts and culture: 83rd Golden Globe Awards",
+        "summary": "The 83rd Golden Globe Awards saw Hamnet and One Battle After Another win Best Dramatic and Best Comedic or Musical Film, respectively. The Pitt and The Studio won Best Drama and Best Comedy or Musical in television.",
+        "place": "Los Angeles Times",
+        "lat": -118.2437,
+        "lng": 33.5669,
+        "event_text": "Arts and culture: 83rd Golden Globe Awards At this year's Golden Globe Awards , Hamnet and One Battle After Another win Best Dramatic and Best Comedic or Musical Film , respectively, while The Pitt and The Studio win Best Drama and Best Comedy or Musical in television, respectively. ( Los Angeles Times )",
+        "url": "https://en.wikipedia.org/wiki/83rd_Golden_Globe_Awards",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/83rd_Golden_Globe_Awards",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Awards",
+          "https://en.wikipedia.org/wiki/Hamnet_(film)",
+          "https://en.wikipedia.org/wiki/One_Battle_After_Another",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Motion_Picture_%E2%80%93_Drama",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Motion_Picture_%E2%80%93_Musical_or_Comedy",
+          "https://en.wikipedia.org/wiki/The_Pitt",
+          "https://en.wikipedia.org/wiki/The_Studio_(TV_series)",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Television_Series_%E2%80%93_Drama",
+          "https://en.wikipedia.org/wiki/Golden_Globe_Award_for_Best_Television_Series_%E2%80%93_Musical_or_Comedy",
+          "https://www.latimes.com/entertainment-arts/story/2026-01-11/golden-globes-2026-winners-list"
+        ],
+        "llm_sentence": "Los Angeles Times",
+        "llm_raw": "```json\n{\n  \"title\": \"Arts and culture: 83rd Golden Globe Awards\",\n  \"summary\": \"The 83rd Golden Globe Awards saw Hamnet and One Battle After Another win Best Dramatic and Best Comedic or Musical Film, respectively. The Pitt and The Studio won Best Drama and Best Comedy or Musical in television.\",\n  \"place\": \"Los Angeles Times\",\n  \"lat\": -118.2437,\n  \"lng\": 33.5669\n}\n```",
+        "llm_geocode_raw": "```json\n{\n  \"lat\": 34.0522,\n  \"lng\": -118.2437\n}\n```",
+        "llm_geocode_parsed": {
+          "lat": 34.0522,
+          "lng": -118.2437
+        },
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 34.0522,\n  \"lng\": -118.2437\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 34.0522,
+          "lng": -118.2437
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.5669,
+          -118.2437
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "07c6ed51b8bf18fd8055ae32d6e95f7f",
+      "properties": {
+        "id": "07c6ed51b8bf18fd8055ae32d6e95f7f",
+        "title": "China-Egypt Relations: Renewable Energy Agreements Worth $1.8 Billion",
+        "summary": "China and Norway have signed renewable energy agreements worth US$ 1.8 billion with Egypt.",
+        "place": "Egypt",
+        "lat": 27,
+        "lng": 29,
+        "event_text": "China–Egypt relations",
+        "url": "https://en.wikipedia.org/wiki/China%E2%80%93Egypt_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/China%E2%80%93Egypt_relations",
+          "https://en.wikipedia.org/wiki/Foreign_relations_of_Norway",
+          "https://en.wikipedia.org/wiki/Egypt",
+          "https://en.wikipedia.org/wiki/Renewable_energy",
+          "https://en.wikipedia.org/wiki/US$",
+          "https://en.wikipedia.org/wiki/China",
+          "https://en.wikipedia.org/wiki/Norway",
+          "https://www.alarabiya.net/aswaq/oil-and-gas/2026/01/11/%D9%85%D8%B5%D8%B1-%D8%AA%D9%88%D9%82%D8%B9-%D8%A7%D8%AA%D9%81%D8%A7%D9%82%D9%8A%D8%A7%D8%AA-%D8%A8%D9%85%D8%AC%D8%A7%D9%84-%D8%A7%D9%84%D8%B7%D8%A7%D9%82%D8%A9-%D8%A7%D9%84%D9%85%D8%AA%D8%AC%D8%AF%D8%AF%D8%A9-%D8%A8%D9%82%D9%8A%D9%85%D8%A9-18-%D9%85%D9%84%D9%8A%D8%A7%D8%B1-%D8%AF%D9%88%D9%84%D8%A7%D8%B1"
+        ],
+        "llm_sentence": "Egypt",
+        "llm_raw": "```json\n{\n  \"title\": \"China-Egypt Relations: Renewable Energy Agreements Worth $1.8 Billion\",\n  \"summary\": \"China and Norway have signed renewable energy agreements worth US$ 1.8 billion with Egypt.\",\n  \"place\": \"Egypt\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"China–Egypt relations\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 30.0,\n  \"lng\": 23.0\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 30.0,
+          "lng": 23.0
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          29,
+          27
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "514276422cb8b2d4a150257d0b1bc151",
+      "properties": {
+        "id": "514276422cb8b2d4a150257d0b1bc151",
+        "title": "Australian Bushfires Devastate Victoria and New South Wales",
+        "summary": "2025–26 Australian bushfire season, one person killed and at least 300 properties destroyed by wildfires across Victoria and New South Wales.",
+        "place": "Victoria, NSW, Australia",
+        "lat": -38.05,
+        "lng": -147.0,
+        "event_text": "Disasters and accidents: 2025–26 Australian bushfire season One person is killed and at least 300 properties are destroyed by wildfires across Victoria and New South Wales , Australia . A state of emergency is declared in Victoria with thousands of firefighters and more than 70 aircraft deployed to combat the fires. (BBC News)",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%9326_Australian_bushfire_season",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%9326_Australian_bushfire_season",
+          "https://en.wikipedia.org/wiki/Wildfire",
+          "https://en.wikipedia.org/wiki/Victoria_(state)",
+          "https://en.wikipedia.org/wiki/New_South_Wales",
+          "https://en.wikipedia.org/wiki/Australia",
+          "https://en.wikipedia.org/wiki/State_of_emergency",
+          "https://en.wikipedia.org/wiki/Firefighter",
+          "https://www.bbc.co.uk/news/articles/c75xdg2p36lo"
+        ],
+        "llm_sentence": "Victoria, NSW, Australia",
+        "llm_raw": "```json\n{\n  \"title\": \"Australian Bushfires Devastate Victoria and New South Wales\",\n  \"summary\": \"2025–26 Australian bushfire season, one person killed and at least 300 properties destroyed by wildfires across Victoria and New South Wales.\",\n  \"place\": \"Victoria, NSW, Australia\",\n  \"lat\": -38.05,\n  \"lng\": -147.0\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -38.95,\n  \"lng\": 147.6\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -38.95,
+          "lng": 147.6
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -147.0,
+          -38.05
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "034e583335b11351ee7d9feb6f00b72f",
+      "properties": {
+        "id": "034e583335b11351ee7d9feb6f00b72f",
+        "title": "Disasters and accidents: Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad, Pakistan.",
+        "summary": "Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad, Pakistan.",
+        "place": "Islamabad, Pakistan",
+        "lat": 34.0522,
+        "lng": 104.5846,
+        "event_text": "Disasters and accidents: Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad , Pakistan . ( Dawn )",
+        "url": "https://en.wikipedia.org/wiki/Islamabad",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Islamabad",
+          "https://en.wikipedia.org/wiki/Pakistan",
+          "https://www.dawn.com/news/1966363"
+        ],
+        "llm_sentence": "Islamabad, Pakistan",
+        "llm_raw": "```json\n{\n  \"title\": \"Disasters and accidents: Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad, Pakistan.\",\n  \"summary\": \"Eight people are killed and 12 others are injured in an explosion during wedding festivities at a house in Islamabad, Pakistan.\",\n  \"place\": \"Islamabad, Pakistan\",\n  \"lat\": 34.0522,\n  \"lng\": 104.5846\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 34.0522,\n  \"lng\": 76.3917\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 34.0522,
+          "lng": 76.3917
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          104.5846,
+          34.0522
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "35428e9eed6baaa61445d7c262ad0663",
+      "properties": {
+        "id": "35428e9eed6baaa61445d7c262ad0663",
+        "title": "Disasters and accidents: The death toll from avalanches in the French Alps over the weekend rises to six as three more skiers are killed.",
+        "summary": "Avalanches have resulted in six deaths in the French Alps over the weekend.",
+        "place": "French Alps",
+        "lat": 44.8,
+        "lng": 6.5,
+        "event_text": "The death toll from avalanches in the French Alps over the weekend rises to six as three more skiers are killed.",
+        "url": "https://en.wikipedia.org/wiki/Avalanche",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Avalanche",
+          "https://en.wikipedia.org/wiki/French_Alps",
+          "https://en.wikipedia.org/wiki/Skiing",
+          "https://www.scmp.com/news/world/europe/article/3339522/6-piste-skiers-killed-separate-french-alps-avalanches-over-weekend"
+        ],
+        "llm_sentence": "French Alps",
+        "llm_raw": "```json\n{\n  \"title\": \"Disasters and accidents: The death toll from avalanches in the French Alps over the weekend rises to six as three more skiers are killed.\",\n  \"summary\": \"Avalanches have resulted in six deaths in the French Alps over the weekend.\",\n  \"place\": \"French Alps\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"The death toll from avalanches in the French Alps over the weekend rises to six as three more skiers are killed.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "South China, Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          6.5,
+          44.8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "102d8021ebf925daf944e065deededf6",
+      "properties": {
+        "id": "102d8021ebf925daf944e065deededf6",
+        "title": "Disasters and accidents: Four people are killed and five others are injured after two cars collide head-on in Bolton , Greater Manchester , United Kingdom.",
+        "summary": "Four people are killed and five others are injured after two cars collide head-on in Bolton, Greater Manchester, United Kingdom.",
+        "place": "Bolton , Greater Manchester , United Kingdom",
+        "lat": 31.2097546,
+        "lng": -1.8760683,
+        "event_text": "Disasters and accidents: Four people are killed and five others are injured after two cars collide head-on in Bolton , Greater Manchester , United Kingdom . (BBC News)",
+        "url": "https://en.wikipedia.org/wiki/Head-on_collision",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Head-on_collision",
+          "https://en.wikipedia.org/wiki/Bolton",
+          "https://en.wikipedia.org/wiki/Greater_Manchester",
+          "https://en.wikipedia.org/wiki/United_Kingdom",
+          "https://www.bbc.com/news/articles/c0r45k245pvo"
+        ],
+        "llm_sentence": "Bolton , Greater Manchester , United Kingdom",
+        "llm_raw": "```json\n{\n  \"title\": \"Disasters and accidents: Four people are killed and five others are injured after two cars collide head-on in Bolton , Greater Manchester , United Kingdom.\",\n  \"summary\": \"Four people are killed and five others are injured after two cars collide head-on in Bolton, Greater Manchester, United Kingdom.\",\n  \"place\": \"Bolton , Greater Manchester , United Kingdom\",\n  \"lat\": 31.2097546,\n  \"lng\": -1.8760683\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Manchester, United Kingdom",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.8760683,
+          31.2097546
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "421514b91506abf768e3c496b77d1d69",
+      "properties": {
+        "id": "421514b91506abf768e3c496b77d1d69",
+        "title": "Three Inmates Killed and 14 Others Injured in Prison Fight",
+        "summary": "Three inmates are killed and 14 others are injured, including a corrections officer, in a prison fight at the Washington State Prison in Davisboro, Georgia, United States.",
+        "place": "Davisboro, Georgia",
+        "lat": 33.689241,
+        "lng": -85.740833,
+        "event_text": "Law and crime: Three inmates are killed and 14 others are injured, including a corrections officer, in a prison fight at the Washington State Prison in Davisboro, Georgia , United States. (AP)",
+        "url": "https://en.wikipedia.org/wiki/Prison_violence",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Prison_violence",
+          "https://en.wikipedia.org/wiki/Washington_State_Prison",
+          "https://en.wikipedia.org/wiki/Davisboro,_Georgia",
+          "https://apnews.com/article/georgia-prison-fights-inmates-dead-5fc77583ef6afd3284e747a1bb8ddc6b"
+        ],
+        "llm_sentence": {
+          "city": "Davisboro",
+          "country": "Georgia"
+        },
+        "llm_raw": "```json\n{\n  \"title\": \"Three Inmates Killed and 14 Others Injured in Prison Fight\",\n  \"summary\": \"Three inmates are killed and 14 others are injured, including a corrections officer, in a prison fight at the Washington State Prison in Davisboro, Georgia, United States.\",\n  \"place\": {\n    \"city\": \"Davisboro\",\n    \"country\": \"Georgia\"\n  },\n  \"lat\": \"33.689241\",\n  \"lng\": \"-85.740833\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 33.6945,\n  \"lng\": -82.7103\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 33.6945,
+          "lng": -82.7103
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -85.740833,
+          33.689241
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "c7cf0dcf4003ac8dcc923370c9cf1dc5",
+      "properties": {
+        "id": "c7cf0dcf4003ac8dcc923370c9cf1dc5",
+        "title": "Myanmar General Election",
+        "summary": "Citizens of Myanmar vote in the second phase to elect the nation’s bicameral legislature. One more phase of voting is expected in late January.",
+        "place": "Myanmar",
+        "lat": 22,
+        "lng": 96,
+        "event_text": "Politics and elections: 2025–26 Myanmar general election",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%9326_Myanmar_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%9326_Myanmar_general_election",
+          "https://en.wikipedia.org/wiki/Myanmar",
+          "https://en.wikipedia.org/wiki/Pyidaungsu_Hluttaw",
+          "https://apnews.com/article/myanmar-election-military-party-second-phase-6661c927e1b6079d899ccc022f0a981d"
+        ],
+        "llm_sentence": "Myanmar",
+        "llm_raw": "```json\n{\n  \"title\": \"Myanmar General Election\",\n  \"summary\": \"Citizens of Myanmar vote in the second phase to elect the nation’s bicameral legislature. One more phase of voting is expected in late January.\",\n  \"place\": \"Myanmar\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Politics and elections: 2025–26 Myanmar general election\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{'lat': 29, 'lng': 106}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 29.0,
+          "lng": 106.0
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          96,
+          22
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "67f1d2c1fbc35b4d025b24faa0fa4887",
+      "properties": {
+        "id": "67f1d2c1fbc35b4d025b24faa0fa4887",
+        "title": "Beninese parliamentary election",
+        "summary": "Citizens in Benin vote to elect the 109 members of the National Assembly more than one month after a thwarted coup attempt.",
+        "place": "Benin",
+        "lat": 8.8333333333333,
+        "lng": 2.1833333333333,
+        "event_text": "2026 Beninese parliamentary election",
+        "url": "https://en.wikipedia.org/wiki/2026_Beninese_parliamentary_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Beninese_parliamentary_election",
+          "https://en.wikipedia.org/wiki/Benin",
+          "https://en.wikipedia.org/wiki/National_Assembly_(Benin)",
+          "https://en.wikipedia.org/wiki/2025_Beninese_coup_attempt",
+          "https://www.rfi.fr/en/africa/20260110-benin-heads-to-polls-after-failed-coup-shakes-political-landscape"
+        ],
+        "llm_sentence": "Benin",
+        "llm_raw": "```json\n{\n  \"title\": \"Beninese parliamentary election\",\n  \"summary\": \"Citizens in Benin vote to elect the 109 members of the National Assembly more than one month after a thwarted coup attempt.\",\n  \"place\": \"Benin\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"2026 Beninese parliamentary election\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nBenin, Benin",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          2.1833333333333,
+          8.8333333333333
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "56cb3ea77f79396504261fa8feb3e817",
+      "properties": {
+        "id": "56cb3ea77f79396504261fa8feb3e817",
+        "title": "Sports: 2026 United Cup",
+        "summary": "Poland win their first United Cup title after defeating Switzerland 2–1 in the final at the Ken Rosewall Arena in Sydney, Australia.",
+        "place": "Sydney, Australia",
+        "lat": -33.867777777777775,
+        "lng": 151.21,
+        "event_text": "Poland win their first United Cup title after defeating Switzerland 2–1 in the final at the Ken Rosewall Arena in Sydney, Australia.",
+        "url": "https://en.wikipedia.org/wiki/2026_United_Cup",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_United_Cup",
+          "https://en.wikipedia.org/wiki/Tennis",
+          "https://en.wikipedia.org/wiki/Poland",
+          "https://en.wikipedia.org/wiki/United_Cup",
+          "https://en.wikipedia.org/wiki/Switzerland",
+          "https://en.wikipedia.org/wiki/Ken_Rosewall_Arena",
+          "https://en.wikipedia.org/wiki/Sydney",
+          "https://www.reuters.com/sports/tennis/third-time-lucky-poland-beat-switzerland-win-united-cup-2026-01-11/"
+        ],
+        "llm_sentence": {
+          "city": "Sydney",
+          "country": "Australia"
+        },
+        "llm_raw": "```json\n{\n  \"title\": \"Sports: 2026 United Cup\",\n  \"summary\": \"Poland win their first United Cup title after defeating Switzerland 2–1 in the final at the Ken Rosewall Arena in Sydney, Australia.\",\n  \"place\": {\n    \"city\": \"Sydney\",\n    \"country\": \"Australia\"\n  },\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Poland win their first United Cup title after defeating Switzerland 2–1 in the final at the Ken Rosewall Arena in Sydney, Australia.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 34.0522,\n  \"lng\": 151.2971\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 34.0522,
+          "lng": 151.2971
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          151.21,
+          -33.867777777777775
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "bf6c7dde715a2798c41002a213e33fb8",
+      "properties": {
+        "id": "bf6c7dde715a2798c41002a213e33fb8",
+        "title": "Armed Conflicts and Attacks: Syrian Conflict",
+        "summary": "Assisted in clashes between armed forces and attacks on a governate building in Aleppo, Syria. Government officials were holding a conference inside.",
+        "place": "Aleppo, Syria",
+        "lat": 36.2,
+        "lng": 37.16,
+        "event_text": "Operation Hawkeye Strike: The United States military launches airstrikes against Islamic State targets in Syria.",
+        "url": "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Syrian_conflict_(2024%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/SDF%E2%80%93Syrian_transitional_government_clashes_(2025%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/January_2026_Aleppo_clashes",
+          "https://en.wikipedia.org/wiki/Loitering_munition",
+          "https://en.wikipedia.org/wiki/Aleppo_Governorate",
+          "https://en.wikipedia.org/wiki/Aleppo",
+          "https://en.wikipedia.org/wiki/Syria",
+          "https://en.wikipedia.org/wiki/Government_of_Syria",
+          "https://www.aljazeera.com/news/2026/1/10/drone-hits-aleppo-governorate-building-after-syrian-army-declares-ceasefire",
+          "https://en.wikipedia.org/wiki/Operation_Hawkeye_Strike",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://en.wikipedia.org/wiki/United_States_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Airstrike",
+          "https://en.wikipedia.org/wiki/Islamic_State",
+          "https://en.wikipedia.org/wiki/Syria",
+          "https://news.sky.com/story/us-military-carries-out-large-scale-strikes-against-isis-across-syria-13491264",
+          "https://www.foxnews.com/us/us-military-launches-airstrikes-against-isis-targets-syria-officials-say"
+        ],
+        "llm_sentence": "Aleppo, Syria",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed Conflicts and Attacks: Syrian Conflict\",\n  \"summary\": \"Assisted in clashes between armed forces and attacks on a governate building in Aleppo, Syria. Government officials were holding a conference inside.\",\n  \"place\": \"Aleppo, Syria\",\n  \"lat\": \"31° 45' 28.6'' N, 66° 47' 59.0'' E\",\n  \"lng\": \"-1.589781833333333 -31.58978183333333\",\n  \"event_text\": \"Operation Hawkeye Strike: The United States military launches airstrikes against Islamic State targets in Syria.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 30.4676,\n  \"lng\": 68.5972\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 30.4676,
+          "lng": 68.5972
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.16,
+          36.2
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "713e63847821685e57977d6f82652245",
+      "properties": {
+        "id": "713e63847821685e57977d6f82652245",
+        "title": "Armed Conflicts and Attacks: Crisis in Venezuela",
+        "summary": "Assisted by The Guardian, this article details ongoing armed conflicts and attacks in Venezuela, including a crisis involving Colectivos targeting Americans. The U.S. State Department urges immediate evacuation.",
+        "place": "Venezuela",
+        "lat": 36.4678,
+        "lng": -80.1946,
+        "event_text": "Colectivos were targeting them.",
+        "url": "https://en.wikipedia.org/wiki/Crisis_in_Venezuela",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Crisis_in_Venezuela",
+          "https://en.wikipedia.org/wiki/War_on_drugs",
+          "https://en.wikipedia.org/wiki/United_States%E2%80%93Venezuela_relations",
+          "https://en.wikipedia.org/wiki/2026_United_States_intervention_in_Venezuela",
+          "https://en.wikipedia.org/wiki/United_States_Department_of_State",
+          "https://en.wikipedia.org/wiki/Americans",
+          "https://en.wikipedia.org/wiki/Venezuela",
+          "https://en.wikipedia.org/wiki/Colectivo_(Venezuela)",
+          "https://www.theguardian.com/us-news/2026/jan/10/us-citizens-venezuela-paramilitaries"
+        ],
+        "llm_sentence": "Venezuela",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed Conflicts and Attacks: Crisis in Venezuela\",\n  \"summary\": \"Assisted by The Guardian, this article details ongoing armed conflicts and attacks in Venezuela, including a crisis involving Colectivos targeting Americans. The U.S. State Department urges immediate evacuation.\",\n  \"place\": \"Venezuela\",\n  \"lat\": \"36.4678\",\n  \"lng\": \"-80.1946\",\n  \"event_text\": \"Colectivos were targeting them.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -8.7,\n  \"lng\": 48.5\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -8.7,
+          "lng": 48.5
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -80.1946,
+          36.4678
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "b00c791ef42b9ff3975c6d8975bbde7d",
+      "properties": {
+        "id": "b00c791ef42b9ff3975c6d8975bbde7d",
+        "title": "Argentina-Brazil Relations",
+        "summary": "Argentina and Brazil are discussing relations following the expulsion of Argentine diplomats under the Nicolás Maduro administration. Brazil is taking responsibility for its diplomatic representation in Venezuela.",
+        "place": "Venezuela",
+        "lat": 8,
+        "lng": -67,
+        "event_text": "Argentina expelled Argentine diplomats after Maduro's regime.",
+        "url": "https://en.wikipedia.org/wiki/Argentina%E2%80%93Brazil_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Argentina%E2%80%93Brazil_relations",
+          "https://en.wikipedia.org/wiki/Argentina%E2%80%93Venezuela_relations",
+          "https://en.wikipedia.org/wiki/International_reactions_to_the_2026_United_States_intervention_in_Venezuela",
+          "https://en.wikipedia.org/wiki/Brazil",
+          "https://en.wikipedia.org/wiki/Argentina",
+          "https://en.wikipedia.org/wiki/List_of_diplomatic_missions_of_Argentina",
+          "https://en.wikipedia.org/wiki/Caracas",
+          "https://en.wikipedia.org/wiki/Nicol%C3%A1s_Maduro",
+          "https://en.wikipedia.org/wiki/Presidency_of_Nicol%C3%A1s_Maduro",
+          "https://www.reuters.com/world/americas/brazil-hand-back-argentine-diplomatic-representation-venezuela-2026-01-11/"
+        ],
+        "llm_sentence": "Venezuela",
+        "llm_raw": "```json\n{\n  \"title\": \"Argentina-Brazil Relations\",\n  \"summary\": \"Argentina and Brazil are discussing relations following the expulsion of Argentine diplomats under the Nicolás Maduro administration. Brazil is taking responsibility for its diplomatic representation in Venezuela.\",\n  \"place\": \"Venezuela\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"Argentina expelled Argentine diplomats after Maduro's regime.\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -5.4138,\n  \"lng\": 48.8972\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -5.4138,
+          "lng": 48.8972
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67,
+          8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "fad60c2d7cf1694f4764758feeb9f370",
+      "properties": {
+        "id": "fad60c2d7cf1694f4764758feeb9f370",
+        "title": "Egyptian Parliamentary Election Finalized",
+        "summary": "The National Elections Authority has finalized the remaining parliamentary seats, confirming that President Abdel Fattah el-Sisi's allies retain the two-thirds supermajority needed to amend the constitution. Opposition parties and independents hold about 158 of 568 elected seats.",
+        "place": "Egypt",
+        "lat": 30.047912,
+        "lng": -27.555854,
+        "event_text": "Politics and elections: 2025 Egyptian parliamentary election Egypt 's National Elections Authority finalizes the remaining 49 parliamentary seats, confirming that President Abdel Fattah el-Sisi 's allies retain the two-thirds supermajority needed to amend the constitution , while opposition parties and independents hold about 158 of 568 elected seats. (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/2025_Egyptian_parliamentary_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025_Egyptian_parliamentary_election",
+          "https://en.wikipedia.org/wiki/Egypt",
+          "https://en.wikipedia.org/wiki/National_Elections_Authority",
+          "https://en.wikipedia.org/wiki/Parliament_of_Egypt",
+          "https://en.wikipedia.org/wiki/President_of_Egypt",
+          "https://en.wikipedia.org/wiki/Abdel_Fattah_el-Sisi",
+          "https://en.wikipedia.org/wiki/Supermajority",
+          "https://en.wikipedia.org/wiki/Constitutional_amendment",
+          "https://en.wikipedia.org/wiki/Constitution_of_Egypt",
+          "https://en.wikipedia.org/wiki/List_of_political_parties_in_Egypt",
+          "https://en.wikipedia.org/wiki/Independent_politician",
+          "https://www.reuters.com/world/africa/egypt-announces-results-last-seats-parliament-vote-that-gave-sisi-strong-2026-01-10/"
+        ],
+        "llm_sentence": "Egypt",
+        "llm_raw": "```json\n{\n  \"title\": \"Egyptian Parliamentary Election Finalized\",\n  \"summary\": \"The National Elections Authority has finalized the remaining parliamentary seats, confirming that President Abdel Fattah el-Sisi's allies retain the two-thirds supermajority needed to amend the constitution. Opposition parties and independents hold about 158 of 568 elected seats.\",\n  \"place\": \"Egypt\",\n  \"lat\": \"30.047912\",\n  \"lng\": \"-27.555854\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nEgypt, Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -27.555854,
+          30.047912
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "015a49d78d52fa6d750c37be27324c2e",
+      "properties": {
+        "id": "015a49d78d52fa6d750c37be27324c2e",
+        "title": "Nicaragua Releases Prisoners After US Demands Release of More Than 60 Political Prisoners",
+        "summary": "Nicaragua releases dozens of prisoners after the United States publicly demanded the release of more than 60 political prisoners.",
+        "place": "Nicaragua, United States",
+        "lat": -8.5972,
+        "lng": -84.9323,
+        "event_text": "Politics and elections: Nicaragua–United States relations Nicaragua releases dozens of prisoners after the United States publicly demanded the release of more than 60 political prisoners . (Al Jazeera)",
+        "url": "https://en.wikipedia.org/wiki/Nicaragua%E2%80%93United_States_relations",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Nicaragua%E2%80%93United_States_relations",
+          "https://en.wikipedia.org/wiki/Nicaragua",
+          "https://en.wikipedia.org/wiki/Politics_of_Nicaragua",
+          "https://www.aljazeera.com/news/2026/1/10/nicaragua-frees-dozens-of-prisoners-amid-pressure-from-trump-administration"
+        ],
+        "llm_sentence": "Nicaragua, United States",
+        "llm_raw": "```json\n{\n  \"title\": \"Nicaragua Releases Prisoners After US Demands Release of More Than 60 Political Prisoners\",\n  \"summary\": \"Nicaragua releases dozens of prisoners after the United States publicly demanded the release of more than 60 political prisoners.\",\n  \"place\": \"Nicaragua, United States\",\n  \"lat\": -8.5972,\n  \"lng\": -84.9323\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -18.3475,\n  \"lng\": -19.0263\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -18.3475,
+          "lng": -19.0263
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -84.9323,
+          -8.5972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "308198708a6cf1ac8184005a9c02360c",
+      "properties": {
+        "id": "308198708a6cf1ac8184005a9c02360c",
+        "title": "Honduran Election: President Castro's Recount Demand Sparks Debate",
+        "summary": "H Héctor Valerio, the Chief of the Joint Chiefs of Staff, assures that the 2025 Honduran general election results will be guaranteed despite President Xiomara Castro’s decree for a recount.",
+        "place": "Honduras",
+        "lat": -8.76,
+        "lng": -69.43,
+        "event_text": "Politics and elections: 2025 Honduran general election The Chief of the Joint Chiefs of Staff of the Honduran Armed Forces Héctor Valerio informs that the already confirmed election results and the transfer of power would be guaranteed despite President Xiomara Castro 's decree demanding a recount of the results. ( Tiempo )",
+        "url": "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+          "https://en.wikipedia.org/wiki/Armed_Forces_of_Honduras",
+          "https://en.wikipedia.org/wiki/President_of_Honduras",
+          "https://en.wikipedia.org/wiki/Xiomara_Castro",
+          "https://tiempo.hn/honduras/2026/01/10/hector-valerio-al-pueblo-confien-en-las-ffaa-garantizaremos-la-alternancia-del-poder/"
+        ],
+        "llm_sentence": "Honduras",
+        "llm_raw": "```json\n{\n  \"title\": \"Honduran Election: President Castro's Recount Demand Sparks Debate\",\n  \"summary\": \"H Héctor Valerio, the Chief of the Joint Chiefs of Staff, assures that the 2025 Honduran general election results will be guaranteed despite President Xiomara Castro’s decree for a recount.\",\n  \"place\": \"Honduras\",\n  \"lat\": -8.76,\n  \"lng\": -69.43\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "City, Country\nUnknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69.43,
+          -8.76
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "0ccd655f7945180c14a4565f59a78c91",
+      "properties": {
+        "id": "0ccd655f7945180c14a4565f59a78c91",
+        "title": "Indonesia Suspens Access to Chatbot Due to Pornography Concerns",
+        "summary": "The Science and Technology Ministry has suspended access to the Grok chatbot due to concerns about generating pornographic content. Representatives of xAI, the developer, have been summoned for investigation.",
+        "place": "Jakarta, Indonesia",
+        "lat": -7.946238,
+        "lng": 106.405333,
+        "event_text": "Science and technology: Pornography Act Indonesia suspends access to the Grok chatbot over concerns about the generation of pornographic content and summons representatives of its developer, xAI , for investigation. (Reuters)",
+        "url": "https://en.wikipedia.org/wiki/Pornography_Act_(Indonesia)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Pornography_Act_(Indonesia)",
+          "https://en.wikipedia.org/wiki/Indonesia",
+          "https://en.wikipedia.org/wiki/Internet_censorship_in_Indonesia",
+          "https://en.wikipedia.org/wiki/Grok_(chatbot)",
+          "https://en.wikipedia.org/wiki/Chatbot",
+          "https://en.wikipedia.org/wiki/Generative_AI_pornography",
+          "https://en.wikipedia.org/wiki/XAI_(company)",
+          "https://www.reuters.com/legal/litigation/indonesia-temporarily-blocks-access-grok-over-sexualised-images-2026-01-10/"
+        ],
+        "llm_sentence": "Jakarta, Indonesia",
+        "llm_raw": "```json\n{\n  \"title\": \"Indonesia Suspens Access to Chatbot Due to Pornography Concerns\",\n  \"summary\": \"The Science and Technology Ministry has suspended access to the Grok chatbot due to concerns about generating pornographic content. Representatives of xAI, the developer, have been summoned for investigation.\",\n  \"place\": \"Jakarta, Indonesia\",\n  \"lat\": -7.946238,\n  \"lng\": 106.405333\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Unknown",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.405333,
+          -7.946238
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "05f6221ff839284f8f7902ddcac95f9d",
+      "properties": {
+        "id": "05f6221ff839284f8f7902ddcac95f9d",
+        "title": "Macclesfield Beat Crystal Palace in Dramatic FA Cup Victory",
+        "summary": "Macclesfield defeated Crystal Palace 2–1 in a significant upset, marking the biggest surprise in the FA Cup's 155-year history.",
+        "place": "North (UK)",
+        "lat": -30.0486,
+        "lng": -90.8717,
+        "event_text": "Sports: 2025–26 FA Cup Macclesfield 2–1 Crystal Palace In association football , National League North team Macclesfield beat the FA Cup defending champions Crystal Palace 2–1, in statistically the biggest upset in the competition's 155-year history . (BBC Sport)",
+        "url": "https://en.wikipedia.org/wiki/2025%E2%80%9326_FA_Cup",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025%E2%80%9326_FA_Cup",
+          "https://en.wikipedia.org/wiki/Macclesfield_2%E2%80%931_Crystal_Palace_(2026)",
+          "https://en.wikipedia.org/wiki/Association_football",
+          "https://en.wikipedia.org/wiki/National_League_North",
+          "https://en.wikipedia.org/wiki/Macclesfield_F.C.",
+          "https://en.wikipedia.org/wiki/FA_Cup",
+          "https://en.wikipedia.org/wiki/Crystal_Palace_F.C.",
+          "https://en.wikipedia.org/wiki/Upset_(competition)",
+          "https://en.wikipedia.org/wiki/History_of_the_FA_Cup",
+          "https://www.bbc.co.uk/sport/football/live/czr43x12xnrt"
+        ],
+        "llm_sentence": "North (UK)",
+        "llm_raw": "```json\n{\n  \"title\": \"Macclesfield Beat Crystal Palace in Dramatic FA Cup Victory\",\n  \"summary\": \"Macclesfield defeated Crystal Palace 2–1 in a significant upset, marking the biggest surprise in the FA Cup's 155-year history.\",\n  \"place\": \"North (UK)\",\n  \"lat\": -30.0486,\n  \"lng\": -90.8717\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 51.2866,\n  \"lng\": -0.7694\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 51.2866,
+          "lng": -0.7694
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.8717,
+          -30.0486
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "256466fcf925ad86f525c926606beb3c",
+      "properties": {
+        "id": "256466fcf925ad86f525c926606beb3c",
+        "title": "Armed conflicts and attacks: Operation Southern Spear",
+        "summary": "Armed conflicts and attacks: Operation Southern Spear United States military seizes a Timor-Leste -flagged oil tanker in the Caribbean Sea, marking the fifth tanker seized as part of the blockade.",
+        "place": "Caribbean Sea",
+        "lat": 15,
+        "lng": -75,
+        "event_text": "The Guardian (The Patriot-News)",
+        "url": "https://en.wikipedia.org/wiki/Operation_Southern_Spear",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Operation_Southern_Spear",
+          "https://en.wikipedia.org/wiki/United_States_oil_blockade_during_Operation_Southern_Spear",
+          "https://en.wikipedia.org/wiki/United_States",
+          "https://en.wikipedia.org/wiki/US_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Timor-Leste",
+          "https://en.wikipedia.org/wiki/Oil_tanker",
+          "https://en.wikipedia.org/wiki/Caribbean_Sea",
+          "https://www.theguardian.com/world/2026/jan/09/us-venezuela-oil-tanker-seizure",
+          "https://www.pennlive.com/nation-world/2026/01/trump-cancels-2nd-attack-on-venezuela-but-us-seizes-another-tanker.html"
+        ],
+        "llm_sentence": "Caribbean Sea",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed conflicts and attacks: Operation Southern Spear\",\n  \"summary\": \"Armed conflicts and attacks: Operation Southern Spear United States military seizes a Timor-Leste -flagged oil tanker in the Caribbean Sea, marking the fifth tanker seized as part of the blockade.\",\n  \"place\": \"Caribbean Sea\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"The Guardian (The Patriot-News)\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -8.05,\n  \"lng\": 15.69\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -8.05,
+          "lng": 15.69
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -75,
+          15
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "f9bd45f53f0a8ab23bc95965c7e9ec17",
+      "properties": {
+        "id": "f9bd45f53f0a8ab23bc95965c7e9ec17",
+        "title": "Russian Strikes Target Lviv in Ukraine",
+        "summary": "Russia has launched drone and missile strikes on Kyiv, targeting high-rise apartment buildings and damaging the Qatari embassy. The attacks occurred in western Ukraine.",
+        "place": "Kyiv, Ukraine",
+        "lat": 43.6801,
+        "lng": 30.7229,
+        "event_text": "Armed conflicts and attacks: Russo-Ukrainian war Kyiv strikes , Russian attacks on civilians in the Russo-Ukrainian war Russian drone and missile strikes on Kyiv , Ukraine , kill four people and wound 28 others after several high-rise apartment buildings are targeted. The Qatari embassy is also damaged in the strikes. (Euronews) Russia strikes Lviv in western Ukraine with its Oreshnik intermediate-range ballistic missile , reportedly targeting a critical infrastructure site. (BBC News)",
+        "url": "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Kyiv_strikes_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Russian_attacks_on_civilians_in_the_Russo-Ukrainian_war_(2022%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/Russian_Armed_Forces",
+          "https://en.wikipedia.org/wiki/Kyiv",
+          "https://en.wikipedia.org/wiki/Ukraine",
+          "https://en.wikipedia.org/wiki/Qatar",
+          "https://en.wikipedia.org/wiki/List_of_diplomatic_missions_of_Qatar",
+          "https://www.euronews.com/video/2026/01/09/russian-airstrike-on-multiple-residential-buildings-in-kyiv-leaves-4-dead-24-injured",
+          "https://en.wikipedia.org/wiki/Russia",
+          "https://en.wikipedia.org/wiki/Lviv",
+          "https://en.wikipedia.org/wiki/Western_Ukraine",
+          "https://en.wikipedia.org/wiki/Oreshnik_(missile)",
+          "https://en.wikipedia.org/wiki/Intermediate-range_ballistic_missile",
+          "https://en.wikipedia.org/wiki/Critical_infrastructure",
+          "https://www.bbc.co.uk/news/articles/cgqe9kv9xxvo"
+        ],
+        "llm_sentence": "Kyiv, Ukraine",
+        "llm_raw": "```json\n{\n  \"title\": \"Russian Strikes Target Lviv in Ukraine\",\n  \"summary\": \"Russia has launched drone and missile strikes on Kyiv, targeting high-rise apartment buildings and damaging the Qatari embassy. The attacks occurred in western Ukraine.\",\n  \"place\": \"Kyiv, Ukraine\",\n  \"lat\": 43.6801,\n  \"lng\": 30.7229\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 43.6872,\n  \"lng\": 30.0972\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 43.6872,
+          "lng": 30.0972
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30.7229,
+          43.6801
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "8e0d4f7f93c579613353d616bc930062",
+      "properties": {
+        "id": "8e0d4f7f93c579613353d616bc930062",
+        "title": "Armed Conflicts and Attacks: Yemeni Civil War",
+        "summary": "A Southern Transitional Council (STC) delegation in Riyadh announces the dissolution of their group following territorial losses to the Saudi-backed Yemeni government. The STC rejects the announcement, claiming it was made under duress.",
+        "place": "Riyadh, Yemen",
+        "lat": -40.3781,
+        "lng": 16.9383,
+        "event_text": "Armed conflicts and attacks: Yemeni civil war 2025 Southern Yemen offensive , Saudi-led intervention in the Yemeni civil war A Southern Transitional Council (STC) delegation in Riyadh announces the group's dissolution following widespread territorial losses to the Saudi -backed Yemeni government . The STC rejects the announcement, saying the announcement was made under duress. ( The New Arab )",
+        "url": "https://en.wikipedia.org/wiki/Yemeni_civil_war_(2014%E2%80%93present)",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Yemeni_civil_war_(2014%E2%80%93present)",
+          "https://en.wikipedia.org/wiki/2025_Southern_Yemen_offensive",
+          "https://en.wikipedia.org/wiki/Saudi-led_intervention_in_the_Yemeni_civil_war",
+          "https://en.wikipedia.org/wiki/Southern_Transitional_Council",
+          "https://en.wikipedia.org/wiki/Riyadh",
+          "https://en.wikipedia.org/wiki/Saudi_Arabia",
+          "https://en.wikipedia.org/wiki/Yemen",
+          "https://en.wikipedia.org/wiki/Yemeni_government",
+          "https://www.newarab.com/news/south-yemen-separatists-call-foul-stc-announce-dissolution"
+        ],
+        "llm_sentence": "Riyadh, Yemen",
+        "llm_raw": "```json\n{\n  \"title\": \"Armed Conflicts and Attacks: Yemeni Civil War\",\n  \"summary\": \"A Southern Transitional Council (STC) delegation in Riyadh announces the dissolution of their group following territorial losses to the Saudi-backed Yemeni government. The STC rejects the announcement, claiming it was made under duress.\",\n  \"place\": \"Riyadh, Yemen\",\n  \"lat\": -40.3781,\n  \"lng\": 16.9383\n}\n```",
+        "llm_geocode_raw": "Unknown",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "Yemen, Saudi Arabia",
+        "llm_only_geocode_parsed": null,
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          16.9383,
+          -40.3781
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "d84c9c5af138453b658c68504e98a509",
+      "properties": {
+        "id": "d84c9c5af138453b658c68504e98a509",
+        "title": "EU-Mercosur Trade Deal",
+        "summary": "Twenty-one EU countries approve a trade deal with Mercosur, creating the world's largest free trade area after 25 years of talks. The deal is expected to be finalized in Paraguay.",
+        "place": "Paraguay",
+        "lat": -23.5,
+        "lng": -58,
+        "event_text": "EU–Mercosur Association Agreement",
+        "url": "https://en.wikipedia.org/wiki/EU%E2%80%93Mercosur_Association_Agreement",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/EU%E2%80%93Mercosur_Association_Agreement",
+          "https://en.wikipedia.org/wiki/European_Union",
+          "https://en.wikipedia.org/wiki/Trade_deal",
+          "https://en.wikipedia.org/wiki/Mercosur",
+          "https://en.wikipedia.org/wiki/Free_trade_area",
+          "https://en.wikipedia.org/wiki/Paraguay",
+          "https://www.politico.eu/article/eu-countries-approve-mercosur-trade-deal-for-signature/"
+        ],
+        "llm_sentence": "Paraguay",
+        "llm_raw": "```json\n{\n  \"title\": \"EU-Mercosur Trade Deal\",\n  \"summary\": \"Twenty-one EU countries approve a trade deal with Mercosur, creating the world's largest free trade area after 25 years of talks. The deal is expected to be finalized in Paraguay.\",\n  \"place\": \"Paraguay\",\n  \"lat\": null,\n  \"lng\": null,\n  \"event_text\": \"EU–Mercosur Association Agreement\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 27.3428,\n  \"lng\": -60.9135\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 27.3428,
+          "lng": -60.9135
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -58,
+          -23.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "eb7d3ec2aa1f12b1dc088e7e605c723c",
+      "properties": {
+        "id": "eb7d3ec2aa1f12b1dc088e7e605c723c",
+        "title": "Bus Plunge into Gorge: Fourteen Dead, Thirty Injured",
+        "summary": "A bus plunged into a gorge near Nahan, Himachal Pradesh, India, resulting in the deaths of fourteen people and injuries to over thirty others.",
+        "place": "Nahan, Himachal Pradesh, India",
+        "lat": -35.2687,
+        "lng": 190.3694,
+        "event_text": "Disasters and accidents: Fourteen people are killed and over 30 others are injured after a bus plunges into a gorge near Nahan , Himachal Pradesh , India . ( Hindustan Times )",
+        "url": "https://en.wikipedia.org/wiki/Nahan",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/Nahan",
+          "https://en.wikipedia.org/wiki/Himachal_Pradesh",
+          "https://en.wikipedia.org/wiki/India",
+          "https://www.hindustantimes.com/india-news/himachal-bus-tragedy-14-killed-over-30-injured-as-private-bus-falls-into-500-feet-deep-gorge-in-sirmaur-101767970619309.html"
+        ],
+        "llm_sentence": "Nahan, Himachal Pradesh, India",
+        "llm_raw": "```json\n{\n  \"title\": \"Bus Plunge into Gorge: Fourteen Dead, Thirty Injured\",\n  \"summary\": \"A bus plunged into a gorge near Nahan, Himachal Pradesh, India, resulting in the deaths of fourteen people and injuries to over thirty others.\",\n  \"place\": \"Nahan, Himachal Pradesh, India\",\n  \"lat\": \"-35.2687\",\n  \"lng\": 190.3694\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 28.3467,\n  \"lng\": 73.9510\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 28.3467,
+          "lng": 73.951
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          190.3694,
+          -35.2687
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "1b54923b2acb68eba5a625ed9ce3a222",
+      "properties": {
+        "id": "1b54923b2acb68eba5a625ed9ce3a222",
+        "title": "Law and crime: 2026 Cedarbluff shootings",
+        "summary": "At least six people are killed in a spree shootings at three locations across Cedarbluff, Mississippi, United States. A 24-year-old man is taken into custody and charged with murder.",
+        "place": "Cedarbluff, Mississippi, United States",
+        "lat": 38.75,
+        "lng": -94.616678,
+        "event_text": "Law and crime: 2026 Cedarbluff shootings At least six people are killed in spree shootings at three locations across Cedarbluff , Mississippi , United States. A 24-year-old man is taken into custody and charged with murder . (AP via CTV News)",
+        "url": "https://en.wikipedia.org/wiki/2026_Cedarbluff_shootings",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2026_Cedarbluff_shootings",
+          "https://en.wikipedia.org/wiki/Spree_killer",
+          "https://en.wikipedia.org/wiki/Cedarbluff,_Mississippi",
+          "https://en.wikipedia.org/wiki/Mississippi",
+          "https://en.wikipedia.org/wiki/Murder_in_United_States_law",
+          "https://www.ctvnews.ca/world/article/six-killed-in-mississippi-suspect-charged-with-murder/"
+        ],
+        "llm_sentence": "Cedarbluff, Mississippi, United States",
+        "llm_raw": "```json\n{\n  \"title\": \"Law and crime: 2026 Cedarbluff shootings\",\n  \"summary\": \"At least six people are killed in a spree shootings at three locations across Cedarbluff, Mississippi, United States. A 24-year-old man is taken into custody and charged with murder.\",\n  \"place\": \"Cedarbluff, Mississippi, United States\",\n  \"lat\": \"38.750000\",\n  \"lng\": \"-94.616678\"\n}\n```",
+        "llm_geocode_raw": "City, Country",
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": 37.6245,\n  \"lng\": -98.2316\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": 37.6245,
+          "lng": -98.2316
+        },
+        "decision": "llm",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -94.616678,
+          38.75
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "082d9b4a945ce871f664b1a8484da8fd",
+      "properties": {
+        "id": "082d9b4a945ce871f664b1a8484da8fd",
+        "title": "Honduran Election Recount Approved",
+        "summary": "The Honduran National Congress approves a recount of the November 2025 election, with President Xiomara Castro's decree subsequently approved.",
+        "place": "Honduras",
+        "lat": 18.6347,
+        "lng": -84.8932,
+        "event_text": "Politics and elections: 2025 Honduran general election The National Congress of Honduras approves a recount of the votes cast in the November 2025 election, which is subsequently approved by President Xiomara Castro 's decree. (CNN in Spanish ) ( Bloomberg )",
+        "url": "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+        "event_links": [
+          "https://en.wikipedia.org/wiki/2025_Honduran_general_election",
+          "https://en.wikipedia.org/wiki/National_Congress_of_Honduras",
+          "https://en.wikipedia.org/wiki/President_of_Honduras",
+          "https://en.wikipedia.org/wiki/Xiomara_Castro",
+          "https://cnnespanol.cnn.com/2026/01/10/latinoamerica/honduras-xiomara-castro-decreto-recuento-votos-orix",
+          "https://www.bloomberg.com/news/articles/2026-01-10/honduran-president-orders-vote-recount-requests-meeting-trump"
+        ],
+        "llm_sentence": "Honduras",
+        "llm_raw": "```json\n{\n  \"title\": \"Honduran Election Recount Approved\",\n  \"summary\": \"The Honduran National Congress approves a recount of the November 2025 election, with President Xiomara Castro's decree subsequently approved.\",\n  \"place\": \"Honduras\",\n  \"lat\": \"18.6347\",\n  \"lng\": \"-84.8932\"\n}\n```",
+        "llm_geocode_raw": null,
+        "llm_geocode_parsed": null,
+        "llm_only_geocode_raw": "```json\n{\n  \"lat\": -80.3167,\n  \"lng\": -72.4953\n}\n```",
+        "llm_only_geocode_parsed": {
+          "lat": -80.3167,
+          "lng": -72.4953
+        },
+        "decision": "wikidata",
+        "source": "Wikipedia Current Events",
+        "geolocation_source": "llm"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -84.8932,
+          18.6347
+        ]
+      }
     }
   ]
 }

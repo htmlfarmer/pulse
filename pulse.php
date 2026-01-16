@@ -1124,6 +1124,20 @@ function pulse_log($tag, $message = '') {
           }
         }
 
+        // If other cities weren't rendered earlier, ensure they're shown at the bottom
+        if (hasOtherCities) {
+          // Avoid duplicating if the block already exists in the HTML
+          if (!/id="other-cities"/.test(html)) {
+            html += '<div id="other-cities" style="border-top: 1px solid #ccc; margin-top: 10px; padding-top: 10px;">';
+            html += '<b>Other cities in area:</b><ul style="padding-left: 1.2em; margin-top: 0;">';
+            data.other_cities.forEach(city => {
+              const search_query = `${city.name}, ${city.state}, ${city.country}`;
+              html += `<li style="margin-bottom: 0.5em;"><a href="https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">${escapeHtml(city.name)}</a> <a href="https://news.google.com/search?q=${encodeURIComponent(search_query)}" target="_blank" rel="noopener noreferrer">(news)</a></li>`;
+            });
+            html += '</ul></div>';
+          }
+        }
+
         infoPanel.update(html);
         // Mark that the static content has been rendered so streaming updates
         // can update only the LLM element instead of replacing the whole panel.

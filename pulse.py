@@ -19,6 +19,7 @@ import signal
 import sys
 import sqlite3
 import os
+import re
 
 try:
     from llama_cpp import Llama
@@ -61,6 +62,26 @@ def load_cities_csv(file_path: Path):
             logging.info(f"Loaded {len(CITIES_CACHE)} cities from {file_path}")
     except Exception as e: sys.exit(f"Failed to load cities from {file_path}: {e}")
 
+
+def _normalize_number_commas(s: Optional[str]) -> Optional[str]:
+    """Fix LLM-inserted spaces after commas in numeric groupings.
+
+    Examples: '1, 600' -> '1,600', '2, 000, 000' -> '2,000,000'.
+    """
+    if s is None:
+        return s
+    try:
+        out = s
+        # Iteratively collapse patterns like ", 600" into ",600" until stable
+        while True:
+            new = re.sub(r'(?<=\d),\s+(?=\d{3}\b)', ',', out)
+            if new == out:
+                break
+            out = new
+        return out
+    except Exception:
+        return s
+
 # --- MODIFIED: Database functions now handle article history ---
 def _init_db(conn: sqlite3.Connection):
     """Initializes all necessary tables in the database."""
@@ -89,12 +110,19 @@ def _init_db(conn: sqlite3.Connection):
 
 def _store_article_in_db(conn, article_data):
     """Inserts or replaces an article in the database."""
+    # Normalize numeric thousands-grouping in summaries before storing
+    def _maybe_norm(s):
+        try:
+            return _normalize_number_commas(s)
+        except Exception:
+            return s
+
     conn.execute('''
         INSERT OR REPLACE INTO articles (article_link, city_name, title, source, summary, published_ts, image_url, geojson_feature)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     ''', (
         article_data['link'], article_data['city'], article_data['title'],
-        article_data['source'], article_data['summary'], article_data['published_ts'],
+        article_data['source'], _maybe_norm(article_data.get('summary')), article_data['published_ts'],
         article_data['image'], json.dumps(article_data['feature'])
     ))
     conn.commit()
@@ -721,6 +749,18 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
             use_llm = False
 
         if lat is not None and lng is not None:
+            # If an LLM-only geocode was parsed separately (more precise), prefer it
+            if llm_only_geocode_parsed and isinstance(llm_only_geocode_parsed, dict):
+                try:
+                    llm_lat_v = float(llm_only_geocode_parsed.get('lat'))
+                    llm_lng_v = float(llm_only_geocode_parsed.get('lng'))
+                    # Override the working coords with the LLM-only parsed coords
+                    lat = llm_lat_v
+                    lng = llm_lng_v
+                except Exception:
+                    # If parsing fails, fall back to previously-determined coords
+                    pass
+
             # stable feature id so client can dedupe
             fid_src = (title or '') + '|' + (place_str or '') + '|' + str(idx)
             fid = hashlib.md5(fid_src.encode('utf-8')).hexdigest()
@@ -733,6 +773,8 @@ def fetch_and_process_current_events(out_path: Path, user_agent: str):
             else:
                 decision = 'llm' if llm_raw else 'fallback'
 
+            # Normalize numeric comma spacing in the LLM-generated summary
+            summary = _normalize_number_commas(summary)
             feature = {
                 "type": "Feature",
                 "id": fid,

@@ -14,33 +14,49 @@ function pulse_log($tag, $message = '') {
   $entry = "[$time] [$tag] ip={$ip} php={$php} ver={$ver} method={$method} uri={$uri} msg={$m}" . PHP_EOL;
   @file_put_contents($logfile, $entry, FILE_APPEND | LOCK_EX);
 }
-  if (isset($_GET['run_pulse_py'])) {
+    if (isset($_GET['run_pulse_py'])) {
       header('Content-Type: application/json');
-      set_time_limit(300); // 5 minutes, because the LLM can be slow
 
-      // Delete old geojson before running the script
+      // Remove old geojson before running the script (preserve original intent)
       $geojson_file = __DIR__ . '/data/current_events.geojson';
       if (file_exists($geojson_file)) {
-          unlink($geojson_file);
+        @unlink($geojson_file);
       }
 
-      $command = 'cd ' . __DIR__ . ' && python3 pulse.py 2>&1';
-      $output = shell_exec($command);
-      
-      if ($output === null) {
-          http_response_code(500);
-          echo json_encode(['status' => 'error', 'message' => 'Failed to execute script. Check server logs and file permissions.']);
-      } else {
-          // Check for fatal errors in output, as shell_exec doesn't give a reliable status code
-          if (strpos($output, 'FATAL:') !== false) {
-              http_response_code(500);
-              echo json_encode(['status' => 'error', 'message' => 'Script executed with fatal errors.', 'output' => $output]);
-          } else {
-              echo json_encode(['status' => 'success', 'message' => 'Data refresh script executed.', 'output' => $output]);
-          }
+      // First try to call the local Python API (app.py) to run the job synchronously
+      $api_url = 'http://127.0.0.1:8000/api/run_pulse_py';
+      $ctx = stream_context_create(['http' => ['timeout' => 5, 'header' => "User-Agent: PulsePHP/1.0\r\n"]]);
+      $resp = @file_get_contents($api_url, false, $ctx);
+      if ($resp !== false) {
+        // Assume the API returned JSON already
+        echo $resp;
+        exit;
       }
-      exit;
-  }
+
+      // If the API is unavailable, start the Python script as a non-blocking background job.
+      // Use nohup & to detach; echo the PID so we can report status.
+      $python = 'python3';
+      $pulse_py = escapeshellarg(__DIR__ . '/pulse.py');
+      $logfile = escapeshellarg(sys_get_temp_dir() . '/pulse_background.log');
+      $cmd = "cd " . escapeshellarg(__DIR__) . " && nohup {$python} {$pulse_py} > {$logfile} 2>&1 & echo $!";
+      $pid = null;
+      try {
+        $pid = trim(shell_exec($cmd));
+      } catch (Exception $e) {
+        $pid = null;
+      }
+
+      if ($pid && is_numeric($pid)) {
+        // create a marker file indicating processing is underway
+        @file_put_contents(__DIR__ . '/data/current_events.running', (string)time());
+        echo json_encode(['status' => 'started', 'pid' => intval($pid)]);
+        exit;
+      } else {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to start background process.']);
+        exit;
+      }
+    }
 
   if (isset($_GET['proxy_gibs'])) {
     $date = isset($_GET['date']) ? $_GET['date'] : '';
@@ -648,56 +664,54 @@ function pulse_log($tag, $message = '') {
         } catch (e) { console.error('logToConsole error', e); }
       }
 
-      // Append streaming text to a console entry while preserving word boundaries between chunks.
-      function appendStreamText(el, chunk) {
-        if (!chunk) return;
-        try {
-          // If chunk starts with newline, append directly
-          if (/^\r?\n/.test(chunk)) { el.textContent += chunk; return; }
-          const existing = el.textContent || '';
-          if (existing && !(/\s$/.test(existing)) && !(/^\s/.test(chunk))) {
-            // Determine whether a space is needed between the existing text and the new chunk.
-            // Avoid inserting spaces before/after common punctuation and a variety of quote/apostrophe characters.
-            const noSpaceBefore = /^[\.,;:!?\)\]\}\u2019\u2018\u201C\u201D'"\u00B4\u02BC-]/;
-            const noSpaceAfter = /[\(\[\{\u2018\u2019\u201C\u201D\\/"'`\-]$/;
-            // Also avoid inserting a space when the existing text ends with a digit and the new
-            // chunk is a digit continuation (e.g. '2' + '0' -> '20') or a short ordinal suffix
-            // such as 'th', 'st', 'nd', 'rd'. This prevents "1 9 th" from appearing.
-            const endsWithDigit = /\d$/.test(existing);
-            const chunkStartsWithDigit = /^\d/.test(chunk);
-            const chunkIsShortAlpha = /^[A-Za-z]{1,3}$/.test(chunk);
-            if (endsWithDigit && (chunkStartsWithDigit || chunkIsShortAlpha)) {
-              // do not add space
-            } else if (!noSpaceBefore.test(chunk) && !noSpaceAfter.test(existing)) {
-              el.textContent += ' ';
-            }
-          }
-        } catch (e) { /* ignore */ }
-        el.textContent += chunk;
-      }
-
-      // Safely append text into a single string, inserting a space between chunks when needed.
+      // Append streaming text to a console entry using a simple spacing heuristic.
+      // Insert a single space between chunks unless one of several no-space
+      // conditions applies (existing ends with whitespace, chunk starts with
+      // whitespace, punctuation, mid-word join, or numeric comma grouping).
       function appendWithSpace(existing, add) {
         if (!add) return existing || '';
         if (!existing) return add;
-        // if existing ends with whitespace or add starts with whitespace, just concatenate
-        if (/\s$/.test(existing) || /^\s/.test(add)) return existing + add;
-        // Avoid inserting a space in cases like: word + 's  or word + , .  Treat many quote/apostrophe variants.
-        const noSpaceBefore = /^[\.,;:!?\)\]\}\u2019\u2018\u201C\u201D'"\u00B4\u02BC-]/;
-        const noSpaceAfter = /[\(\[\{\u2018\u2019\u201C\u201D\\/"'`\-]$/;
-        // Special handling to prevent inserting spaces into digit sequences or before short
-        // ordinal-like suffixes (e.g. 'th', 'st'). If existing ends with a digit and add starts
-        // with a digit or is a short alpha suffix, don't add a space.
-        const endsWithDigit = /\d$/.test(existing);
-        const addStartsWithDigit = /^\d/.test(add);
-        const addIsShortAlpha = /^[A-Za-z]{1,3}$/.test(add);
-        // Also avoid inserting a space when existing ends with an apostrophe-like character
-        // and the addition is a short alpha (e.g. "'s", "'re"). This prevents "here' s".
-        const endsWithApostrophe = /[\u2018\u2019'`\u00B4\u02BC]$/.test(existing);
-        if (noSpaceBefore.test(add) || noSpaceAfter.test(existing)) return existing + add;
-        if (endsWithDigit && (addStartsWithDigit || addIsShortAlpha)) return existing + add;
-        if (endsWithApostrophe && addIsShortAlpha) return existing + add;
-        return existing + ' ' + add;
+        try {
+          // If either side already has whitespace adjacency, just concatenate
+          if (/\s$/.test(existing) || /^\s/.test(add)) return existing + add;
+
+          const lastChar = existing.charAt(existing.length - 1) || '';
+          const firstChar = add.charAt(0) || '';
+
+          // Mid-word join: letter + lowercase letter (e.g. 'Ch' + 'imo' -> 'Chimo')
+          if (/[A-Za-zÀ-ÖØ-öø-ÿ]$/.test(existing) && /^[a-zà-öø-ÿ]/.test(add)) {
+            return existing + add;
+          }
+
+          // Apostrophe contractions: don't insert space after an apostrophe
+          if (/[\u2018\u2019'`\u00B4\u02BC]$/.test(existing) && /^[A-Za-zÀ-ÖØ-öø-ÿ]/.test(add)) {
+            return existing + add;
+          }
+
+          // Numeric thousands grouping: comma followed by digits (e.g. '1,' + '600' -> '1,600')
+          if (/,$/.test(existing) && /^\d/.test(add)) {
+            return existing + add;
+          }
+
+          // No space before common closing punctuation or commas/periods
+          if (/^[\.,;:!?)\]\}]/.test(add)) return existing + add;
+
+          // No space after opening punctuation like '(', '[', '{'
+          if (/[\(\[\{]$/.test(existing)) return existing + add;
+
+          // Default: insert a single space
+          return existing + ' ' + add;
+        } catch (e) {
+          return existing + add;
+        }
+      }
+
+      function appendStreamText(el, chunk) {
+        if (!chunk) return;
+        try {
+          const existing = el.textContent || '';
+          el.textContent = appendWithSpace(existing, chunk);
+        } catch (e) { /* ignore */ }
       }
 
       const map = L.map('map').setView([39.8283, -98.5795], 4);
@@ -1239,16 +1253,17 @@ function pulse_log($tag, $message = '') {
               showInfoPopup(combinedData, latlng);
 
               // Build a concise prompt for the LLM
-              let prompt = 'Give the historical context of events in the area. Give a detailed summary (2-4 sentences), mention any likely historical causes or themes, and list 3-10short tags." Context: ';
-              prompt += `Nearest city: ${search_query} `;
+              let prompt = 'Give the historical context of events in the area ';
+              prompt += `near the city: ${search_query} `;
               if (combinedData.other_cities && combinedData.other_cities.length) {
-                prompt += 'Other nearby cities: ' + combinedData.other_cities.slice(0,6).map(c=>c.name).join(', ') + ' ';
+                prompt += 'Discuss how other nearby cities such as: ' + combinedData.other_cities.slice(0,6).map(c=>c.name).join(', ') + ' maybe related.';
+              }
+              prompt += 'Give a detailed NEWS SUMMARY section with (3-5 sentences), mention any likely historical causes or themes, and list 3-10 short tags." Context: ';
+              if (combinedData.news && combinedData.news.length) {
+                prompt += 'Recent headlines (titles):\n' + combinedData.news.slice(0,6).map(a=> '- ' + (a.title || a)).join(' ') + ' ';
               }
               if (combinedData.wiki_topics && combinedData.wiki_topics.length) {
                 prompt += 'Area topics from Wikipedia: ' + combinedData.wiki_topics.slice(0,8).join('; ') + ' ';
-              }
-              if (combinedData.news && combinedData.news.length) {
-                prompt += 'Recent headlines (titles):\n' + combinedData.news.slice(0,6).map(a=> '- ' + (a.title || a)).join(' ') + ' ';
               }
               if (typeof llmEnabled === 'undefined' || llmEnabled) {
                 // Indicate the LLM started: show a temporary 'Thinking...' message in the popup
@@ -1289,7 +1304,7 @@ function pulse_log($tag, $message = '') {
                           let data = dataLines.map(l => l.slice(6)).join('\n');
                           if (data === '[DONE]') { try { logToConsole('LLM stream done for ' + search_query, 'info'); } catch(e){}; continue; }
                           if (data.startsWith('[ERROR]')) { try { logToConsole('LLM stream error: ' + data, 'error'); } catch(e){}; continue; }
-                          data = data.replace(/^\s*assistant[:\s]*/i, '').trim();
+                          data = data.replace(/^\s*assistant[:\s]*/i, '');
                           if (!data) continue;
                           if (!streamEntry) {
                             const entries = document.getElementById('llm-console-entries');
@@ -1305,7 +1320,7 @@ function pulse_log($tag, $message = '') {
                            showInfoPopup(combinedData, latlng);
                            try { streamEntry.parentElement.scrollTop = streamEntry.parentElement.scrollHeight; } catch(e) {}
                         } else {
-                          let chunkText = (part || '').toString().replace(/^\s*assistant[:\s]*/i, '').trim();
+                          let chunkText = (part || '').toString().replace(/^\s*assistant[:\s]*/i, '');
                           if (!chunkText) continue;
                           if (!streamEntry) {
                             const entries = document.getElementById('llm-console-entries');
@@ -1325,7 +1340,7 @@ function pulse_log($tag, $message = '') {
                     }
 
                     if (buf && buf.trim()) {
-                      const tail = buf.replace(/^\s*assistant[:\s]*/i, '').trim();
+                      const tail = buf.replace(/^\s*assistant[:\s]*/i, '');
                       if (tail) {
                         if (!streamEntry) {
                           const entries = document.getElementById('llm-console-entries');

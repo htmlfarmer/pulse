@@ -1269,13 +1269,11 @@ function pulse_log($tag, $message = '') {
                 // Indicate the LLM started: show a temporary 'Thinking...' message in the popup
                 combinedData.llm = 'Thinking...';
                 showInfoPopup(combinedData, latlng);
-                logToConsole(`Started LLM for ${search_query}`, 'info');
 
                 const llmPayload = { prompt: prompt, system_prompt: 'You are a helpful, concise local news analyst. Keep answers short.' };
-                // Log the exact request sent to the LLM into the console for debugging/visibility
-                try { logToConsole('LLM request: ' + JSON.stringify(llmPayload), 'info'); } catch(e) {}
+                // (LLM request payload logging removed to avoid verbose console output)
                 // Only attempt direct streaming to local LLM server (no proxy fallback).
-                const directUrl = 'http://127.0.0.1:5005/ask';
+                const directUrl = 'http://ashy.tplinkdns.com:5005/ask';
                 (async function directStreamOnly(){
                   try {
                     const r = await fetch(directUrl + '?stream=1', {

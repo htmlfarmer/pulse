@@ -37,23 +37,35 @@ function pulse_log($tag, $message = '') {
       // Use nohup & to detach; echo the PID so we can report status.
       $python = 'python3';
       $pulse_py = escapeshellarg(__DIR__ . '/pulse.py');
+      $wiki_py = escapeshellarg(__DIR__ . '/wikipedia.py');
       $logfile = escapeshellarg(sys_get_temp_dir() . '/pulse_background.log');
-      $cmd = "cd " . escapeshellarg(__DIR__) . " && nohup {$python} {$pulse_py} > {$logfile} 2>&1 & echo $!";
-      $pid = null;
+      $logfile_wiki = escapeshellarg(sys_get_temp_dir() . '/wiki_background.log');
+      // Start both scripts in the background and echo both PIDs (one per line)
+      $cmd = "cd " . escapeshellarg(__DIR__) . " && (nohup {$python} {$pulse_py} > {$logfile} 2>&1 & echo $!; nohup {$python} {$wiki_py} > {$logfile_wiki} 2>&1 & echo $!)";
+
+      $pid_output = null;
       try {
-        $pid = trim(shell_exec($cmd));
+        $pid_output = trim(shell_exec($cmd));
       } catch (Exception $e) {
-        $pid = null;
+        $pid_output = null;
       }
 
-      if ($pid && is_numeric($pid)) {
+      $pids = [];
+      if ($pid_output) {
+        $parts = preg_split('/\s+/', trim($pid_output));
+        foreach ($parts as $p) {
+          if (is_numeric($p)) $pids[] = intval($p);
+        }
+      }
+
+      if (count($pids) > 0) {
         // create a marker file indicating processing is underway
         @file_put_contents(__DIR__ . '/data/current_events.running', (string)time());
-        echo json_encode(['status' => 'started', 'pid' => intval($pid)]);
+        echo json_encode(['status' => 'started', 'pids' => $pids]);
         exit;
       } else {
         http_response_code(500);
-        echo json_encode(['status' => 'error', 'message' => 'Failed to start background process.']);
+        echo json_encode(['status' => 'error', 'message' => 'Failed to start background processes.']);
         exit;
       }
     }
@@ -740,6 +752,9 @@ function pulse_log($tag, $message = '') {
       };
 
       const date = '<?php echo $gibs_date; ?>';
+      // LLM server configuration
+      const LLM_SERVER_URL = 'http://ashy.tplinkdns.com:5005/ask';
+      const LLM_DEFAULT_PROVIDER = 'gemini-2.5-flash-lite';
 
       const displayDate = new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', { 
         year: 'numeric', 
@@ -1270,10 +1285,10 @@ function pulse_log($tag, $message = '') {
                 combinedData.llm = 'Thinking...';
                 showInfoPopup(combinedData, latlng);
 
-                const llmPayload = { prompt: prompt, system_prompt: 'You are a helpful, concise local news analyst. Keep answers short.' };
+                const llmPayload = { prompt: prompt, system_prompt: 'You are a helpful, concise local news analyst. Keep answers short.', provider: LLM_DEFAULT_PROVIDER };
                 // (LLM request payload logging removed to avoid verbose console output)
                 // Only attempt direct streaming to local LLM server (no proxy fallback).
-                const directUrl = 'http://ashy.tplinkdns.com:5005/ask';
+                const directUrl = LLM_SERVER_URL;
                 (async function directStreamOnly(){
                   try {
                     const r = await fetch(directUrl + '?stream=1', {
@@ -1417,8 +1432,8 @@ function pulse_log($tag, $message = '') {
 
                 logToConsole('LLM inline query: ' + prompt, 'info');
 
-                const payload = { prompt: prompt, system_prompt: 'You are a concise news analyst. Answer briefly and focus on recent relevant events.' };
-                const r = await fetch('http://127.0.0.1:5005/ask?stream=1', {
+                const payload = { prompt: prompt, system_prompt: 'You are a concise news analyst. Answer briefly and focus on recent relevant events.', provider: LLM_DEFAULT_PROVIDER };
+                const r = await fetch(LLM_SERVER_URL + '?stream=1', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' },
                   body: JSON.stringify(payload)

@@ -58,6 +58,21 @@ Notes
 - If images don't appear, open the image URL directly in the browser to confirm reachability / hotlinking restrictions.
 - If you want the script to copy or set ownership into /var/www/html automatically, tell me and I will add a --deploy-path / --set-owner option.
 
+LLM server support ✅
+- You can point `pulse.py` at a running LLM HTTP server (the project's `server/llm_server.py` implements `/ask`). Set the `LLM_SERVER_URL` environment variable to e.g. `http://ashy.tplinkdns.com:5005/ask` and `pulse` will prefer the remote server for geolocation extraction. If the remote server is unreachable, `pulse` will fall back to a local GGUF model if available. When forwarding prompts, `pulse` will request the Google Gemini 2.5 Flash Lite model by default (`gemini-2.5-flash-lite`), unless overridden by `LLM_SERVER_PROVIDER` or `--llm-provider`.
+- CLI override: pass `--llm-server` or `--llm-provider` to `pulse.py` to override these values for a single run. Example:
+
+```bash
+python3 pulse.py --llm-server http://ashy.tplinkdns.com:5005/ask --llm-provider local
+```
+
+- Local GGUF model disabled by default ✅
+  - `pulse.py` will NOT automatically load the local GGUF model. To explicitly allow loading the local model as a fallback when the remote server is not available, set `ALLOW_LOCAL_LLM=1` or pass `--allow-local-llm` on the CLI. Example:
+
+```bash
+# Enable local GGUF fallback for this run
+python3 pulse.py --allow-local-llm
+```
 Where to specify news sources
 
 - Default file: the script expects a newline-separated feeds file (default: feeds.txt). Each non-empty line is treated as an RSS/atom feed URL. Lines beginning with `#` are ignored as comments.

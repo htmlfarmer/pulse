@@ -6,3 +6,7 @@ matplotlib==3.10.8
 
 Flask
 flask-cors
+
+# Dev/test deps
+pytest
+requests
